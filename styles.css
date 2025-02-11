@@ -1,0 +1,149 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: #f0e4d8;
+    margin: 0;
+    padding: 0;
+}
+
+/* Top Left Section */
+.top-left {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    text-align: left;
+}
+
+.save {
+    margin-bottom: 20px;
+}
+
+.save button {
+    padding: 10px;
+    margin: 5px;
+    background-color: #ffd700;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.achievements {
+    background-color: white;
+    border-radius: 10px;
+    padding: 10px;
+    max-width: 200px;
+}
+
+.achievements h2 {
+    margin: 0 0 10px 0;
+}
+
+.achievements ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* Cookie Image */
+#cookie {
+    width: 200px;
+    cursor: pointer;
+    transition: transform 0.1s;
+    margin-top: 50px;
+}
+
+#cookie:active {
+    transform: scale(0.95);
+}
+
+/* Stats Section */
+.stats {
+    margin: 20px;
+    padding: 10px;
+    background-color: white;
+    border-radius: 10px;
+    display: inline-block;
+}
+
+/* Upgrades Section */
+.upgrade {
+    padding: 10px;
+    margin: 5px;
+    background-color: #ffd700;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.upgrade:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+/* Grandmas Box */
+.grandmas-box {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: white;
+    border-radius: 10px;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Grandma Progress Bar */
+.grandma-progress {
+    width: 100px;
+    height: 10px;
+    background-color: #e0e0e0;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.grandma-progress-bar {
+    height: 100%;
+    background-color: #ff8c42;
+    width: 0;
+    transition: width 0.3s ease;
+}
+
+/* Grandma Counter */
+.grandma-counter {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.grandma-image {
+    width: 30px;
+    animation: bake 1s infinite;
+}
+
+@keyframes bake {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+    100% { transform: translateY(0); }
+}
+
+.grandma-counter span {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+}
+
+/* Floating Numbers */
+.floating-number {
+    position: absolute;
+    color: #333;
+    font-size: 20px;
+    animation: floatUp 1s ease-out;
+    pointer-events: none;
+}
+
+@keyframes floatUp {
+    0% { transform: translateY(0); opacity: 1; }
+    100% { transform: translateY(-50px); opacity: 0; }
+}

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cookie Clicker</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Top Left Section -->
+    <div class="top-left">
+        <div class="save">
+            <button id="saveGame">Save Game</button>
+            <button id="loadGame">Load Game</button>
+        </div>
+        <div class="achievements">
+            <h2>Achievements</h2>
+            <ul id="achievementsList"></ul>
+        </div>
+    </div>
+
+    <!-- Main Game Section -->
+    <div class="stats">
+        <h1>Cookies: <span id="cookieCount">0</span></h1>
+        <p>Per Click: <span id="clickPower">1</span></p>
+        <p>Auto Clickers: <span id="autoClickers">0</span></p>
+        <p>Grandma's Bakeries: <span id="grandmas">0</span></p>
+        <p>Cookie Farms: <span id="farms">0</span></p>
+    </div>
+
+    <img id="cookie" src="cookie.png" alt="Cookie">
+
+    <!-- Grandmas Box -->
+    <div id="grandmasBox" class="grandmas-box">
+        <div class="grandma-progress">
+            <div id="grandmaProgressBar" class="grandma-progress-bar"></div>
+        </div>
+        <div class="grandma-counter">
+            <img src="grandma.png" alt="Grandma Baking" class="grandma-image">
+            <span id="grandmaCount">0</span>
+        </div>
+    </div>
+
+    <!-- Upgrades Section -->
+    <div class="upgrades">
+        <button class="upgrade" id="clickUpgrade">
+            Upgrade Click Power (Cost: 10)
+        </button>
+        <button class="upgrade" id="autoClicker">
+            Buy Auto Clicker (Cost: 50)
+        </button>
+        <button class="upgrade" id="grandma">
+            Buy Grandma's Bakery (Cost: 100)
+        </button>
+        <button class="upgrade" id="farm">
+            Buy Cookie Farm (Cost: 500)
+        </button>
+        <button class="upgrade" id="luckyClick">
+            Lucky Click (Cost: 20)
+        </button>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
