@@ -173,7 +173,7 @@ class Game {
         const floatingNumber = document.createElement('div');
         floatingNumber.className = 'floating-number';
         floatingNumber.textContent = `+${amount}`;
-        floatingNumber.style.color = isBonus ? 'blue' : 'green';
+        floatingNumber.style.color = isBonus ? 'blue' : 'red';
 
         const cookieRect = this.cookie.getBoundingClientRect();
         floatingNumber.style.left = `${cookieRect.left + cookieRect.width / 2 - 15}px`;

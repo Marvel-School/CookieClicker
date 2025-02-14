@@ -137,7 +137,7 @@ body {
 /* Floating Numbers */
 .floating-number {
     position: absolute;
-    color: #333;
+    color: red;
     font-size: 20px;
     animation: floatUp 1s ease-out;
     pointer-events: none;
