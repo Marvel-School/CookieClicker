@@ -31,10 +31,6 @@ class Game {
         this.init();
     }
 
-    /**
-     * init()
-     * Initializes DOM element references, event listeners, UI display, and auto-click intervals.
-     */
     init() {
         // DOM references for main game UI
         this.cookie = document.getElementById('cookie');
@@ -42,7 +38,7 @@ class Game {
         this.clickPowerDisplay = document.getElementById('clickPower');
         this.cpsDisplay = document.getElementById('cps');
 
-        // Additional stats (autoClickers, grandmas, farms) if you want to display them in HTML
+        // Additional stats
         this.autoClickersDisplay = document.getElementById('autoClickers');
         this.grandmasDisplay = document.getElementById('grandmas');
         this.farmsDisplay = document.getElementById('farms');
@@ -84,10 +80,6 @@ class Game {
         this.startAutoClicker();
     }
 
-    /**
-     * setupEventListeners()
-     * Attaches event listeners to buttons, cookie image, etc.
-     */
     setupEventListeners() {
         // Cookie click => handle cookie increment and confetti
         this.cookie.addEventListener('click', (e) => this.handleClick(e));
@@ -111,24 +103,14 @@ class Game {
         });
     }
 
-    /**
-     * handleClick(e)
-     * Increments cookies, plays sound (if on), shows floating number, confetti, achievements, etc.
-     */
     handleClick(e) {
         if (this.soundOn) {
             this.clickSound.currentTime = 0;
             this.clickSound.play();
         }
-
-        // Add cookies
         this.cookies += this.clickPower;
-
-        // Show floating number and confetti
         this.showFloatingNumber(this.clickPower);
         this.createConfetti(e.clientX, e.clientY);
-
-        // Check achievements & refresh display
         this.checkAchievements();
         this.updateDisplay();
     }
@@ -180,28 +162,20 @@ class Game {
         }
     }
 
-    /**
-     * startAutoClicker()
-     * Automates cookie production based on number of auto-clickers, grandmas, and farms.
-     */
     startAutoClicker() {
         setInterval(() => {
-            this.cookies += this.autoClickers;      // 1 cookie/sec each
-            this.cookies += this.grandmas * 5;      // 5 cookies/sec each
-            this.cookies += this.farms * 10;        // 10 cookies/sec each
+            this.cookies += this.autoClickers;
+            this.cookies += this.grandmas * 5;
+            this.cookies += this.farms * 10;
             this.updateDisplay();
         }, 1000);
     }
 
-    /**
-     * updateDisplay()
-     * Refreshes cookie counters, costs, and calls to update visual progress bars.
-     */
     updateDisplay() {
         this.cookieCount.textContent = Math.floor(this.cookies);
         this.clickPowerDisplay.textContent = this.clickPower;
 
-        // If you have <p>Auto Clickers: <span id="autoClickers">0</span></p> in HTML
+        // If you have <p>Auto Clickers: <span id="autoClickers">...</span></p> in HTML
         if (this.autoClickersDisplay) {
             this.autoClickersDisplay.textContent = this.autoClickers;
         }
@@ -218,26 +192,20 @@ class Game {
         this.farmButton.textContent = `Buy Cookie Farm (Cost: ${this.farmCost})`;
         this.luckyClickButton.textContent = `Lucky Click (Cost: ${this.luckyClickCost})`;
 
-        // Enable/disable buttons based on cookie count
         this.clickUpgradeButton.disabled = this.cookies < this.clickUpgradeCost;
         this.autoClickerButton.disabled = this.cookies < this.autoClickerCost;
         this.grandmaButton.disabled = this.cookies < this.grandmaCost;
         this.farmButton.disabled = this.cookies < this.farmCost;
         this.luckyClickButton.disabled = this.cookies < this.luckyClickCost;
 
-        // Calculate and display overall cookies/second
         const cps = (this.autoClickers * 1) + (this.grandmas * 5) + (this.farms * 10);
         this.cpsDisplay.textContent = cps;
 
-        // Update visuals for auto clickers, farms, etc.
+        // Update visuals
         this.updateAutoClickersVisual();
         this.updateFarmsVisual();
     }
 
-    /**
-     * showFloatingNumber(amount, isBonus)
-     * Creates a floating text element over the cookie to show click or bonus amounts.
-     */
     showFloatingNumber(amount, isBonus = false) {
         const floatingNumber = document.createElement('div');
         floatingNumber.className = 'floating-number';
@@ -252,10 +220,6 @@ class Game {
         setTimeout(() => floatingNumber.remove(), 1000);
     }
 
-    /**
-     * createConfetti(x, y)
-     * Spawns small colored particles that radiate out from the mouse click position.
-     */
     createConfetti(x, y) {
         const colors = ['#FFC107', '#FF5722', '#4CAF50', '#2196F3', '#9C27B0'];
         const numConfetti = 20;
@@ -277,10 +241,6 @@ class Game {
         }
     }
 
-    /**
-     * updateGrandmasVisual()
-     * Updates the Grandma Bakery progress bar and count.
-     */
     updateGrandmasVisual() {
         const maxGrandmas = 20;
         const progressWidth = (this.grandmas / maxGrandmas) * 100;
@@ -288,21 +248,13 @@ class Game {
         this.grandmaCount.textContent = this.grandmas;
     }
 
-    /**
-     * updateAutoClickersVisual()
-     * Updates the Auto Clickers progress bar and count.
-     */
     updateAutoClickersVisual() {
-        const maxAutoClickers = 10; // maximum for full progress
+        const maxAutoClickers = 10;
         const progressWidth = (this.autoClickers / maxAutoClickers) * 100;
         this.autoClickersProgressBar.style.width = `${Math.min(progressWidth, 100)}%`;
         this.autoClickersCountVisual.textContent = this.autoClickers;
     }
 
-    /**
-     * updateFarmsVisual()
-     * Updates the Farms progress bar and count.
-     */
     updateFarmsVisual() {
         const maxFarms = 10;
         const progressWidth = (this.farms / maxFarms) * 100;
@@ -310,10 +262,6 @@ class Game {
         this.farmsCountVisual.textContent = this.farms;
     }
 
-    /**
-     * checkAchievements()
-     * Verifies if new achievements have been unlocked, then updates the list.
-     */
     checkAchievements() {
         const newAchievements = [
             { condition: this.cookies >= 100,  text: '100 Cookies!' },
@@ -330,20 +278,12 @@ class Game {
         });
     }
 
-    /**
-     * updateAchievements()
-     * Renders the achievements list in the sidebar.
-     */
     updateAchievements() {
         this.achievementsList.innerHTML = this.achievements
             .map(ach => `<li>${ach}</li>`)
             .join('');
     }
 
-    /**
-     * saveGame()
-     * Saves the current game state to local storage.
-     */
     saveGame() {
         const gameState = {
             cookies: this.cookies,
@@ -362,10 +302,6 @@ class Game {
         alert('Game saved!');
     }
 
-    /**
-     * loadGame()
-     * Loads saved game data from local storage, if available.
-     */
     loadGame() {
         const savedGame = JSON.parse(localStorage.getItem('cookieGameSave'));
         if (savedGame) {
@@ -390,10 +326,6 @@ class Game {
         }
     }
 
-    /**
-     * resetGame()
-     * Resets all game state and clears local storage.
-     */
     resetGame() {
         const confirmReset = confirm("Are you sure you want to reset your game? This action cannot be undone.");
         if (!confirmReset) return;
@@ -421,5 +353,4 @@ class Game {
     }
 }
 
-// Initialize the game instance
 const game = new Game();
