@@ -24,7 +24,7 @@ class Game {
 
         // Sound toggle (enabled by default)
         this.soundOn = true;
-        this.clickSound = new Audio('click.mp3');
+        this.clickSound = new Audio('sounds/click.mp3');
         this.clickSound.volume = 0.2;
 
         // Initialize the game (DOM setup, event listeners, etc.)
