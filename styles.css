@@ -5,121 +5,154 @@ body {
     background-color: #f0e4d8;
     margin: 0;
     padding: 0;
-}
-
-/* Top Left Section */
-.top-left {
+  }
+  
+  /* Top Left Section (Achievements, Save/Load/Reset, Sound) */
+  .top-left {
     position: absolute;
     top: 10px;
     left: 10px;
     text-align: left;
-}
-
-.save {
+  }
+  
+  .save {
     margin-bottom: 20px;
-}
-
-.save button {
+  }
+  
+  .save button {
     padding: 10px;
     margin: 5px;
     background-color: #ffd700;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-}
-
-.achievements {
+  }
+  
+  .achievements {
     background-color: white;
     border-radius: 10px;
     padding: 10px;
     max-width: 200px;
-}
-
-.achievements h2 {
+  }
+  
+  .achievements h2 {
     margin: 0 0 10px 0;
-}
-
-.achievements ul {
+  }
+  
+  .achievements ul {
     list-style-type: none;
     padding: 0;
     margin: 0;
-}
-
-/* Cookie Image */
-#cookie {
-    width: 200px;
-    cursor: pointer;
-    transition: transform 0.1s;
-    margin-top: 50px;
-}
-
-#cookie:active {
-    transform: scale(0.95);
-}
-
-/* Stats Section */
-.stats {
+  }
+  
+  /* Main Layout: Left column for upgrades, center for stats/cookie */
+  .main-layout {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
+    margin-top: 100px; /* Space under top-left section */
+    padding: 20px;
+    gap: 30px;
+  }
+  
+  /* Upgrade Buttons stacked on the left */
+  .upgrade-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  /* Center area for stats and cookie */
+  .center-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Stats box */
+  .stats {
     margin: 20px;
     padding: 10px;
     background-color: white;
     border-radius: 10px;
     display: inline-block;
-}
-
-/* Upgrades Section */
-.upgrade {
+  }
+  
+  /* Cookie Image */
+  #cookie {
+    width: 200px;
+    cursor: pointer;
+    transition: transform 0.1s;
+    margin-top: 10px;
+  }
+  
+  #cookie:active {
+    transform: scale(0.95);
+  }
+  
+  /* Upgrades Section (buttons) */
+  .upgrade {
     padding: 10px;
-    margin: 5px;
+    margin: 0; /* remove extra margin now that we have gap */
     background-color: #ffd700;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-}
-
-.upgrade:disabled {
+  }
+  
+  .upgrade:disabled {
     background-color: #cccccc;
     cursor: not-allowed;
-}
-
-/* Confetti Particle Styles */
-.confetti {
+  }
+  
+  /* Confetti Particle Styles */
+  .confetti {
     position: absolute;
     width: 8px;
     height: 8px;
-    background-color: red; /* Will be overridden */
+    background-color: red; /* Will be overridden by JS */
     pointer-events: none;
     opacity: 1;
     border-radius: 50%;
     animation: confettiAnimation 1s ease-out forwards;
-}
-
-@keyframes confettiAnimation {
+  }
+  
+  @keyframes confettiAnimation {
     0% {
-        transform: translate(0, 0) rotate(0deg);
-        opacity: 1;
+      transform: translate(0, 0) rotate(0deg);
+      opacity: 1;
     }
     100% {
-        transform: translate(var(--x), var(--y)) rotate(360deg);
-        opacity: 0;
+      transform: translate(var(--x), var(--y)) rotate(360deg);
+      opacity: 0;
     }
-}
-
-/* Floating Numbers */
-.floating-number {
+  }
+  
+  /* Floating Numbers */
+  .floating-number {
     position: absolute;
     color: red;
     font-size: 20px;
     animation: floatUp 1s ease-out;
     pointer-events: none;
-}
-
-@keyframes floatUp {
-    0% { transform: translateY(0); opacity: 1; }
-    100% { transform: translateY(-50px); opacity: 0; }
-}
-
-/* Upgrade Visualizations Container (Bottom Right, Stacked) */
-#upgradeVisualsContainer {
+  }
+  
+  @keyframes floatUp {
+    0% {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(-50px);
+      opacity: 0;
+    }
+  }
+  
+  /* Upgrade Visualizations Container (Bottom Right, Stacked) */
+  #upgradeVisualsContainer {
     position: fixed;
     bottom: 20px;
     right: 20px;
@@ -127,10 +160,10 @@ body {
     flex-direction: column;
     align-items: flex-end;
     gap: 10px;
-}
-
-/* Common Styles for Upgrade Visualization Boxes */
-.upgrade-box {
+  }
+  
+  /* Common Styles for Upgrade Visualization Boxes */
+  .upgrade-box {
     background-color: white;
     border-radius: 10px;
     padding: 10px;
@@ -139,45 +172,68 @@ body {
     align-items: center;
     gap: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-/* Progress Bar Container */
-.upgrade-progress {
+  }
+  
+  /* Progress Bar Container */
+  .upgrade-progress {
     width: 100px;
     height: 10px;
     background-color: #e0e0e0;
     border-radius: 5px;
     overflow: hidden;
-}
-
-/* Progress Bar */
-.upgrade-progress-bar {
+  }
+  
+  /* Progress Bar */
+  .upgrade-progress-bar {
     height: 100%;
     background-color: #ff8c42;
     width: 0;
     transition: width 0.3s ease;
-}
-
-/* Upgrade Counter */
-.upgrade-counter {
+  }
+  
+  /* Upgrade Counter */
+  .upgrade-counter {
     display: flex;
     align-items: center;
     gap: 5px;
-}
-
-.upgrade-image {
+  }
+  
+  .upgrade-image {
     width: 30px;
     animation: bounce 1s infinite;
-}
-
-@keyframes bounce {
-    0% { transform: translateY(0); }
-    50% { transform: translateY(-5px); }
-    100% { transform: translateY(0); }
-}
-
-.upgrade-counter span {
+  }
+  
+  @keyframes bounce {
+    0% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-5px);
+    }
+    100% {
+      transform: translateY(0);
+    }
+  }
+  
+  .upgrade-counter span {
     font-size: 18px;
     font-weight: bold;
     color: #333;
-}
+  }
+  
+  /* Responsive Layout for Smaller Screens */
+  @media (max-width: 700px) {
+    .main-layout {
+      flex-direction: column;
+      align-items: center;
+    }
+  
+    .upgrade-buttons {
+      align-items: center; /* Center the stacked buttons on mobile */
+    }
+  
+    .center-area {
+      margin-top: 20px;
+    }
+  }
+  
