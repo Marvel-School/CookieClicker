@@ -27,43 +27,56 @@ class Game {
         this.clickSound = new Audio('sounds/click.mp3');
         this.clickSound.volume = 0.2;
 
-        // Initialize the game (DOM setup, event listeners, etc.)
+        // Initialize the game
         this.init();
     }
 
     /**
      * init()
-     * Initializes DOM element references, event listeners, UI display, and auto-click interval.
+     * Initializes DOM element references, event listeners, UI display, and auto-click intervals.
      */
     init() {
-        // DOM element references
+        // DOM references for main game UI
         this.cookie = document.getElementById('cookie');
         this.cookieCount = document.getElementById('cookieCount');
         this.clickPowerDisplay = document.getElementById('clickPower');
         this.cpsDisplay = document.getElementById('cps');
+
+        // Additional stats (autoClickers, grandmas, farms) if you want to display them in HTML
         this.autoClickersDisplay = document.getElementById('autoClickers');
         this.grandmasDisplay = document.getElementById('grandmas');
         this.farmsDisplay = document.getElementById('farms');
 
+        // Upgrade buttons
         this.clickUpgradeButton = document.getElementById('clickUpgrade');
         this.autoClickerButton = document.getElementById('autoClicker');
         this.grandmaButton = document.getElementById('grandma');
         this.farmButton = document.getElementById('farm');
         this.luckyClickButton = document.getElementById('luckyClick');
 
+        // Achievements & Save/Load/Reset
         this.achievementsList = document.getElementById('achievementsList');
         this.saveGameButton = document.getElementById('saveGame');
         this.loadGameButton = document.getElementById('loadGame');
         this.resetGameButton = document.getElementById('resetGame');
         this.toggleSoundButton = document.getElementById('toggleSound');
 
+        // Grandma's Visualization
         this.grandmaProgressBar = document.getElementById('grandmaProgressBar');
         this.grandmaCount = document.getElementById('grandmaCount');
 
-        // Set up event listeners for interactions
+        // Auto Clickers Visualization
+        this.autoClickersProgressBar = document.getElementById('autoClickersProgressBar');
+        this.autoClickersCountVisual = document.getElementById('autoClickersCountVisual');
+
+        // Farms Visualization
+        this.farmsProgressBar = document.getElementById('farmsProgressBar');
+        this.farmsCountVisual = document.getElementById('farmsCountVisual');
+
+        // Set up event listeners
         this.setupEventListeners();
 
-        // Initial UI update and visualizations
+        // Initial UI update
         this.updateDisplay();
         this.updateGrandmasVisual();
 
@@ -73,10 +86,10 @@ class Game {
 
     /**
      * setupEventListeners()
-     * Attaches event listeners for cookie clicks, upgrades, save/load/reset, and sound toggle.
+     * Attaches event listeners to buttons, cookie image, etc.
      */
     setupEventListeners() {
-        // Click event for cookie; pass event to get mouse coordinates for confetti.
+        // Cookie click => handle cookie increment and confetti
         this.cookie.addEventListener('click', (e) => this.handleClick(e));
 
         // Upgrade buttons
@@ -86,12 +99,12 @@ class Game {
         this.farmButton.addEventListener('click', () => this.buyFarm());
         this.luckyClickButton.addEventListener('click', () => this.luckyClick());
 
-        // Save, load, and reset game
+        // Save, Load, Reset
         this.saveGameButton.addEventListener('click', () => this.saveGame());
         this.loadGameButton.addEventListener('click', () => this.loadGame());
         this.resetGameButton.addEventListener('click', () => this.resetGame());
 
-        // Toggle sound
+        // Toggle Sound
         this.toggleSoundButton.addEventListener('click', () => {
             this.soundOn = !this.soundOn;
             alert(`Sound is now ${this.soundOn ? 'ON' : 'OFF'}.`);
@@ -100,10 +113,7 @@ class Game {
 
     /**
      * handleClick(e)
-     * Increases cookie count, plays sound, shows floating number and confetti,
-     * checks achievements, and updates UI.
-     *
-     * @param {MouseEvent} e - The click event containing mouse coordinates.
+     * Increments cookies, plays sound (if on), shows floating number, confetti, achievements, etc.
      */
     handleClick(e) {
         if (this.soundOn) {
@@ -111,9 +121,14 @@ class Game {
             this.clickSound.play();
         }
 
+        // Add cookies
         this.cookies += this.clickPower;
+
+        // Show floating number and confetti
         this.showFloatingNumber(this.clickPower);
         this.createConfetti(e.clientX, e.clientY);
+
+        // Check achievements & refresh display
         this.checkAchievements();
         this.updateDisplay();
     }
@@ -165,25 +180,37 @@ class Game {
         }
     }
 
+    /**
+     * startAutoClicker()
+     * Automates cookie production based on number of auto-clickers, grandmas, and farms.
+     */
     startAutoClicker() {
         setInterval(() => {
-            this.cookies += this.autoClickers;
-            this.cookies += this.grandmas * 5;
-            this.cookies += this.farms * 10;
+            this.cookies += this.autoClickers;      // 1 cookie/sec each
+            this.cookies += this.grandmas * 5;      // 5 cookies/sec each
+            this.cookies += this.farms * 10;        // 10 cookies/sec each
             this.updateDisplay();
         }, 1000);
     }
 
     /**
      * updateDisplay()
-     * Updates UI elements such as cookie count, upgrade costs, CPS, and visual panels.
+     * Refreshes cookie counters, costs, and calls to update visual progress bars.
      */
     updateDisplay() {
         this.cookieCount.textContent = Math.floor(this.cookies);
         this.clickPowerDisplay.textContent = this.clickPower;
-        this.autoClickersDisplay.textContent = this.autoClickers;
-        this.grandmasDisplay.textContent = this.grandmas;
-        this.farmsDisplay.textContent = this.farms;
+
+        // If you have <p>Auto Clickers: <span id="autoClickers">0</span></p> in HTML
+        if (this.autoClickersDisplay) {
+            this.autoClickersDisplay.textContent = this.autoClickers;
+        }
+        if (this.grandmasDisplay) {
+            this.grandmasDisplay.textContent = this.grandmas;
+        }
+        if (this.farmsDisplay) {
+            this.farmsDisplay.textContent = this.farms;
+        }
 
         this.clickUpgradeButton.textContent = `Upgrade Click Power (Cost: ${this.clickUpgradeCost})`;
         this.autoClickerButton.textContent = `Buy Auto Clicker (Cost: ${this.autoClickerCost})`;
@@ -191,26 +218,25 @@ class Game {
         this.farmButton.textContent = `Buy Cookie Farm (Cost: ${this.farmCost})`;
         this.luckyClickButton.textContent = `Lucky Click (Cost: ${this.luckyClickCost})`;
 
+        // Enable/disable buttons based on cookie count
         this.clickUpgradeButton.disabled = this.cookies < this.clickUpgradeCost;
         this.autoClickerButton.disabled = this.cookies < this.autoClickerCost;
         this.grandmaButton.disabled = this.cookies < this.grandmaCost;
         this.farmButton.disabled = this.cookies < this.farmCost;
         this.luckyClickButton.disabled = this.cookies < this.luckyClickCost;
 
+        // Calculate and display overall cookies/second
         const cps = (this.autoClickers * 1) + (this.grandmas * 5) + (this.farms * 10);
         this.cpsDisplay.textContent = cps;
 
-        // Update visualization panels for Auto Clickers and Farms
+        // Update visuals for auto clickers, farms, etc.
         this.updateAutoClickersVisual();
         this.updateFarmsVisual();
     }
 
     /**
      * showFloatingNumber(amount, isBonus)
-     * Displays a floating number animation near the cookie.
-     *
-     * @param {number} amount - The number to display.
-     * @param {boolean} isBonus - Whether it's a bonus (blue) or normal (red).
+     * Creates a floating text element over the cookie to show click or bonus amounts.
      */
     showFloatingNumber(amount, isBonus = false) {
         const floatingNumber = document.createElement('div');
@@ -228,10 +254,7 @@ class Game {
 
     /**
      * createConfetti(x, y)
-     * Creates confetti particles that spray out from the given (x, y) coordinates.
-     *
-     * @param {number} x - The x-coordinate of the mouse click.
-     * @param {number} y - The y-coordinate of the mouse click.
+     * Spawns small colored particles that radiate out from the mouse click position.
      */
     createConfetti(x, y) {
         const colors = ['#FFC107', '#FF5722', '#4CAF50', '#2196F3', '#9C27B0'];
@@ -244,8 +267,8 @@ class Game {
             confetti.style.left = `${x}px`;
             confetti.style.top = `${y}px`;
 
-            const offsetX = (Math.random() * 200 - 100).toFixed(0) + 'px';
-            const offsetY = (Math.random() * 200 - 100).toFixed(0) + 'px';
+            const offsetX = `${(Math.random() * 200 - 100).toFixed(0)}px`;
+            const offsetY = `${(Math.random() * 200 - 100).toFixed(0)}px`;
             confetti.style.setProperty('--x', offsetX);
             confetti.style.setProperty('--y', offsetY);
 
@@ -256,7 +279,7 @@ class Game {
 
     /**
      * updateGrandmasVisual()
-     * Updates the Grandma Bakery visualization panel.
+     * Updates the Grandma Bakery progress bar and count.
      */
     updateGrandmasVisual() {
         const maxGrandmas = 20;
@@ -267,34 +290,36 @@ class Game {
 
     /**
      * updateAutoClickersVisual()
-     * Updates the Auto Clickers visualization panel.
+     * Updates the Auto Clickers progress bar and count.
      */
     updateAutoClickersVisual() {
-        const maxAutoClickers = 10; // Define maximum for full progress
+        const maxAutoClickers = 10; // maximum for full progress
         const progressWidth = (this.autoClickers / maxAutoClickers) * 100;
-        const autoClickersProgressBar = document.getElementById('autoClickersProgressBar');
-        autoClickersProgressBar.style.width = `${Math.min(progressWidth, 100)}%`;
-        document.getElementById('autoClickersCountVisual').textContent = this.autoClickers;
+        this.autoClickersProgressBar.style.width = `${Math.min(progressWidth, 100)}%`;
+        this.autoClickersCountVisual.textContent = this.autoClickers;
     }
 
     /**
      * updateFarmsVisual()
-     * Updates the Cookie Farms visualization panel.
+     * Updates the Farms progress bar and count.
      */
     updateFarmsVisual() {
         const maxFarms = 10;
         const progressWidth = (this.farms / maxFarms) * 100;
-        const farmsProgressBar = document.getElementById('farmsProgressBar');
-        farmsProgressBar.style.width = `${Math.min(progressWidth, 100)}%`;
-        document.getElementById('farmsCountVisual').textContent = this.farms;
+        this.farmsProgressBar.style.width = `${Math.min(progressWidth, 100)}%`;
+        this.farmsCountVisual.textContent = this.farms;
     }
 
+    /**
+     * checkAchievements()
+     * Verifies if new achievements have been unlocked, then updates the list.
+     */
     checkAchievements() {
         const newAchievements = [
-            { condition: this.cookies >= 100, text: '100 Cookies!' },
+            { condition: this.cookies >= 100,  text: '100 Cookies!' },
             { condition: this.cookies >= 1000, text: '1000 Cookies!' },
             { condition: this.autoClickers >= 5, text: '5 Auto Clickers!' },
-            { condition: this.grandmas >= 3, text: '3 Grandma\'s Bakeries!' },
+            { condition: this.grandmas >= 3,   text: '3 Grandma\'s Bakeries!' },
         ];
 
         newAchievements.forEach(achievement => {
@@ -305,12 +330,20 @@ class Game {
         });
     }
 
+    /**
+     * updateAchievements()
+     * Renders the achievements list in the sidebar.
+     */
     updateAchievements() {
         this.achievementsList.innerHTML = this.achievements
-            .map(achievement => `<li>${achievement}</li>`)
+            .map(ach => `<li>${ach}</li>`)
             .join('');
     }
 
+    /**
+     * saveGame()
+     * Saves the current game state to local storage.
+     */
     saveGame() {
         const gameState = {
             cookies: this.cookies,
@@ -323,12 +356,16 @@ class Game {
             grandmaCost: this.grandmaCost,
             farmCost: this.farmCost,
             achievements: this.achievements,
-            soundOn: this.soundOn
+            soundOn: this.soundOn,
         };
         localStorage.setItem('cookieGameSave', JSON.stringify(gameState));
         alert('Game saved!');
     }
 
+    /**
+     * loadGame()
+     * Loads saved game data from local storage, if available.
+     */
     loadGame() {
         const savedGame = JSON.parse(localStorage.getItem('cookieGameSave'));
         if (savedGame) {
@@ -353,23 +390,27 @@ class Game {
         }
     }
 
+    /**
+     * resetGame()
+     * Resets all game state and clears local storage.
+     */
     resetGame() {
         const confirmReset = confirm("Are you sure you want to reset your game? This action cannot be undone.");
         if (!confirmReset) return;
 
         localStorage.removeItem('cookieGameSave');
+
+        // Reset all game data
         this.cookies = 0;
         this.clickPower = 1;
         this.autoClickers = 0;
         this.grandmas = 0;
         this.farms = 0;
-
         this.clickUpgradeCost = 10;
         this.autoClickerCost = 50;
         this.grandmaCost = 100;
         this.farmCost = 500;
         this.luckyClickCost = 20;
-
         this.achievements = [];
         this.soundOn = true;
 
@@ -380,5 +421,5 @@ class Game {
     }
 }
 
-// Initialize the game when the script loads
+// Initialize the game instance
 const game = new Game();
