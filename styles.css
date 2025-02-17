@@ -147,3 +147,27 @@ body {
     0% { transform: translateY(0); opacity: 1; }
     100% { transform: translateY(-50px); opacity: 0; }
 }
+
+/* Confetti Particle Styles */
+.confetti {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background-color: red; /* Will be overridden by inline style */
+    pointer-events: none;
+    opacity: 1;
+    border-radius: 50%;
+    animation: confettiAnimation 1s ease-out forwards;
+}
+
+@keyframes confettiAnimation {
+    0% {
+        transform: translate(0, 0) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        /* Uses CSS variables for random offset values */
+        transform: translate(var(--x), var(--y)) rotate(360deg);
+        opacity: 0;
+    }
+}
