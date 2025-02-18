@@ -1,25 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Cookie Clicker</title>
-  <link rel="stylesheet" href="styles.css" />
-</head>
-<body>
-  <!-- Top Left Section: Save/Load/Reset/Sound + Achievements -->
-  <div class="top-left">
-    <div class="save">
-      <button id="saveGame">Save Game</button>
-      <button id="loadGame">Load Game</button>
-      <button id="resetGame">Reset Game</button>
-      <button id="toggleSound">Toggle Sound</button>
-    </div>
-
-  <!-- Main Layout Container -->
-  <div class="main-layout">
-    <!-- Left Column: Upgrade Buttons (stacked) -->
-    <div class="upgrade-buttons">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cookie Clicker</title>
+    <link rel="icon" type="image/png" href="image/cookie.png" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <!-- LEFT Section: Upgrade Buttons -->
+    <section class="left">
       <button class="upgrade" id="clickUpgrade">
         Upgrade Click Power (Cost: 10)
       </button>
@@ -35,14 +25,34 @@
       <button class="upgrade" id="luckyClick">
         Lucky Click (Cost: 20)
       </button>
-    </div>
+    </section>
 
-    <!-- Center Area: Stats + Cookie -->
-    <div class="center-area">
+    <!-- CENTER Section: Stats and Cookie -->
+    <div class="center">
       <div class="stats">
         <h1>Cookies: <span id="cookieCount">0</span></h1>
         <p>Per Click: <span id="clickPower">1</span></p>
         <p>Cookies Per Second: <span id="cps">0</span></p>
+      </div>
+      <img id="cookie" src="image/cookie.png" alt="Cookie" />
+    </div>
+
+    <!-- RIGHT Section: Achievements, Visualizations, and Save/Load/Reset/Sound -->
+    <section class="right">
+      <div class="achievements">
+        <h2>Achievements</h2>
+        <ul id="achievementsList"></ul>
+      </div>
+
+      <!-- Auto Clickers Visualization -->
+      <div id="autoClickersBox" class="upgrade-box">
+        <div class="upgrade-progress">
+          <div id="autoClickersProgressBar" class="upgrade-progress-bar"></div>
+        </div>
+        <div class="upgrade-counter">
+          <img src="image/hand.png" alt="Auto Clicker" class="upgrade-image" />
+          <span id="autoClickersCountVisual">0</span>
+        </div>
       </div>
       <img id="cookie" src="image/cookie.png" alt="Cookie" />
     </div>
@@ -67,31 +77,18 @@
           <div id="grandmaProgressBar" class="upgrade-progress-bar"></div>
         </div>
         <div class="upgrade-counter">
-          <img
-            src="image/grandma.png"
-            alt="Grandma Baking"
-            class="upgrade-image"
-          />
+          <img src="image/grandma.png" alt="Grandma Baking" class="upgrade-image" />
           <span id="grandmaCount">0</span>
         </div>
       </div>
-      <div class="upgrade-counter">
-        <img src="image/farm.png" alt="Cookie Farm" class="upgrade-image" />
-        <span id="farmsCountVisual">0</span>
-      </div>
-    </div>
 
-    <!-- Grandma's Bakery Visualization -->
-    <div id="grandmasBox" class="upgrade-box">
-      <div class="upgrade-progress">
-        <div id="grandmaProgressBar" class="upgrade-progress-bar"></div>
-      </div>
-      <div class="upgrade-counter">
-        <img src="image/grandma.png" alt="Grandma Baking" class="upgrade-image" />
-        <span id="grandmaCount">0</span>
-      </div>
-    </div>
+      <!-- Save/Load/Reset/Sound Buttons -->
+      <button id="saveGame">Save Game</button>
+      <button id="loadGame">Load Game</button>
+      <button id="resetGame">Reset Game</button>
+      <button id="toggleSound">Toggle Sound</button>
+    </section>
 
-  <script src="script.js"></script>
-</body>
+    <script src="script.js"></script>
+  </body>
 </html>
