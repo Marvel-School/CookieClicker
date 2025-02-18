@@ -1,266 +1,264 @@
 /* Global Styles */
 body {
-    font-family: Arial, sans-serif;
-    text-align: center;
-    background-color: #f0e4d8;
-    margin: 0;
-    padding: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f0e4d8;
+  margin: 0;
+  padding: 0;
 }
 
-/* Top right Section */
-/* .top-left {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    text-align: left;
-} */
+/* LEFT Section: Upgrade Buttons */
+.left {
+  position: fixed;
+  top: 0;
+  left: 5px;
+  width: 25%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around; /* Evenly space buttons */
+}
+
+/* Override left button styles so they are not a gradient */
+.left button {
+  background: #ffcc33; /* Solid background instead of a gradient */
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 12px;
+  width: 100%;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.left button:hover {
+  background: #ffaa00;
+  transform: scale(1.05);
+  box-shadow: 6px 6px 15px rgba(0, 0, 0, 0.3);
+}
+
+.left button:active {
+  transform: scale(0.95);
+  box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* Disabled left buttons: solid grey background and white text */
+.left button:disabled {
+  background-color: #777 !important;
+  color: white !important;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+/* RIGHT Section */
 .right {
-    position: fixed;
-    top: 0px;
-    right: 5px;
-    width: 25%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 15px; 
-    background: rgba(255, 255, 255, 0.9); 
-    padding: 15px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  position: fixed;
+  top: 0;
+  right: 5px;
+  width: 25%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 15px;
 }
-
-/* .save {
-    margin-bottom: 20px;
-} */
-
-/* 🌟  Style button  */
-.right button {
-    background: linear-gradient(145deg, #ffcc33, #ff9900);
-    color: white;
-    font-size: 16px;
-    font-weight: bold;
-    padding: 12px 20px;
-    margin: 10px 0;
-    width: 100%;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.3s ease-in-out;
-    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2);
-}
-
-
-.right button:hover {
-    background: linear-gradient(145deg, #ffaa00, #ff6600);
-    transform: scale(1.05);
-    box-shadow: 6px 6px 15px rgba(0, 0, 0, 0.3);
-}
-
-
-.right button:active {
-    transform: scale(0.95);
-    box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.3);
-}
-
-.right button.special {
-    background: linear-gradient(145deg, #ff4444, #cc0000);
-}
-
-.right button.special:hover {
-    background: linear-gradient(145deg, #ff2222, #aa0000);
-}
-
 
 .achievements {
-    background-color: white;
-    border-radius: 10px;
-    padding: 10px;
-    max-width: 200px;
-  }
-  
-  .achievements h2 {
-    margin: 0 0 10px 0;
-  }
-  
-  .achievements ul {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-  }
-  
-  /* Main Layout: Left column for upgrades, center for stats/cookie */
-  .main-layout {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: flex-start;
-    margin-top: 100px; /* Space under top-left section */
-    padding: 20px;
-    gap: 30px;
-  }
-  
-  /* Upgrade Buttons stacked on the left */
-  .upgrade-buttons {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
-  
-  /* Center area for stats and cookie */
-  .center-area {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  /* Stats box */
-  .stats {
-    margin: 20px;
-    padding: 10px;
-    background-color: white;
-    border-radius: 10px;
-    display: inline-block;
-  }
-  
-  /* Cookie Image */
-  #cookie {
-    width: 200px;
-    cursor: pointer;
-    transition: transform 0.1s;
-    margin-top: 10px;
-  }
-  
-  #cookie:active {
-    transform: scale(0.95);
-  }
-  
-  /* Upgrades Section (buttons) */
-  .upgrade {
-    padding: 10px;
-    margin: 0; /* remove extra margin now that we have gap */
-    background-color: #ffd700;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  .upgrade:disabled {
-    background-color: #cccccc;
-    cursor: not-allowed;
-  }
-  
-  /* Confetti Particle Styles */
-  .confetti {
-    position: absolute;
-    width: 8px;
-    height: 8px;
-    background-color: red; /* Will be overridden by JS */
-    pointer-events: none;
+  width: 100%;
+  background-color: white;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+/* CENTER Section: Stats and Cookie Image */
+.center {
+  position: absolute;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  z-index: 10;
+}
+
+.stats {
+  background-color: white;
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+  margin-bottom: 20px;
+}
+
+/* Main Cookie Image */
+#cookie {
+  width: 200px;
+  cursor: pointer;
+  transition: transform 0.1s;
+  z-index: 10;
+}
+
+#cookie:active {
+  transform: scale(0.95);
+}
+
+/* Common button styles for RIGHT section (save/load/reset/sound) */
+.right button {
+  background: linear-gradient(145deg, #ffcc33, #ff9900);
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 12px;
+  width: 100%;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.right button:hover {
+  background: linear-gradient(145deg, #ffaa00, #ff6600);
+  transform: scale(1.05);
+  box-shadow: 6px 6px 15px rgba(0, 0, 0, 0.3);
+}
+
+.right button:active {
+  transform: scale(0.95);
+  box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* Disabled buttons (for both left and right) */
+.upgrade:disabled,
+.left button:disabled,
+.right button:disabled {
+  background-color: #777 !important;
+  color: white !important;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+/* Confetti Particle Styles */
+.confetti {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  pointer-events: none;
+  opacity: 1;
+  border-radius: 50%;
+  animation: confettiAnimation 1s ease-out forwards;
+}
+
+@keyframes confettiAnimation {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
     opacity: 1;
-    border-radius: 50%;
-    animation: confettiAnimation 1s ease-out forwards;
   }
-  
-  @keyframes confettiAnimation {
-    0% {
-      transform: translate(0, 0) rotate(0deg);
-      opacity: 1;
-    }
-    100% {
-      transform: translate(var(--x), var(--y)) rotate(360deg);
-      opacity: 0;
-    }
+  100% {
+    transform: translate(var(--x), var(--y)) rotate(360deg);
+    opacity: 0;
   }
-  
-  /* Floating Numbers */
-  .floating-number {
-    position: absolute;
-    color: red;
-    font-size: 20px;
-    animation: floatUp 1s ease-out;
-    pointer-events: none;
+}
+
+/* Floating Numbers */
+.floating-number {
+  position: absolute;
+  color: red;
+  font-size: 20px;
+  animation: floatUp 1s ease-out;
+  pointer-events: none;
+}
+
+@keyframes floatUp {
+  0% {
+    transform: translateY(0);
+    opacity: 1;
   }
-  
-  @keyframes floatUp {
-    0% {
-      transform: translateY(0);
-      opacity: 1;
-    }
-    100% {
-      transform: translateY(-50px);
-      opacity: 0;
-    }
+  100% {
+    transform: translateY(-50px);
+    opacity: 0;
   }
-  
-  /* Upgrade Visualizations Container (Bottom Right, Stacked) */
-  #upgradeVisualsContainer {
-    position: fixed;
-    bottom: 20px;
-    /* right: 20px; */
-    display: flex;
+}
+
+/* Upgrade Visualization Boxes (in RIGHT section) */
+.upgrade-box {
+  background-color: white;
+  border-radius: 10px;
+  padding: 10px;
+  width: 220px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.upgrade-progress {
+  width: 100px;
+  height: 10px;
+  background-color: #e0e0e0;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.upgrade-progress-bar {
+  height: 100%;
+  background-color: #ff8c42;
+  width: 0;
+  transition: width 0.3s ease;
+}
+
+.upgrade-counter {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.upgrade-image {
+  width: 30px;
+  animation: bounce 1s infinite;
+}
+
+@keyframes bounce {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+  100% { transform: translateY(0); }
+}
+
+.upgrade-counter span {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+}
+
+/* Responsive Layout for Mobile */
+@media (max-width: 700px) {
+  .left, .right {
+    position: relative;
+    width: 90%;
+    margin: 10px auto;
+    height: auto;
     flex-direction: column;
-    align-items: flex-end;
-    gap: 10px;
-  }
-  
-  /* Common Styles for Upgrade Visualization Boxes */
-  .upgrade-box {
-    background-color: white;
-    border-radius: 10px;
-    padding: 10px;
-    width: 220px; /* Ensures all boxes are the same size */
-    display: flex;
     align-items: center;
     gap: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   }
-  
-  /* Progress Bar Container */
-  .upgrade-progress {
-    width: 100px;
-    height: 10px;
-    background-color: #e0e0e0;
-    border-radius: 5px;
-    overflow: hidden;
+  .center {
+    position: relative;
+    top: auto;
+    left: auto;
+    transform: none;
+    margin: 20px auto;
   }
-  
-  /* Progress Bar */
-  .upgrade-progress-bar {
-    height: 100%;
-    background-color: #ff8c42;
-    width: 0;
-    transition: width 0.3s ease;
+  #cookie {
+    margin: 20px auto;
   }
-  
-  /* Upgrade Counter */
-  .upgrade-counter {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-  }
-  
-  .upgrade-image {
-    width: 30px;
-    animation: bounce 1s infinite;
-  }
-  
-  @keyframes bounce {
-    0% {
-      transform: translateY(0);
-    }
-    50% {
-      transform: translateY(-5px);
-    }
-    100% {
-      transform: translateY(0);
-    }
-  }
-  
-  .upgrade-counter span {
-    font-size: 18px;
-    font-weight: bold;
-    color: #333;
 }
