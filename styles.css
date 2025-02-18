@@ -7,26 +7,71 @@ body {
     padding: 0;
 }
 
-/* Top Left Section */
-.top-left {
+/* Top right Section */
+/* .top-left {
     position: absolute;
     top: 10px;
     left: 10px;
     text-align: left;
+} */
+.right {
+    position: fixed;
+    top: 0px;
+    right: 5px;
+    width: 25%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 15px; /* المسافة بين العناصر */
+    background: rgba(255, 255, 255, 0.9); /* خلفية بيضاء شفافة قليلاً */
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.save {
+/* .save {
     margin-bottom: 20px;
+} */
+
+/* 🌟 تصميم الأزرار الأساسي */
+.right button {
+    background: linear-gradient(145deg, #ffcc33, #ff9900);
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 12px 20px;
+    margin: 10px 0;
+    width: 100%;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2);
 }
 
-.save button {
-    padding: 10px;
-    margin: 5px;
-    background-color: #ffd700;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
+/* 🎯 تأثير التحويل عند المرور بالماوس */
+.right button:hover {
+    background: linear-gradient(145deg, #ffaa00, #ff6600);
+    transform: scale(1.05);
+    box-shadow: 6px 6px 15px rgba(0, 0, 0, 0.3);
 }
+
+/* 💥 تأثير عند الضغط */
+.right button:active {
+    transform: scale(0.95);
+    box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* 🏆 تصميم خاص للأزرار المهمة */
+.right button.special {
+    background: linear-gradient(145deg, #ff4444, #cc0000);
+}
+
+.right button.special:hover {
+    background: linear-gradient(145deg, #ff2222, #aa0000);
+}
+
 
 .achievements {
     background-color: white;
@@ -122,7 +167,7 @@ body {
 #upgradeVisualsContainer {
     position: fixed;
     bottom: 20px;
-    right: 20px;
+    /* right: 20px; */
     display: flex;
     flex-direction: column;
     align-items: flex-end;
