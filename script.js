@@ -175,7 +175,6 @@ class Game {
         this.cookieCount.textContent = Math.floor(this.cookies);
         this.clickPowerDisplay.textContent = this.clickPower;
 
-        // If you have <p>Auto Clickers: <span id="autoClickers">...</span></p> in HTML
         if (this.autoClickersDisplay) {
             this.autoClickersDisplay.textContent = this.autoClickers;
         }
@@ -201,7 +200,6 @@ class Game {
         const cps = (this.autoClickers * 1) + (this.grandmas * 5) + (this.farms * 10);
         this.cpsDisplay.textContent = cps;
 
-        // Update visuals
         this.updateAutoClickersVisual();
         this.updateFarmsVisual();
     }
@@ -264,10 +262,10 @@ class Game {
 
     checkAchievements() {
         const newAchievements = [
-            { condition: this.cookies >= 100,  text: '100 Cookies!' },
+            { condition: this.cookies >= 100, text: '100 Cookies!' },
             { condition: this.cookies >= 1000, text: '1000 Cookies!' },
             { condition: this.autoClickers >= 5, text: '5 Auto Clickers!' },
-            { condition: this.grandmas >= 3,   text: '3 Grandma\'s Bakeries!' },
+            { condition: this.grandmas >= 3, text: '3 Grandma\'s Bakeries!' },
         ];
 
         newAchievements.forEach(achievement => {
@@ -331,8 +329,6 @@ class Game {
         if (!confirmReset) return;
 
         localStorage.removeItem('cookieGameSave');
-
-        // Reset all game data
         this.cookies = 0;
         this.clickPower = 1;
         this.autoClickers = 0;
