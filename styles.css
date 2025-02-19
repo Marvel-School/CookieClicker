@@ -235,7 +235,6 @@ body {
 }
 
 .upgrade-counter span {
-/* <<<<<<< HEAD */
   font-size: 18px;
   font-weight: bold;
   color: #333;
@@ -266,9 +265,3 @@ body {
 
 /* Responsive Layout for Tablet */
 lol
-=======
-    font-size: 18px;
-    font-weight: bold;
-    color: #333;
-}
-/* .backGround */
