@@ -33,8 +33,10 @@ class Game {
         this.init();
     }
     playHoverSound() {
-        this.clickSound.currentTime = 0;
-        this.clickSound.play();
+        if (this.soundOn) {
+            this.clickSound.currentTime = 0;
+            this.clickSound.play();
+        }
     }
     init() {
         // DOM references for main game UI
@@ -92,15 +94,27 @@ class Game {
 
         // Upgrade buttons
         this.clickUpgradeButton.addEventListener('click', () => this.upgradeClickPower());
+        this.clickUpgradeButton.addEventListener('mouseover', () => this.playHoverSound());
+        
         this.autoClickerButton.addEventListener('click', () => this.buyAutoClicker());
+        this.autoClickerButton.addEventListener('mouseover', () => this.playHoverSound());
+        
         this.grandmaButton.addEventListener('click', () => this.buyGrandma());
+        this.grandmaButton.addEventListener('mouseover', () => this.playHoverSound());
+
         this.farmButton.addEventListener('click', () => this.buyFarm());
+        this.farmButton.addEventListener('mouseover', () => this.playHoverSound());
+
         this.luckyClickButton.addEventListener('click', () => this.luckyClick());
+        this.luckyClickButton.addEventListener('mouseover', () => this.playHoverSound());
+
 
         // Save, Load, Reset
         this.saveGameButton.addEventListener('mouseover', () => this.playHoverSound());
         this.saveGameButton.addEventListener('click', () => this.saveGame());
+        this.loadGameButton.addEventListener('mouseover', () => this.playHoverSound());
         this.loadGameButton.addEventListener('click', () => this.loadGame());
+        this.resetGameButton.addEventListener('mouseover', () => this.playHoverSound());
         this.resetGameButton.addEventListener('click', () => this.resetGame());
 
         // Toggle Sound
