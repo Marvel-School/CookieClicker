@@ -78,7 +78,7 @@ body {
   transition: transform 0.1s ease;
 }
 
-/* Remove drop shadow on hover; instead, scale the image up slightly */
+/* On hover, scale the cookie image up slightly */
 #cookie:hover {
   transform: scale(1.05);
 }
