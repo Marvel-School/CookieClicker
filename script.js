@@ -31,7 +31,12 @@ class Game {
       // Initialize the game
       this.init();
     }
-  
+    playHoverSound() {
+        if (this.soundOn) {
+            this.clickSound.currentTime = 0;
+            this.clickSound.play();
+        }
+    }
     init() {
       // Cache DOM references for the main UI
       const { cookie, cookieCount, clickPower, cps } = this;
@@ -74,25 +79,39 @@ class Game {
     }
   
     setupEventListeners() {
-      // Event delegation for upgrade buttons in the left container
-      const leftSection = document.querySelector('.left');
-      leftSection.addEventListener('click', (e) => {
-        if (e.target.matches('button.upgrade')) {
-          this.performPurchase(e.target.id);
-        }
-      });
-  
-      // Other individual button listeners
-      this.saveGameButton.addEventListener('click', () => this.saveGame());
-      this.loadGameButton.addEventListener('click', () => this.loadGame());
-      this.resetGameButton.addEventListener('click', () => this.resetGame());
-      this.toggleSoundButton.addEventListener('click', () => {
-        this.soundOn = !this.soundOn;
-        alert(`Sound is now ${this.soundOn ? 'ON' : 'OFF'}.`);
-      });
-  
-      // Cookie click handler
-      this.cookie.addEventListener('click', (e) => this.handleClick(e));
+        // Cookie click => handle cookie increment and confetti
+        this.cookie.addEventListener('click', (e) => this.handleClick(e));
+
+        // Upgrade buttons
+        this.clickUpgradeButton.addEventListener('click', () => this.upgradeClickPower());
+        this.clickUpgradeButton.addEventListener('mouseover', () => this.playHoverSound());
+        
+        this.autoClickerButton.addEventListener('click', () => this.buyAutoClicker());
+        this.autoClickerButton.addEventListener('mouseover', () => this.playHoverSound());
+        
+        this.grandmaButton.addEventListener('click', () => this.buyGrandma());
+        this.grandmaButton.addEventListener('mouseover', () => this.playHoverSound());
+
+        this.farmButton.addEventListener('click', () => this.buyFarm());
+        this.farmButton.addEventListener('mouseover', () => this.playHoverSound());
+
+        this.luckyClickButton.addEventListener('click', () => this.luckyClick());
+        this.luckyClickButton.addEventListener('mouseover', () => this.playHoverSound());
+
+
+        // Save, Load, Reset
+        this.saveGameButton.addEventListener('mouseover', () => this.playHoverSound());
+        this.saveGameButton.addEventListener('click', () => this.saveGame());
+        this.loadGameButton.addEventListener('mouseover', () => this.playHoverSound());
+        this.loadGameButton.addEventListener('click', () => this.loadGame());
+        this.resetGameButton.addEventListener('mouseover', () => this.playHoverSound());
+        this.resetGameButton.addEventListener('click', () => this.resetGame());
+
+        // Toggle Sound
+        this.toggleSoundButton.addEventListener('click', () => {
+            this.soundOn = !this.soundOn;
+            alert(`Sound is now ${this.soundOn ? 'ON' : 'OFF'}.`);
+        });
     }
   
     handleClick(e) {
