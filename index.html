@@ -32,25 +32,33 @@
       </button>
     </section>
 
-    <!-- TOP Section: Stats (fixed at the top center) -->
-    <div class="stats">
-      <h1>Cookies: <span id="cookieCount">0</span></h1>
-      <p>Per Click: <span id="clickPower">1</span></p>
-      <p>Cookies Per Second: <span id="cps">0</span></p>
-    </div>
+    <!-- CENTER Section: Background, Stats, and Cookie -->
+    <section class="background">
+      <!-- Animated Background Decoration -->
+      <div class="set">
+        <div><img src="image/cookie1.png" alt="decorative cookie"></div>
+        <div><img src="image/cookie3.png" alt="decorative cookie"></div>
+        <div><img src="image/cookie4.png" alt="decorative cookie"></div>
+        <div><img src="image/cookie1.png" alt="decorative cookie"></div>
+        <div><img src="image/cookie3.png" alt="decorative cookie"></div>
+        <!-- You can add more animated elements as desired -->
+      </div>
+      <div class="center">
+        <div class="stats">
+          <h1>Cookies: <span id="cookieCount">0</span></h1>
+          <p>Per Click: <span id="clickPower">1</span></p>
+          <p>Cookies Per Second: <span id="cps">0</span></p>
+        </div>
+        <img id="cookie" src="image/cookie.png" alt="Cookie" />
+      </div>
+    </section>
 
-    <!-- CENTER Section: Clickable Cookie (centered) -->
-    <div class="center">
-      <img id="cookie" src="image/cookie.png" alt="Cookie" />
-    </div>
-
-    <!-- RIGHT Section: Achievements, Visualizations, and Save/Load/Reset/Sound -->
+    <!-- RIGHT Section: Achievements, Visualizations, and Controls -->
     <section class="right">
       <div class="achievements">
         <h2>Achievements</h2>
         <ul id="achievementsList"></ul>
       </div>
-
       <!-- Auto Clickers Visualization -->
       <div id="autoClickersBox" class="upgrade-box">
         <div class="upgrade-progress">
@@ -61,7 +69,6 @@
           <span id="autoClickersCountVisual">0</span>
         </div>
       </div>
-
       <!-- Cookie Farms Visualization -->
       <div id="farmsBox" class="upgrade-box">
         <div class="upgrade-progress">
@@ -72,7 +79,6 @@
           <span id="farmsCountVisual">0</span>
         </div>
       </div>
-
       <!-- Grandma's Bakery Visualization -->
       <div id="grandmasBox" class="upgrade-box">
         <div class="upgrade-progress">
@@ -83,7 +89,6 @@
           <span id="grandmaCount">0</span>
         </div>
       </div>
-
       <!-- Save/Load/Reset/Sound Buttons -->
       <button id="saveGame">Save Game</button>
       <button id="loadGame">Load Game</button>
