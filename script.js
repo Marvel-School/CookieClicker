@@ -4,364 +4,306 @@
  * Handles core logic for Cookie Clicker using an OOP approach.
  */
 class Game {
-  constructor() {
-    // Game state variables
-    this.cookies = 0;
-    this.clickPower = 1;
-    this.autoClickers = 0;
-    this.grandmas = 0;
-    this.farms = 0;
-
-    // Base costs for upgrades
-    this.clickUpgradeCost = 10;
-    this.autoClickerCost = 50;
-    this.grandmaCost = 100;
-    this.farmCost = 500;
-    this.luckyClickCost = 20;
-
-    // Upgrade configuration for generic purchase operations
-    this.upgradeConfig = {
-      clickUpgrade: {
-        cost: 'clickUpgradeCost',
-        action: 'multiplyClickPower', // Multiply click power by 2
-        multiplier: 3
-      },
-      autoClicker: {
-        cost: 'autoClickerCost',
-        count: 'autoClickers',
-        action: 'increment', // Increment autoClickers count
-        multiplier: 1.5
-      },
-      grandma: {
-        cost: 'grandmaCost',
-        count: 'grandmas',
-        action: 'increment', // Increment grandmas count
-        multiplier: 1.5,
-        extra: 'updateGrandmasVisual' // Also update grandma visual
-      },
-      farm: {
-        cost: 'farmCost',
-        count: 'farms',
-        action: 'increment', // Increment farms count
-        multiplier: 1.5
-      },
-      luckyClick: {
-        cost: 'luckyClickCost',
-        action: 'lucky', // Subtract cost, add a random bonus
-        multiplier: 1 // Cost remains unchanged
-      }
-    };
-
-    // Array for unlocked achievements
-    this.achievements = [];
-
-    // Sound toggle (enabled by default)
-    this.soundOn = true;
-    this.clickSound = new Audio('sounds/click.mp3');
-    this.clickSound.volume = 0.2;
-
-    // Initialize the game
-    this.init();
-  }
-
-  init() {
-    // DOM references for main game UI
-    this.cookie = document.getElementById('cookie');
-    this.cookieCount = document.getElementById('cookieCount');
-    this.clickPowerDisplay = document.getElementById('clickPower');
-    this.cpsDisplay = document.getElementById('cps');
-
-    // Additional stats
-    this.autoClickersDisplay = document.getElementById('autoClickers');
-    this.grandmasDisplay = document.getElementById('grandmas');
-    this.farmsDisplay = document.getElementById('farms');
-
-    // Upgrade buttons
-    this.clickUpgradeButton = document.getElementById('clickUpgrade');
-    this.autoClickerButton = document.getElementById('autoClicker');
-    this.grandmaButton = document.getElementById('grandma');
-    this.farmButton = document.getElementById('farm');
-    this.luckyClickButton = document.getElementById('luckyClick');
-
-    // Achievements & Save/Load/Reset
-    this.achievementsList = document.getElementById('achievementsList');
-    this.saveGameButton = document.getElementById('saveGame');
-    this.loadGameButton = document.getElementById('loadGame');
-    this.resetGameButton = document.getElementById('resetGame');
-    this.toggleSoundButton = document.getElementById('toggleSound');
-
-    // Grandma's Visualization
-    this.grandmaProgressBar = document.getElementById('grandmaProgressBar');
-    this.grandmaCount = document.getElementById('grandmaCount');
-
-    // Auto Clickers Visualization
-    this.autoClickersProgressBar = document.getElementById('autoClickersProgressBar');
-    this.autoClickersCountVisual = document.getElementById('autoClickersCountVisual');
-
-    // Farms Visualization
-    this.farmsProgressBar = document.getElementById('farmsProgressBar');
-    this.farmsCountVisual = document.getElementById('farmsCountVisual');
-
-    // Set up event listeners
-    this.setupEventListeners();
-
-    // Initial UI update
-    this.updateDisplay();
-    this.updateGrandmasVisual();
-
-    // Start auto-click production
-    this.startAutoClicker();
-  }
-
-  setupEventListeners() {
-    // Cookie click => handle cookie increment and confetti
-    this.cookie.addEventListener('click', (e) => this.handleClick(e));
-
-    // Upgrade buttons using the generic purchase function
-    this.clickUpgradeButton.addEventListener('click', () => this.performPurchase('clickUpgrade'));
-    this.autoClickerButton.addEventListener('click', () => this.performPurchase('autoClicker'));
-    this.grandmaButton.addEventListener('click', () => this.performPurchase('grandma'));
-    this.farmButton.addEventListener('click', () => this.performPurchase('farm'));
-    this.luckyClickButton.addEventListener('click', () => this.performPurchase('luckyClick'));
-
-    // Save, Load, Reset
-    this.saveGameButton.addEventListener('click', () => this.saveGame());
-    this.loadGameButton.addEventListener('click', () => this.loadGame());
-    this.resetGameButton.addEventListener('click', () => this.resetGame());
-
-    // Toggle Sound
-    this.toggleSoundButton.addEventListener('click', () => {
-      this.soundOn = !this.soundOn;
-      alert(`Sound is now ${this.soundOn ? 'ON' : 'OFF'}.`);
-    });
-  }
-
-  handleClick(e) {
-    if (this.soundOn) {
-      this.clickSound.currentTime = 0;
-      this.clickSound.play();
+    constructor() {
+      // Centralized state management
+      this.state = {
+        cookies: 0,
+        clickPower: 1,
+      };
+  
+      // Upgrades configuration and state
+      this.upgrades = {
+        clickUpgrade: { cost: 10, multiplier: 3, action: 'multiplyClickPower' },
+        autoClicker: { cost: 50, count: 0, multiplier: 1.5, action: 'increment' },
+        grandma: { cost: 100, count: 0, multiplier: 1.5, action: 'increment', extra: 'updateGrandmasVisual' },
+        farm: { cost: 500, count: 0, multiplier: 1.5, action: 'increment' },
+        luckyClick: { cost: 20, action: 'lucky', multiplier: 1 }
+      };
+  
+      // Array for unlocked achievements
+      this.achievements = [];
+  
+      // Sound toggle (enabled by default)
+      this.soundOn = true;
+      this.clickSound = new Audio('sounds/click.mp3');
+      this.clickSound.volume = 0.2;
+  
+      // Initialize the game
+      this.init();
     }
-    this.cookies += this.clickPower;
-    this.showFloatingNumber(this.clickPower);
-    this.createConfetti(e.clientX, e.clientY);
-    this.checkAchievements();
-    this.updateDisplay();
-  }
-
-  // Generic purchase function that handles various upgrades based on the configuration
-  performPurchase(upgradeType) {
-    const config = this.upgradeConfig[upgradeType];
-    const costProperty = config.cost;
-    if (this.cookies >= this[costProperty]) {
-      this.cookies -= this[costProperty];
-      switch (config.action) {
-        case 'multiplyClickPower':
-          this.clickPower *= 2;
-          break;
-        case 'increment':
-          this[config.count]++;
-          break;
-        case 'lucky':
-          const bonus = Math.floor(Math.random() * 10) + 1;
-          this.cookies += bonus;
-          this.showFloatingNumber(bonus, true);
-          break;
-        default:
-          break;
-      }
-      this[costProperty] = Math.floor(this[costProperty] * config.multiplier);
+  
+    init() {
+      // Cache DOM references for the main UI
+      const { cookie, cookieCount, clickPower, cps } = this;
+      this.cookie = document.getElementById('cookie');
+      this.cookieCount = document.getElementById('cookieCount');
+      this.clickPowerDisplay = document.getElementById('clickPower');
+      this.cpsDisplay = document.getElementById('cps');
+  
+      // Additional stats
+      this.autoClickersDisplay = document.getElementById('autoClickers');
+      this.grandmasDisplay = document.getElementById('grandmas');
+      this.farmsDisplay = document.getElementById('farms');
+  
+      // Upgrade buttons (we'll also use event delegation)
+      this.clickUpgradeButton = document.getElementById('clickUpgrade');
+      this.autoClickerButton = document.getElementById('autoClicker');
+      this.grandmaButton = document.getElementById('grandma');
+      this.farmButton = document.getElementById('farm');
+      this.luckyClickButton = document.getElementById('luckyClick');
+  
+      // Other controls
+      this.achievementsList = document.getElementById('achievementsList');
+      this.saveGameButton = document.getElementById('saveGame');
+      this.loadGameButton = document.getElementById('loadGame');
+      this.resetGameButton = document.getElementById('resetGame');
+      this.toggleSoundButton = document.getElementById('toggleSound');
+  
+      // Visualization elements for upgrades
+      this.grandmaProgressBar = document.getElementById('grandmaProgressBar');
+      this.grandmaCountDisplay = document.getElementById('grandmaCount');
+      this.autoClickersProgressBar = document.getElementById('autoClickersProgressBar');
+      this.autoClickersCountVisual = document.getElementById('autoClickersCountVisual');
+      this.farmsProgressBar = document.getElementById('farmsProgressBar');
+      this.farmsCountVisual = document.getElementById('farmsCountVisual');
+  
+      this.setupEventListeners();
       this.updateDisplay();
-      if (config.extra && typeof this[config.extra] === 'function') {
-        this[config.extra]();
+      this.updateGrandmasVisual();
+      this.startGameLoop();
+    }
+  
+    setupEventListeners() {
+      // Event delegation for upgrade buttons in the left container
+      const leftSection = document.querySelector('.left');
+      leftSection.addEventListener('click', (e) => {
+        if (e.target.matches('button.upgrade')) {
+          this.performPurchase(e.target.id);
+        }
+      });
+  
+      // Other individual button listeners
+      this.saveGameButton.addEventListener('click', () => this.saveGame());
+      this.loadGameButton.addEventListener('click', () => this.loadGame());
+      this.resetGameButton.addEventListener('click', () => this.resetGame());
+      this.toggleSoundButton.addEventListener('click', () => {
+        this.soundOn = !this.soundOn;
+        alert(`Sound is now ${this.soundOn ? 'ON' : 'OFF'}.`);
+      });
+  
+      // Cookie click handler
+      this.cookie.addEventListener('click', (e) => this.handleClick(e));
+    }
+  
+    handleClick(e) {
+      if (this.soundOn) {
+        this.clickSound.currentTime = 0;
+        this.clickSound.play();
+      }
+      this.state.cookies += this.state.clickPower;
+      this.showFloatingNumber(this.state.clickPower);
+      this.createConfetti(e.clientX, e.clientY);
+      this.checkAchievements();
+      this.updateDisplay();
+    }
+  
+    // Generic purchase function
+    performPurchase(upgradeType) {
+      const config = this.upgrades[upgradeType];
+      if (this.state.cookies >= config.cost) {
+        this.state.cookies -= config.cost;
+        switch (config.action) {
+          case 'multiplyClickPower':
+            this.state.clickPower *= 2;
+            break;
+          case 'increment':
+            config.count = (config.count || 0) + 1;
+            break;
+          case 'lucky':
+            const bonus = Math.floor(Math.random() * 10) + 1;
+            this.state.cookies += bonus;
+            this.showFloatingNumber(bonus, true);
+            break;
+          default:
+            break;
+        }
+        config.cost = Math.floor(config.cost * config.multiplier);
+        this.updateDisplay();
+        if (config.extra && typeof this[config.extra] === 'function') {
+          this[config.extra]();
+        }
       }
     }
-  }
-
-  startAutoClicker() {
-    setInterval(() => {
-      this.cookies += this.autoClickers;
-      this.cookies += this.grandmas * 5;
-      this.cookies += this.farms * 10;
-      this.updateDisplay();
-    }, 1000);
-  }
-
-  updateDisplay() {
-    this.cookieCount.textContent = Math.floor(this.cookies);
-    this.clickPowerDisplay.textContent = this.clickPower;
-
-    if (this.autoClickersDisplay) {
-      this.autoClickersDisplay.textContent = this.autoClickers;
+  
+    // Game loop using requestAnimationFrame for smooth updates
+    startGameLoop() {
+      let lastTime = performance.now();
+      const loop = (now) => {
+        const delta = (now - lastTime) / 1000; // seconds elapsed
+        lastTime = now;
+        // Calculate cookies per second based on upgrades
+        const cps =
+          ((this.upgrades.autoClicker.count || 0) * 1) +
+          ((this.upgrades.grandma.count || 0) * 5) +
+          ((this.upgrades.farm.count || 0) * 10);
+        this.state.cookies += cps * delta;
+        this.updateDisplay();
+        requestAnimationFrame(loop);
+      };
+      requestAnimationFrame(loop);
     }
-    if (this.grandmasDisplay) {
-      this.grandmasDisplay.textContent = this.grandmas;
+  
+    updateDisplay() {
+      // Batch DOM updates using the cached state and upgrade values
+      this.cookieCount.textContent = Math.floor(this.state.cookies);
+      this.clickPowerDisplay.textContent = this.state.clickPower;
+  
+      // Update upgrade buttons text and disabled state
+      this.clickUpgradeButton.textContent = `Upgrade Click Power (Cost: ${this.upgrades.clickUpgrade.cost})`;
+      this.autoClickerButton.textContent = `Buy Auto Clicker (Cost: ${this.upgrades.autoClicker.cost})`;
+      this.grandmaButton.textContent = `Buy Grandma's Bakery (Cost: ${this.upgrades.grandma.cost})`;
+      this.farmButton.textContent = `Buy Cookie Farm (Cost: ${this.upgrades.farm.cost})`;
+      this.luckyClickButton.textContent = `Lucky Click (Cost: ${this.upgrades.luckyClick.cost})`;
+  
+      this.clickUpgradeButton.disabled = this.state.cookies < this.upgrades.clickUpgrade.cost;
+      this.autoClickerButton.disabled = this.state.cookies < this.upgrades.autoClicker.cost;
+      this.grandmaButton.disabled = this.state.cookies < this.upgrades.grandma.cost;
+      this.farmButton.disabled = this.state.cookies < this.upgrades.farm.cost;
+      this.luckyClickButton.disabled = this.state.cookies < this.upgrades.luckyClick.cost;
+  
+      // Calculate and update cookies per second
+      const cps =
+        ((this.upgrades.autoClicker.count || 0) * 1) +
+        ((this.upgrades.grandma.count || 0) * 5) +
+        ((this.upgrades.farm.count || 0) * 10);
+      this.cpsDisplay.textContent = Math.floor(cps);
+  
+      // Update visualizations for auto clickers and farms
+      this.updateAutoClickersVisual();
+      this.updateFarmsVisual();
     }
-    if (this.farmsDisplay) {
-      this.farmsDisplay.textContent = this.farms;
+  
+    showFloatingNumber(amount, isBonus = false) {
+      const floatingNumber = document.createElement('div');
+      floatingNumber.className = 'floating-number';
+      floatingNumber.textContent = `+${amount}`;
+      floatingNumber.style.color = isBonus ? 'blue' : 'red';
+  
+      const { left, top, width } = this.cookie.getBoundingClientRect();
+      floatingNumber.style.left = `${left + width / 2 - 15}px`;
+      floatingNumber.style.top = `${top - 10}px`;
+  
+      document.body.appendChild(floatingNumber);
+      setTimeout(() => floatingNumber.remove(), 1000);
     }
-
-    this.clickUpgradeButton.textContent = `Upgrade Click Power (Cost: ${this.clickUpgradeCost})`;
-    this.autoClickerButton.textContent = `Buy Auto Clicker (Cost: ${this.autoClickerCost})`;
-    this.grandmaButton.textContent = `Buy Grandma's Bakery (Cost: ${this.grandmaCost})`;
-    this.farmButton.textContent = `Buy Cookie Farm (Cost: ${this.farmCost})`;
-    this.luckyClickButton.textContent = `Lucky Click (Cost: ${this.luckyClickCost})`;
-
-    this.clickUpgradeButton.disabled = this.cookies < this.clickUpgradeCost;
-    this.autoClickerButton.disabled = this.cookies < this.autoClickerCost;
-    this.grandmaButton.disabled = this.cookies < this.grandmaCost;
-    this.farmButton.disabled = this.cookies < this.farmCost;
-    this.luckyClickButton.disabled = this.cookies < this.luckyClickCost;
-
-    const cps = (this.autoClickers * 1) + (this.grandmas * 5) + (this.farms * 10);
-    this.cpsDisplay.textContent = cps;
-
-    this.updateAutoClickersVisual();
-    this.updateFarmsVisual();
-  }
-
-  showFloatingNumber(amount, isBonus = false) {
-    const floatingNumber = document.createElement('div');
-    floatingNumber.className = 'floating-number';
-    floatingNumber.textContent = `+${amount}`;
-    floatingNumber.style.color = isBonus ? 'blue' : 'red';
-
-    const cookieRect = this.cookie.getBoundingClientRect();
-    floatingNumber.style.left = `${cookieRect.left + cookieRect.width / 2 - 15}px`;
-    floatingNumber.style.top = `${cookieRect.top - 10}px`;
-
-    document.body.appendChild(floatingNumber);
-    setTimeout(() => floatingNumber.remove(), 1000);
-  }
-
-  createConfetti(x, y) {
-    const colors = ['#FFC107', '#FF5722', '#4CAF50', '#2196F3', '#9C27B0'];
-    const numConfetti = 20;
-
-    for (let i = 0; i < numConfetti; i++) {
-      const confetti = document.createElement('div');
-      confetti.className = 'confetti';
-      confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-      confetti.style.left = `${x}px`;
-      confetti.style.top = `${y}px`;
-
-      const offsetX = `${(Math.random() * 200 - 100).toFixed(0)}px`;
-      const offsetY = `${(Math.random() * 200 - 100).toFixed(0)}px`;
-      confetti.style.setProperty('--x', offsetX);
-      confetti.style.setProperty('--y', offsetY);
-
-      document.body.appendChild(confetti);
-      setTimeout(() => confetti.remove(), 1000);
+  
+    createConfetti(x, y) {
+      const colors = ['#FFC107', '#FF5722', '#4CAF50', '#2196F3', '#9C27B0'];
+      const numConfetti = 20;
+      for (let i = 0; i < numConfetti; i++) {
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti';
+        confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        confetti.style.left = `${x}px`;
+        confetti.style.top = `${y}px`;
+        const offsetX = `${(Math.random() * 200 - 100).toFixed(0)}px`;
+        const offsetY = `${(Math.random() * 200 - 100).toFixed(0)}px`;
+        confetti.style.setProperty('--x', offsetX);
+        confetti.style.setProperty('--y', offsetY);
+        document.body.appendChild(confetti);
+        setTimeout(() => confetti.remove(), 1000);
+      }
     }
-  }
-
-  updateGrandmasVisual() {
-    const maxGrandmas = 20;
-    const progressWidth = (this.grandmas / maxGrandmas) * 100;
-    this.grandmaProgressBar.style.width = `${Math.min(progressWidth, 100)}%`;
-    this.grandmaCount.textContent = this.grandmas;
-  }
-
-  updateAutoClickersVisual() {
-    const maxAutoClickers = 10;
-    const progressWidth = (this.autoClickers / maxAutoClickers) * 100;
-    this.autoClickersProgressBar.style.width = `${Math.min(progressWidth, 100)}%`;
-    this.autoClickersCountVisual.textContent = this.autoClickers;
-  }
-
-  updateFarmsVisual() {
-    const maxFarms = 10;
-    const progressWidth = (this.farms / maxFarms) * 100;
-    this.farmsProgressBar.style.width = `${Math.min(progressWidth, 100)}%`;
-    this.farmsCountVisual.textContent = this.farms;
-  }
-
-  checkAchievements() {
-    const newAchievements = [
-      { condition: this.cookies >= 100, text: '100 Cookies!' },
-      { condition: this.cookies >= 1000, text: '1000 Cookies!' },
-      { condition: this.autoClickers >= 5, text: '5 Auto Clickers!' },
-      { condition: this.grandmas >= 3, text: "3 Grandma's Bakeries!" }
-    ];
-
-    newAchievements.forEach(achievement => {
-      if (achievement.condition && !this.achievements.includes(achievement.text)) {
-        this.achievements.push(achievement.text);
+  
+    updateGrandmasVisual() {
+      const maxGrandmas = 20;
+      const count = this.upgrades.grandma.count || 0;
+      const progressWidth = (count / maxGrandmas) * 100;
+      this.grandmaProgressBar.style.width = `${Math.min(progressWidth, 100)}%`;
+      this.grandmaCountDisplay.textContent = count;
+    }
+  
+    updateAutoClickersVisual() {
+      const maxAutoClickers = 10;
+      const count = this.upgrades.autoClicker.count || 0;
+      const progressWidth = (count / maxAutoClickers) * 100;
+      this.autoClickersProgressBar.style.width = `${Math.min(progressWidth, 100)}%`;
+      this.autoClickersCountVisual.textContent = count;
+    }
+  
+    updateFarmsVisual() {
+      const maxFarms = 10;
+      const count = this.upgrades.farm.count || 0;
+      const progressWidth = (count / maxFarms) * 100;
+      this.farmsProgressBar.style.width = `${Math.min(progressWidth, 100)}%`;
+      this.farmsCountVisual.textContent = count;
+    }
+  
+    checkAchievements() {
+      const achievementsToCheck = [
+        { condition: this.state.cookies >= 100, text: '100 Cookies!' },
+        { condition: this.state.cookies >= 1000, text: '1000 Cookies!' },
+        { condition: (this.upgrades.autoClicker.count || 0) >= 5, text: '5 Auto Clickers!' },
+        { condition: (this.upgrades.grandma.count || 0) >= 3, text: "3 Grandma's Bakeries!" }
+      ];
+      achievementsToCheck.forEach(({ condition, text }) => {
+        if (condition && !this.achievements.includes(text)) {
+          this.achievements.push(text);
+          this.updateAchievements();
+        }
+      });
+    }
+  
+    updateAchievements() {
+      this.achievementsList.innerHTML = this.achievements.map(ach => `<li>${ach}</li>`).join('');
+    }
+  
+    saveGame() {
+      const gameState = {
+        state: this.state,
+        upgrades: this.upgrades,
+        achievements: this.achievements,
+        soundOn: this.soundOn
+      };
+      localStorage.setItem('cookieGameSave', JSON.stringify(gameState));
+      alert('Game saved!');
+    }
+  
+    loadGame() {
+      const savedGame = JSON.parse(localStorage.getItem('cookieGameSave'));
+      if (savedGame) {
+        this.state = savedGame.state;
+        this.upgrades = savedGame.upgrades;
+        this.achievements = savedGame.achievements;
+        this.soundOn = savedGame.soundOn !== undefined ? savedGame.soundOn : true;
+        this.updateDisplay();
         this.updateAchievements();
+        this.updateGrandmasVisual();
+        alert('Game loaded!');
+      } else {
+        alert('No saved game found!');
       }
-    });
-  }
-
-  updateAchievements() {
-    this.achievementsList.innerHTML = this.achievements
-      .map(ach => `<li>${ach}</li>`)
-      .join('');
-  }
-
-  saveGame() {
-    const gameState = {
-      cookies: this.cookies,
-      clickPower: this.clickPower,
-      autoClickers: this.autoClickers,
-      grandmas: this.grandmas,
-      farms: this.farms,
-      clickUpgradeCost: this.clickUpgradeCost,
-      autoClickerCost: this.autoClickerCost,
-      grandmaCost: this.grandmaCost,
-      farmCost: this.farmCost,
-      achievements: this.achievements,
-      soundOn: this.soundOn,
-    };
-    localStorage.setItem('cookieGameSave', JSON.stringify(gameState));
-    alert('Game saved!');
-  }
-
-  loadGame() {
-    const savedGame = JSON.parse(localStorage.getItem('cookieGameSave'));
-    if (savedGame) {
-      this.cookies = savedGame.cookies;
-      this.clickPower = savedGame.clickPower;
-      this.autoClickers = savedGame.autoClickers;
-      this.grandmas = savedGame.grandmas;
-      this.farms = savedGame.farms;
-      this.clickUpgradeCost = savedGame.clickUpgradeCost;
-      this.autoClickerCost = savedGame.autoClickerCost;
-      this.grandmaCost = savedGame.grandmaCost;
-      this.farmCost = savedGame.farmCost;
-      this.achievements = savedGame.achievements;
-      this.soundOn = savedGame.soundOn !== undefined ? savedGame.soundOn : true;
-
+    }
+  
+    resetGame() {
+      if (!confirm("Are you sure you want to reset your game? This action cannot be undone.")) return;
+      localStorage.removeItem('cookieGameSave');
+      this.state = { cookies: 0, clickPower: 1 };
+      this.upgrades = {
+        clickUpgrade: { cost: 10, multiplier: 3, action: 'multiplyClickPower' },
+        autoClicker: { cost: 50, count: 0, multiplier: 1.5, action: 'increment' },
+        grandma: { cost: 100, count: 0, multiplier: 1.5, action: 'increment', extra: 'updateGrandmasVisual' },
+        farm: { cost: 500, count: 0, multiplier: 1.5, action: 'increment' },
+        luckyClick: { cost: 20, action: 'lucky', multiplier: 1 }
+      };
+      this.achievements = [];
+      this.soundOn = true;
       this.updateDisplay();
       this.updateAchievements();
       this.updateGrandmasVisual();
-      alert('Game loaded!');
-    } else {
-      alert('No saved game found!');
+      alert('Game has been reset.');
     }
   }
-
-  resetGame() {
-    const confirmReset = confirm("Are you sure you want to reset your game? This action cannot be undone.");
-    if (!confirmReset) return;
-
-    localStorage.removeItem('cookieGameSave');
-    this.cookies = 0;
-    this.clickPower = 1;
-    this.autoClickers = 0;
-    this.grandmas = 0;
-    this.farms = 0;
-    this.clickUpgradeCost = 10;
-    this.autoClickerCost = 50;
-    this.grandmaCost = 100;
-    this.farmCost = 500;
-    this.luckyClickCost = 20;
-    this.achievements = [];
-    this.soundOn = true;
-
-    this.updateDisplay();
-    this.updateAchievements();
-    this.updateGrandmasVisual();
-    alert('Game has been reset.');
-  }
-}
-
-const game = new Game();
+  
+  const game = new Game();
+  
