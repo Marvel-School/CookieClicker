@@ -155,51 +155,51 @@ body {
 }
 section .set div:nth-child(9){ 
 
-    left:20%; 
+    left:10%; 
 
     animation: animate 15s linear infinite; 
 
-    animation-delay: -7s; 
+    animation-delay: -9s; 
 
 } 
 
 section .set div:nth-child(10){ 
 
-    left:50%; 
+    left:40%; 
 
     animation: animate 20s linear infinite; 
 
-    animation-delay: -5s; 
+    animation-delay: -6s; 
 
 } 
 
 section .set div:nth-child(11){ 
 
-    left:70%; 
+    left:60%; 
 
     animation: animate 20s linear infinite; 
 
-    animation-delay: 0s; 
+    animation-delay: -2s; 
 
 } 
 
 section .set div:nth-child(12){ 
 
-    left:0%; 
+    left:10%; 
 
     animation: animate 15s linear infinite; 
 
-    animation-delay: -5s; 
+    animation-delay: 0s; 
 
 } 
 
 section .set div:nth-child(13){ 
 
-    left:85%; 
+    left:75%; 
 
     animation: animate 18s linear infinite; 
 
-    animation-delay: -10s; 
+    animation-delay: 0s; 
 
 } 
 
@@ -207,23 +207,23 @@ section .set div:nth-child(14){
 
     left:0%; 
 
-    animation: animate 12s linear infinite; 
+    animation: animate -8s linear infinite; 
 
 } 
 
 section .set div:nth-child(15){ 
 
-    left:15%; 
+    left:25%; 
 
-    animation: animate 14s linear infinite; 
+    animation: animate 10s linear infinite; 
 
 } 
 
 section .set div:nth-child(16){ 
 
-    left:60%; 
+    left:40%; 
 
-    animation: animate 15s linear infinite; 
+    animation: animate 10s linear infinite; 
 
 } 
 
