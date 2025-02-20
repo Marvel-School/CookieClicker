@@ -26,11 +26,16 @@ class Game {
         this.soundOn = true;
         this.clickSound = new Audio('sounds/click.mp3');
         this.clickSound.volume = 0.2;
+        // this.hoverSound = new Audio('sounds/click.mp3');
+        // this.hoverSound.volume = 0.2;
 
         // Initialize the game
         this.init();
     }
-
+    playHoverSound() {
+        this.clickSound.currentTime = 0;
+        this.clickSound.play();
+    }
     init() {
         // DOM references for main game UI
         this.cookie = document.getElementById('cookie');
@@ -57,6 +62,7 @@ class Game {
         this.resetGameButton = document.getElementById('resetGame');
         this.toggleSoundButton = document.getElementById('toggleSound');
 
+
         // Grandma's Visualization
         this.grandmaProgressBar = document.getElementById('grandmaProgressBar');
         this.grandmaCount = document.getElementById('grandmaCount');
@@ -79,7 +85,7 @@ class Game {
         // Start auto-click production
         this.startAutoClicker();
     }
-
+    
     setupEventListeners() {
         // Cookie click => handle cookie increment and confetti
         this.cookie.addEventListener('click', (e) => this.handleClick(e));
@@ -92,6 +98,7 @@ class Game {
         this.luckyClickButton.addEventListener('click', () => this.luckyClick());
 
         // Save, Load, Reset
+        this.saveGameButton.addEventListener('mouseover', () => this.playHoverSound());
         this.saveGameButton.addEventListener('click', () => this.saveGame());
         this.loadGameButton.addEventListener('click', () => this.loadGame());
         this.resetGameButton.addEventListener('click', () => this.resetGame());
@@ -281,7 +288,7 @@ class Game {
             .map(ach => `<li>${ach}</li>`)
             .join('');
     }
-
+   
     saveGame() {
         const gameState = {
             cookies: this.cookies,
