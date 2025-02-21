@@ -167,8 +167,6 @@ body {
   cursor: pointer;
   transition: transform 0.1s ease;
 }
-
-/* On hover, scale the cookie image up slightly */
 #cookie:hover {
   transform: scale(1.05);
 }
