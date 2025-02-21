@@ -2,8 +2,9 @@
  * Game class
  * ----------
  * Handles core logic for Cookie Clicker using an OOP approach.
- * This version centralizes state, upgrade data, provides hover sound feedback,
- * uses a smooth game loop, and expands background and UI functionality.
+ * This version centralizes state & upgrade data, plays hover sounds,
+ * uses a smooth game loop, and moves settings (save, load, reset, toggle sound)
+ * into a settings panel toggled by a settings icon at the bottom right.
  */
 class Game {
   constructor() {
@@ -36,7 +37,6 @@ class Game {
     this.clickSound = new Audio("sounds/click.mp3");
     this.clickSound.volume = 0.2;
 
-    // Initialize the game
     this.init();
   }
 
@@ -67,12 +67,22 @@ class Game {
     this.farmButton = document.getElementById("farm");
     this.luckyClickButton = document.getElementById("luckyClick");
 
+<<<<<<< Updated upstream
     // Control buttons
     this.achievementsList = document.getElementById("achievementsList");
     this.saveGameButton = document.getElementById("saveGame");
     this.loadGameButton = document.getElementById("loadGame");
     this.resetGameButton = document.getElementById("resetGame");
     this.toggleSoundButton = document.getElementById("toggleSound");
+=======
+    // Settings panel elements (moved to bottom right)
+    this.saveGameButton = document.getElementById('saveGame');
+    this.loadGameButton = document.getElementById('loadGame');
+    this.resetGameButton = document.getElementById('resetGame');
+    this.toggleSoundButton = document.getElementById('toggleSound');
+    this.settingsIcon = document.getElementById('settingsIcon');
+    this.settingsMenu = document.getElementById('settingsMenu');
+>>>>>>> Stashed changes
 
     // Visualization elements
     this.grandmaProgressBar = document.getElementById("grandmaProgressBar");
@@ -93,14 +103,22 @@ class Game {
   }
 
   setupEventListeners() {
+<<<<<<< Updated upstream
     // Event delegation for upgrade buttons (by their container)
     const leftSection = document.querySelector(".left");
     leftSection.addEventListener("click", (e) => {
       if (e.target.matches("button.upgrade")) {
+=======
+    // Event delegation for upgrade buttons in the left container
+    const leftSection = document.querySelector('.left');
+    leftSection.addEventListener('click', (e) => {
+      if (e.target.matches('button.upgrade')) {
+>>>>>>> Stashed changes
         this.performPurchase(e.target.id);
       }
     });
     // Add hover sound to upgrade buttons
+<<<<<<< Updated upstream
     [
       this.clickUpgradeButton,
       this.autoClickerButton,
@@ -121,6 +139,28 @@ class Game {
     this.loadGameButton.addEventListener("click", () => this.loadGame());
     this.resetGameButton.addEventListener("click", () => this.resetGame());
     this.toggleSoundButton.addEventListener("click", () => {
+=======
+    [this.clickUpgradeButton, this.autoClickerButton, this.grandmaButton, this.farmButton, this.luckyClickButton]
+      .forEach(btn => btn.addEventListener('mouseover', () => this.playHoverSound()));
+
+    // Settings icon toggles the settings menu
+    this.settingsIcon.addEventListener('click', () => {
+      if (this.settingsMenu.style.display === 'none' || !this.settingsMenu.style.display) {
+        this.settingsMenu.style.display = 'block';
+      } else {
+        this.settingsMenu.style.display = 'none';
+      }
+    });
+    // Add hover sound to settings control buttons
+    [this.saveGameButton, this.loadGameButton, this.resetGameButton, this.toggleSoundButton]
+      .forEach(btn => btn.addEventListener('mouseover', () => this.playHoverSound()));
+
+    // Set up control listeners from settings menu
+    this.saveGameButton.addEventListener('click', () => this.saveGame());
+    this.loadGameButton.addEventListener('click', () => this.loadGame());
+    this.resetGameButton.addEventListener('click', () => this.resetGame());
+    this.toggleSoundButton.addEventListener('click', () => {
+>>>>>>> Stashed changes
       this.soundOn = !this.soundOn;
       alert(`Sound is now ${this.soundOn ? "ON" : "OFF"}.`);
     });
@@ -141,7 +181,7 @@ class Game {
     this.updateDisplay();
   }
 
-  // Generic purchase function using upgrade config
+  // Generic purchase function using the upgrades config
   performPurchase(upgradeType) {
     const config = this.upgrades[upgradeType];
     if (this.state.cookies >= config.cost) {
@@ -216,7 +256,7 @@ class Game {
       (this.upgrades.farm.count || 0) * 10;
     this.cpsDisplay.textContent = Math.floor(cps);
 
-    // Update upgrade visualizations
+    // Update visualizations
     this.updateAutoClickersVisual();
     this.updateFarmsVisual();
   }

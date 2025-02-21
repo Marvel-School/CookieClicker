@@ -87,24 +87,28 @@ body {
   filter: brightness(50%);
   overflow: hidden;
 }
-
-/* Each decorative element in the background */
 .background .set div {
   position: absolute;
   display: block;
 }
-
-/* Example styling for animated items */
 .background .set div img {
   width: 30px;
   height: 50px;
 }
+<<<<<<< Updated upstream
 
 /* Sample nth-child rules to animate the decorative images */
 .background .set div:nth-child(1){
     left:10%;
     animation: animate 15s linear infinite;
     animation-delay: -7s;
+=======
+/* Sample nth-child rules */
+.background .set div:nth-child(1) {
+  left: 10%;
+  animation: animate 15s linear infinite;
+  animation-delay: -7s;
+>>>>>>> Stashed changes
 }
 .background .set div:nth-child(2){
     left:30%;
@@ -140,6 +144,7 @@ body {
 }
 section .set div:nth-child(9){ 
 
+<<<<<<< Updated upstream
     left:70%; 
 
     animation: animate 15s linear infinite; 
@@ -270,6 +275,8 @@ section .set div:nth-child(25) {
     animation-delay: -1s;
 } 
 /* Keyframes for background animation */
+=======
+>>>>>>> Stashed changes
 @keyframes animate {
   0% {
     opacity: 0;
@@ -316,7 +323,7 @@ section .set div:nth-child(25) {
   transform: scale(0.95);
 }
 
-/* RIGHT Section: Achievements & Controls */
+/* RIGHT Section: Achievements & Upgrade Visualizations */
 .right {
   position: fixed;
   top: 0;
@@ -342,33 +349,59 @@ section .set div:nth-child(25) {
   padding: 10px;
 }
 
-.right button {
+/* Settings Container at Bottom Right */
+#settingsContainer {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 500;
+  text-align: right;
+}
+
+#settingsIcon {
+  background: #2980b9;
+  color: #fff;
+  font-size: 32px;
+  padding: 10px;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+#settingsMenu {
+  margin-top: 10px;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Right Section Button Styles (for settings buttons) */
+#settingsMenu button {
   background: linear-gradient(145deg, #ffcc33, #ff9900);
   color: white;
   font-size: 16px;
   font-weight: bold;
   padding: 12px 20px;
-  margin: 10px 0;
+  margin: 5px 0;
   width: 100%;
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  transition: all 0.3s ease-in-out;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
   box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2);
 }
-
-.right button:hover {
+#settingsMenu button:hover {
   background: linear-gradient(145deg, #ffaa00, #ff6600);
   transform: scale(1.05);
   box-shadow: 6px 6px 15px rgba(0, 0, 0, 0.3);
 }
-
-.right button:active {
+#settingsMenu button:active {
   transform: scale(0.95);
   box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.3);
 }
 
-/* Disabled buttons styling */
+/* Disabled buttons */
 button:disabled {
   background: #777 !important;
   color: #fff !important;
@@ -388,7 +421,6 @@ button:disabled {
   border-radius: 50%;
   animation: confettiAnimation 1s ease-out forwards;
 }
-
 @keyframes confettiAnimation {
   0% {
     transform: translate(0, 0) rotate(0deg);
@@ -422,6 +454,27 @@ button:disabled {
     transition: width 0.3s ease;
   }
 
+<<<<<<< Updated upstream
+=======
+/* Floating Numbers */
+.floating-number {
+  position: absolute;
+  color: red;
+  font-size: 20px;
+  animation: floatUp 1s ease-out;
+  pointer-events: none;
+}
+@keyframes floatUp {
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+}
+>>>>>>> Stashed changes
 
 /* Upgrade Visualization Boxes */
 .upgrade-box {
@@ -434,7 +487,6 @@ button:disabled {
   gap: 10px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
-
 .upgrade-progress {
   width: 100px;
   height: 10px;
@@ -442,31 +494,26 @@ button:disabled {
   border-radius: 5px;
   overflow: hidden;
 }
-
 .upgrade-progress-bar {
   height: 100%;
   background-color: #ff8c42;
   width: 0;
   transition: width 0.3s ease;
 }
-
 .upgrade-counter {
   display: flex;
   align-items: center;
   gap: 5px;
 }
-
 .upgrade-image {
   width: 30px;
   animation: bounce 1s infinite;
 }
-
 @keyframes bounce {
   0% { transform: translateY(0); }
   50% { transform: translateY(-5px); }
   100% { transform: translateY(0); }
 }
-
 .upgrade-counter span {
   font-size: 18px;
   font-weight: bold;
