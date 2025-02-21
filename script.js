@@ -268,14 +268,77 @@ class Game {
       localStorage.setItem('cookieGameSave', JSON.stringify(gameState));
       alert('Game saved!');
     }
-  
+
+    // loadGame() {
+    //     const savedGame = JSON.parse(localStorage.getItem('cookieGameSave'));
+    //     if (savedGame) {
+    //         this.cookies = savedGame.cookies;
+    //         this.clickPower = savedGame.clickPower;
+    //         this.autoClickers = savedGame.autoClickers;
+    //         this.grandmas = savedGame.grandmas;
+    //         this.farms = savedGame.farms;
+    //         this.clickUpgradeCost = savedGame.clickUpgradeCost;
+    //         this.autoClickerCost = savedGame.autoClickerCost;
+    //         this.grandmaCost = savedGame.grandmaCost;
+    //         this.farmCost = savedGame.farmCost;
+    //         this.achievements = savedGame.achievements;
+    //         this.soundOn = savedGame.soundOn !== undefined ? savedGame.soundOn : true;
+
+    //         this.updateDisplay();
+    //         this.updateAchievements();
+    //         this.updateGrandmasVisual();
+    //         alert('Game loaded!');
+    //     } else {
+    //         alert('No saved game found!');
+    //     }
+    // }
     loadGame() {
-      const savedGame = JSON.parse(localStorage.getItem('cookieGameSave'));
-      if (savedGame) {
-        this.state = savedGame.state;
-        this.upgrades = savedGame.upgrades;
-        this.achievements = savedGame.achievements;
-        this.soundOn = savedGame.soundOn !== undefined ? savedGame.soundOn : true;
+        const confirmLoad = confirm("Do you want to load the saved game?");
+        if (confirmLoad) {
+            const savedGame = JSON.parse(localStorage.getItem('cookieGameSave'));
+            if (savedGame) {
+                this.cookies = savedGame.cookies;
+                this.clickPower = savedGame.clickPower;
+                this.autoClickers = savedGame.autoClickers;
+                this.grandmas = savedGame.grandmas;
+                this.farms = savedGame.farms;
+                this.clickUpgradeCost = savedGame.clickUpgradeCost;
+                this.autoClickerCost = savedGame.autoClickerCost;
+                this.grandmaCost = savedGame.grandmaCost;
+                this.farmCost = savedGame.farmCost;
+                this.achievements = savedGame.achievements;
+                this.soundOn = savedGame.soundOn !== undefined ? savedGame.soundOn : true;
+    
+                this.updateDisplay();
+                this.updateAchievements();
+                this.updateGrandmasVisual();
+                alert("Game loaded successfully!");
+            } else {
+                alert("No saved game found!");
+            }
+        } else {
+            alert("Game load canceled.");
+        }
+    }
+    
+    resetGame() {
+        const confirmReset = confirm("Are you sure you want to reset your game? This action cannot be undone.");
+        if (!confirmReset) return;
+
+        localStorage.removeItem('cookieGameSave');
+        this.cookies = 0;
+        this.clickPower = 1;
+        this.autoClickers = 0;
+        this.grandmas = 0;
+        this.farms = 0;
+        this.clickUpgradeCost = 10;
+        this.autoClickerCost = 50;
+        this.grandmaCost = 100;
+        this.farmCost = 500;
+        this.luckyClickCost = 20;
+        this.achievements = [];
+        this.soundOn = true;
+
         this.updateDisplay();
         this.updateAchievements();
         this.updateGrandmasVisual();
