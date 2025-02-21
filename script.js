@@ -2,10 +2,12 @@
  * Game class
  * ----------
  * Handles core logic for Cookie Clicker using an OOP approach.
+ * This version centralizes state, upgrade data, provides hover sound feedback,
+ * uses a smooth game loop, and expands background and UI functionality.
  */
 class Game {
   constructor() {
-    // Centralized state management
+    // Centralized game state
     this.state = {
       cookies: 0,
       clickPower: 1,
@@ -20,10 +22,10 @@ class Game {
       luckyClick: { cost: 20, action: 'lucky', multiplier: 1 }
     };
 
-    // Array for unlocked achievements
+    // Achievements array
     this.achievements = [];
 
-    // Sound toggle (enabled by default)
+    // Sound settings
     this.soundOn = true;
     this.clickSound = new Audio('sounds/click.mp3');
     this.clickSound.volume = 0.2;
@@ -32,34 +34,40 @@ class Game {
     this.init();
   }
 
+  playHoverSound() {
+    if (this.soundOn) {
+      this.clickSound.currentTime = 0;
+      this.clickSound.play();
+    }
+  }
+
   init() {
-    // Cache DOM references for the main UI
-    const { cookie, cookieCount, clickPower, cps } = this;
+    // Cache DOM elements
     this.cookie = document.getElementById('cookie');
     this.cookieCount = document.getElementById('cookieCount');
     this.clickPowerDisplay = document.getElementById('clickPower');
     this.cpsDisplay = document.getElementById('cps');
 
-    // Additional stats
+    // Stats elements
     this.autoClickersDisplay = document.getElementById('autoClickers');
     this.grandmasDisplay = document.getElementById('grandmas');
     this.farmsDisplay = document.getElementById('farms');
 
-    // Upgrade buttons (we'll also use event delegation)
+    // Upgrade buttons
     this.clickUpgradeButton = document.getElementById('clickUpgrade');
     this.autoClickerButton = document.getElementById('autoClicker');
     this.grandmaButton = document.getElementById('grandma');
     this.farmButton = document.getElementById('farm');
     this.luckyClickButton = document.getElementById('luckyClick');
 
-    // Other controls
+    // Control buttons
     this.achievementsList = document.getElementById('achievementsList');
     this.saveGameButton = document.getElementById('saveGame');
     this.loadGameButton = document.getElementById('loadGame');
     this.resetGameButton = document.getElementById('resetGame');
     this.toggleSoundButton = document.getElementById('toggleSound');
 
-    // Visualization elements for upgrades
+    // Visualization elements
     this.grandmaProgressBar = document.getElementById('grandmaProgressBar');
     this.grandmaCountDisplay = document.getElementById('grandmaCount');
     this.autoClickersProgressBar = document.getElementById('autoClickersProgressBar');
@@ -74,15 +82,22 @@ class Game {
   }
 
   setupEventListeners() {
-    // Event delegation for upgrade buttons in the left container
+    // Event delegation for upgrade buttons (by their container)
     const leftSection = document.querySelector('.left');
     leftSection.addEventListener('click', (e) => {
       if (e.target.matches('button.upgrade')) {
         this.performPurchase(e.target.id);
       }
     });
+    // Add hover sound to upgrade buttons
+    [this.clickUpgradeButton, this.autoClickerButton, this.grandmaButton, this.farmButton, this.luckyClickButton]
+      .forEach(btn => btn.addEventListener('mouseover', () => this.playHoverSound()));
+    
+    // Other control buttons with hover sound
+    [this.saveGameButton, this.loadGameButton, this.resetGameButton]
+      .forEach(btn => btn.addEventListener('mouseover', () => this.playHoverSound()));
 
-    // Other individual button listeners
+    // Set up control listeners
     this.saveGameButton.addEventListener('click', () => this.saveGame());
     this.loadGameButton.addEventListener('click', () => this.loadGame());
     this.resetGameButton.addEventListener('click', () => this.resetGame());
@@ -107,7 +122,7 @@ class Game {
     this.updateDisplay();
   }
 
-  // Generic purchase function
+  // Generic purchase function using upgrade config
   performPurchase(upgradeType) {
     const config = this.upgrades[upgradeType];
     if (this.state.cookies >= config.cost) {
@@ -135,13 +150,12 @@ class Game {
     }
   }
 
-  // Game loop using requestAnimationFrame for smooth updates
+  // Smooth game loop using requestAnimationFrame
   startGameLoop() {
     let lastTime = performance.now();
     const loop = (now) => {
-      const delta = (now - lastTime) / 1000; // seconds elapsed
+      const delta = (now - lastTime) / 1000;
       lastTime = now;
-      // Calculate cookies per second based on upgrades
       const cps =
         ((this.upgrades.autoClicker.count || 0) * 1) +
         ((this.upgrades.grandma.count || 0) * 5) +
@@ -154,31 +168,32 @@ class Game {
   }
 
   updateDisplay() {
-    // Batch DOM updates using the cached state and upgrade values
+    // Update main stats
     this.cookieCount.textContent = Math.floor(this.state.cookies);
     this.clickPowerDisplay.textContent = this.state.clickPower;
 
-    // Update upgrade buttons text and disabled state
+    // Update upgrade button labels
     this.clickUpgradeButton.textContent = `Upgrade Click Power (Cost: ${this.upgrades.clickUpgrade.cost})`;
     this.autoClickerButton.textContent = `Buy Auto Clicker (Cost: ${this.upgrades.autoClicker.cost})`;
     this.grandmaButton.textContent = `Buy Grandma's Bakery (Cost: ${this.upgrades.grandma.cost})`;
     this.farmButton.textContent = `Buy Cookie Farm (Cost: ${this.upgrades.farm.cost})`;
     this.luckyClickButton.textContent = `Lucky Click (Cost: ${this.upgrades.luckyClick.cost})`;
 
+    // Disable buttons if insufficient cookies
     this.clickUpgradeButton.disabled = this.state.cookies < this.upgrades.clickUpgrade.cost;
     this.autoClickerButton.disabled = this.state.cookies < this.upgrades.autoClicker.cost;
     this.grandmaButton.disabled = this.state.cookies < this.upgrades.grandma.cost;
     this.farmButton.disabled = this.state.cookies < this.upgrades.farm.cost;
     this.luckyClickButton.disabled = this.state.cookies < this.upgrades.luckyClick.cost;
 
-    // Calculate and update cookies per second
+    // Update CPS display
     const cps =
       ((this.upgrades.autoClicker.count || 0) * 1) +
       ((this.upgrades.grandma.count || 0) * 5) +
       ((this.upgrades.farm.count || 0) * 10);
     this.cpsDisplay.textContent = Math.floor(cps);
 
-    // Update visualizations for auto clickers and farms
+    // Update upgrade visualizations
     this.updateAutoClickersVisual();
     this.updateFarmsVisual();
   }
@@ -188,11 +203,9 @@ class Game {
     floatingNumber.className = 'floating-number';
     floatingNumber.textContent = `+${amount}`;
     floatingNumber.style.color = isBonus ? 'blue' : 'red';
-
     const { left, top, width } = this.cookie.getBoundingClientRect();
     floatingNumber.style.left = `${left + width / 2 - 15}px`;
     floatingNumber.style.top = `${top - 10}px`;
-
     document.body.appendChild(floatingNumber);
     setTimeout(() => floatingNumber.remove(), 1000);
   }
@@ -270,18 +283,23 @@ class Game {
   }
 
   loadGame() {
-    const savedGame = JSON.parse(localStorage.getItem('cookieGameSave'));
-    if (savedGame) {
-      this.state = savedGame.state;
-      this.upgrades = savedGame.upgrades;
-      this.achievements = savedGame.achievements;
-      this.soundOn = savedGame.soundOn !== undefined ? savedGame.soundOn : true;
-      this.updateDisplay();
-      this.updateAchievements();
-      this.updateGrandmasVisual();
-      alert('Game loaded!');
+    const confirmLoad = confirm("Do you want to load the saved game?");
+    if (confirmLoad) {
+      const savedGame = JSON.parse(localStorage.getItem('cookieGameSave'));
+      if (savedGame) {
+        this.state = savedGame.state;
+        this.upgrades = savedGame.upgrades;
+        this.achievements = savedGame.achievements;
+        this.soundOn = savedGame.soundOn !== undefined ? savedGame.soundOn : true;
+        this.updateDisplay();
+        this.updateAchievements();
+        this.updateGrandmasVisual();
+        alert("Game loaded successfully!");
+      } else {
+        alert("No saved game found!");
+      }
     } else {
-      alert('No saved game found!');
+      alert("Game load canceled.");
     }
   }
 

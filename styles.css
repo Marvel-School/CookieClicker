@@ -23,6 +23,7 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: space-around;
+  z-index: 100;
 }
 
 .left button {
@@ -49,7 +50,7 @@ body {
   box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.25);
 }
 
-/* TOP Section: Stats (fixed at top center) */
+/* TOP Section: Stats */
 .stats {
   position: fixed;
   top: 20px;
@@ -59,51 +60,137 @@ body {
   padding: 15px 20px;
   border-radius: 12px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-  z-index: 10;
+  z-index: 200;
   text-align: center;
 }
 
-/* CENTER Section: Clickable Cookie (centered) */
-.center {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 10;
+/* Background and Center Section */
+.background {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  background: radial-gradient(#333, #000);
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
+/* Animated background decoration */
+.background .set {
+  position: absolute;
+  width: 50%;
+  height: 100vh;
+  top: 0;
+  left: 25%;
+  pointer-events: none;
+  filter: brightness(50%);
+  overflow: hidden;
+}
+
+/* Each decorative element in the background */
+.background .set div {
+  position: absolute;
+  display: block;
+}
+
+/* Example styling for animated items */
+.background .set div img {
+  width: 30px;
+  height: 50px;
+}
+
+/* Sample nth-child rules to animate the decorative images */
+.background .set div:nth-child(1) {
+  left: 10%;
+  animation: animate 15s linear infinite;
+  animation-delay: -7s;
+}
+.background .set div:nth-child(2) {
+  left: 30%;
+  animation: animate 20s linear infinite;
+  animation-delay: -5s;
+}
+.background .set div:nth-child(3) {
+  left: 50%;
+  animation: animate 20s linear infinite;
+  animation-delay: 0s;
+}
+.background .set div:nth-child(4) {
+  left: 70%;
+  animation: animate 15s linear infinite;
+  animation-delay: -5s;
+}
+.background .set div:nth-child(5) {
+  left: 90%;
+  animation: animate 18s linear infinite;
+  animation-delay: -10s;
+}
+
+/* Keyframes for background animation */
+@keyframes animate {
+  0% {
+    opacity: 0;
+    top: -10%;
+    transform: translateX(20px) rotate(0deg);
+  }
+  10% {
+    opacity: 1;
+  }
+  20% {
+    transform: translateX(-20px) rotate(45deg);
+  }
+  40% {
+    transform: translateX(-20px) rotate(90deg);
+  }
+  60% {
+    transform: translateX(20px) rotate(180deg);
+  }
+  80% {
+    transform: translateX(-20px) rotate(180deg);
+  }
+  100% {
+    top: 110%;
+    transform: translateX(-20px) rotate(225deg);
+  }
+}
+
+/* CENTER Section: Clickable Cookie */
+.center {
+  position: relative;
+  z-index: 300;
+  text-align: center;
+}
 #cookie {
-  width: 220px;
+  width: 250px;
+  height: 250px;
   cursor: pointer;
   transition: transform 0.1s ease;
 }
-
-/* On hover, scale the cookie image up slightly */
 #cookie:hover {
   transform: scale(1.05);
 }
-
 #cookie:active {
   transform: scale(0.95);
 }
 
-/* RIGHT Section: Achievements, Visualizations, and Save/Load/Reset/Sound */
+/* RIGHT Section: Achievements & Controls */
 .right {
   position: fixed;
-  top: 50%;
-  right: 20px;
-  transform: translateY(-50%);
-  width: 220px;
-  background: rgba(255, 255, 255, 0.95);
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  top: 0;
+  right: 5px;
+  width: 25%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
   align-items: flex-end;
   gap: 15px;
   overflow-y: auto;
-  max-height: 90%;
+  z-index: 100;
 }
 
 .achievements {
@@ -114,30 +201,32 @@ body {
 }
 
 .right button {
-  background: linear-gradient(145deg, #2980b9, #3498db);
-  color: #fff;
-  font-size: 18px;
-  font-weight: 500;
-  padding: 14px;
+  background: linear-gradient(145deg, #ffcc33, #ff9900);
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 12px 20px;
+  margin: 10px 0;
   width: 100%;
   border: none;
-  border-radius: 12px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease-in-out;
+  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2);
 }
 
 .right button:hover {
+  background: linear-gradient(145deg, #ffaa00, #ff6600);
   transform: scale(1.05);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+  box-shadow: 6px 6px 15px rgba(0, 0, 0, 0.3);
 }
 
 .right button:active {
-  transform: scale(0.98);
-  box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.25);
+  transform: scale(0.95);
+  box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.3);
 }
 
-/* Force disabled buttons to have a grey background and clear styling */
+/* Disabled buttons styling */
 button:disabled {
   background: #777 !important;
   color: #fff !important;
@@ -189,16 +278,16 @@ button:disabled {
   }
 }
 
-/* Upgrade Visualization Boxes (inside RIGHT section) */
+/* Upgrade Visualization Boxes */
 .upgrade-box {
   background-color: #fff;
-  border-radius: 12px;
-  padding: 12px;
-  width: 240px;
+  border-radius: 10px;
+  padding: 10px;
+  width: 220px;
   display: flex;
   align-items: center;
-  gap: 12px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  gap: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .upgrade-progress {
@@ -239,7 +328,7 @@ button:disabled {
   color: #333;
 }
 
-/* Responsive Layout for Mobile */
+/* Responsive Layout */
 @media (max-width: 700px) {
   .left, .right {
     position: relative;
