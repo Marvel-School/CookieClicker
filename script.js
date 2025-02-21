@@ -321,30 +321,58 @@ class Game {
         alert('Game saved!');
     }
 
-    loadGame() {
-        const savedGame = JSON.parse(localStorage.getItem('cookieGameSave'));
-        if (savedGame) {
-            this.cookies = savedGame.cookies;
-            this.clickPower = savedGame.clickPower;
-            this.autoClickers = savedGame.autoClickers;
-            this.grandmas = savedGame.grandmas;
-            this.farms = savedGame.farms;
-            this.clickUpgradeCost = savedGame.clickUpgradeCost;
-            this.autoClickerCost = savedGame.autoClickerCost;
-            this.grandmaCost = savedGame.grandmaCost;
-            this.farmCost = savedGame.farmCost;
-            this.achievements = savedGame.achievements;
-            this.soundOn = savedGame.soundOn !== undefined ? savedGame.soundOn : true;
+    // loadGame() {
+    //     const savedGame = JSON.parse(localStorage.getItem('cookieGameSave'));
+    //     if (savedGame) {
+    //         this.cookies = savedGame.cookies;
+    //         this.clickPower = savedGame.clickPower;
+    //         this.autoClickers = savedGame.autoClickers;
+    //         this.grandmas = savedGame.grandmas;
+    //         this.farms = savedGame.farms;
+    //         this.clickUpgradeCost = savedGame.clickUpgradeCost;
+    //         this.autoClickerCost = savedGame.autoClickerCost;
+    //         this.grandmaCost = savedGame.grandmaCost;
+    //         this.farmCost = savedGame.farmCost;
+    //         this.achievements = savedGame.achievements;
+    //         this.soundOn = savedGame.soundOn !== undefined ? savedGame.soundOn : true;
 
-            this.updateDisplay();
-            this.updateAchievements();
-            this.updateGrandmasVisual();
-            alert('Game loaded!');
+    //         this.updateDisplay();
+    //         this.updateAchievements();
+    //         this.updateGrandmasVisual();
+    //         alert('Game loaded!');
+    //     } else {
+    //         alert('No saved game found!');
+    //     }
+    // }
+    loadGame() {
+        const confirmLoad = confirm("Do you want to load the saved game?");
+        if (confirmLoad) {
+            const savedGame = JSON.parse(localStorage.getItem('cookieGameSave'));
+            if (savedGame) {
+                this.cookies = savedGame.cookies;
+                this.clickPower = savedGame.clickPower;
+                this.autoClickers = savedGame.autoClickers;
+                this.grandmas = savedGame.grandmas;
+                this.farms = savedGame.farms;
+                this.clickUpgradeCost = savedGame.clickUpgradeCost;
+                this.autoClickerCost = savedGame.autoClickerCost;
+                this.grandmaCost = savedGame.grandmaCost;
+                this.farmCost = savedGame.farmCost;
+                this.achievements = savedGame.achievements;
+                this.soundOn = savedGame.soundOn !== undefined ? savedGame.soundOn : true;
+    
+                this.updateDisplay();
+                this.updateAchievements();
+                this.updateGrandmasVisual();
+                alert("Game loaded successfully!");
+            } else {
+                alert("No saved game found!");
+            }
         } else {
-            alert('No saved game found!');
+            alert("Game load canceled.");
         }
     }
-
+    
     resetGame() {
         const confirmReset = confirm("Are you sure you want to reset your game? This action cannot be undone.");
         if (!confirmReset) return;
