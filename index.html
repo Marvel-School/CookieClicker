@@ -41,7 +41,7 @@
         <div><img src="image/cookie4.png" alt="decorative cookie"></div>
         <div><img src="image/cookie1.png" alt="decorative cookie"></div>
         <div><img src="image/cookie3.png" alt="decorative cookie"></div>
-        <!-- You can add more animated elements as desired -->
+        <!-- Add more decorative elements as desired -->
       </div>
       <div class="center">
         <div class="stats">
@@ -53,7 +53,7 @@
       </div>
     </section>
 
-    <!-- RIGHT Section: Achievements, Visualizations, and Controls -->
+    <!-- RIGHT Section: Achievements and Upgrade Visualizations -->
     <section class="right">
       <div class="achievements">
         <h2>Achievements</h2>
@@ -79,22 +79,34 @@
           <span id="farmsCountVisual">0</span>
         </div>
       </div>
-      <!-- Grandma's Bakery Visualization -->
+      <!-- Grandma's Bakery Visualization as a Loading Bar -->
       <div id="grandmasBox" class="upgrade-box">
         <div class="upgrade-progress">
           <div id="grandmaProgressBar" class="upgrade-progress-bar"></div>
         </div>
         <div class="upgrade-counter">
-          <img src="image/grandma.png" alt="Grandma Baking" class="upgrade-image" />
+          <img src="image/grandma.png" alt="grandma" class="upgrade-image" />
           <span id="grandmaCount">0</span>
         </div>
       </div>
-      <!-- Save/Load/Reset/Sound Buttons -->
-      <button id="saveGame">Save Game</button>
-      <button id="loadGame">Load Game</button>
-      <button id="resetGame">Reset Game</button>
-      <button id="toggleSound">Toggle Sound</button>
     </section>
+
+    <!-- Settings Container in Bottom Right -->
+    <div id="settingsContainer">
+      <!-- Uiverse.io Settings Button -->
+      <button id="settingsIcon" class="setting-btn">
+        <span class="bar bar1"></span>
+        <span class="bar bar2"></span>
+        <span class="bar bar1"></span>
+      </button>
+      <!-- Settings Menu -->
+      <div id="settingsMenu" style="display: none;">
+        <button id="saveGame">Save Game</button>
+        <button id="loadGame">Load Game</button>
+        <button id="resetGame">Reset Game</button>
+        <button id="toggleSound">Toggle Sound</button>
+      </div>
+    </div>
 
     <script src="script.js"></script>
   </body>

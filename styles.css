@@ -26,6 +26,15 @@ body {
   z-index: 100;
 }
 
+/* Disabled left buttons styling */
+.left button:disabled {
+  background: #777 !important;
+  color: #fff !important;
+  box-shadow: none !important;
+  transform: none !important;
+  cursor: not-allowed !important;
+}
+
 .left button {
   background: linear-gradient(145deg, #2980b9, #3498db);
   color: #fff;
@@ -87,20 +96,15 @@ body {
   filter: brightness(50%);
   overflow: hidden;
 }
-
-/* Each decorative element in the background */
 .background .set div {
   position: absolute;
   display: block;
 }
-
-/* Example styling for animated items */
 .background .set div img {
   width: 30px;
   height: 50px;
 }
-
-/* Sample nth-child rules to animate the decorative images */
+/* Example nth-child rules for decorative cookies */
 .background .set div:nth-child(1) {
   left: 10%;
   animation: animate 15s linear infinite;
@@ -126,8 +130,6 @@ body {
   animation: animate 18s linear infinite;
   animation-delay: -10s;
 }
-
-/* Keyframes for background animation */
 @keyframes animate {
   0% {
     opacity: 0;
@@ -174,7 +176,7 @@ body {
   transform: scale(0.95);
 }
 
-/* RIGHT Section: Achievements & Controls */
+/* RIGHT Section: Achievements & Upgrade Visualizations */
 .right {
   position: fixed;
   top: 0;
@@ -200,40 +202,114 @@ body {
   padding: 10px;
 }
 
-.right button {
-  background: linear-gradient(145deg, #ffcc33, #ff9900);
-  color: white;
-  font-size: 16px;
+/* Grandma's Bakery Visualization as a Loading Bar */
+#grandmasBox {
+  width: 220px;
+}
+#grandmaProgressBar {
+  width: 0;
+  height: 10px;
+  background-color: #ff8c42;
+  border-radius: 5px;
+  transition: width 0.3s ease;
+}
+#grandmaCount {
+  font-size: 18px;
   font-weight: bold;
-  padding: 12px 20px;
-  margin: 10px 0;
+  color: #333;
+}
+
+/* Settings Container at Bottom Right */
+#settingsContainer {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 999;
+  text-align: right;
+}
+
+/* Uiverse.io Settings Button */
+.setting-btn {
+  width: 45px;
+  height: 45px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background-color: rgb(129, 110, 216);
+  border-radius: 10px;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0px 0px 0px 2px rgb(212, 209, 255);
+}
+.bar {
+  width: 50%;
+  height: 2px;
+  background-color: rgb(229, 229, 229);
+  position: relative;
+  border-radius: 2px;
+}
+.bar::before {
+  content: "";
+  width: 2px;
+  height: 2px;
+  background-color: rgb(126, 117, 255);
+  position: absolute;
+  border-radius: 50%;
+  border: 2px solid white;
+  transition: all 0.3s;
+  box-shadow: 0px 0px 5px white;
+}
+.bar1::before {
+  transform: translateX(-4px);
+}
+.bar2::before {
+  transform: translateX(4px);
+}
+.setting-btn:hover .bar1::before {
+  transform: translateX(4px);
+}
+.setting-btn:hover .bar2::before {
+  transform: translateX(-4px);
+}
+
+/* Settings Menu */
+#settingsMenu {
+  display: none;
+  position: absolute;
+  right: 0;
+  bottom: 55px;
+  background: #fff;
+  padding: 10px;
+  border-radius: 10px;
+  width: 200px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Settings Menu Buttons - Updated */
+#settingsMenu button {
+  background: rgb(129, 110, 216);
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 8px 10px;
+  margin: 5px 0;
   width: 100%;
   border: none;
-  border-radius: 8px;
+  border-radius: 6px;
   cursor: pointer;
-  transition: all 0.3s ease-in-out;
-  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.2);
 }
-
-.right button:hover {
-  background: linear-gradient(145deg, #ffaa00, #ff6600);
-  transform: scale(1.05);
-  box-shadow: 6px 6px 15px rgba(0, 0, 0, 0.3);
+#settingsMenu button:hover {
+  background: rgb(129, 110, 216);
+  transform: scale(1.02);
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3);
 }
-
-.right button:active {
+#settingsMenu button:active {
   transform: scale(0.95);
-  box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.3);
-}
-
-/* Disabled buttons styling */
-button:disabled {
-  background: #777 !important;
-  color: #fff !important;
-  border: none !important;
-  box-shadow: none !important;
-  transform: none !important;
-  cursor: not-allowed !important;
+  box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 /* Confetti Particle Styles */
@@ -246,7 +322,6 @@ button:disabled {
   border-radius: 50%;
   animation: confettiAnimation 1s ease-out forwards;
 }
-
 @keyframes confettiAnimation {
   0% {
     transform: translate(0, 0) rotate(0deg);
@@ -266,7 +341,6 @@ button:disabled {
   animation: floatUp 1s ease-out;
   pointer-events: none;
 }
-
 @keyframes floatUp {
   0% {
     transform: translateY(0);
@@ -289,7 +363,6 @@ button:disabled {
   gap: 10px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
-
 .upgrade-progress {
   width: 100px;
   height: 10px;
@@ -297,31 +370,26 @@ button:disabled {
   border-radius: 5px;
   overflow: hidden;
 }
-
 .upgrade-progress-bar {
   height: 100%;
   background-color: #ff8c42;
   width: 0;
   transition: width 0.3s ease;
 }
-
 .upgrade-counter {
   display: flex;
   align-items: center;
   gap: 5px;
 }
-
 .upgrade-image {
   width: 30px;
   animation: bounce 1s infinite;
 }
-
 @keyframes bounce {
   0% { transform: translateY(0); }
   50% { transform: translateY(-5px); }
   100% { transform: translateY(0); }
 }
-
 .upgrade-counter span {
   font-size: 18px;
   font-weight: bold;
