@@ -5,11 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Cookie Clicker</title>
     <link rel="icon" type="image/png" href="image/cookie.png" />
-    <!-- Import Google Font for modern typography -->
-    <link
-      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
-      rel="stylesheet"
-    />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
@@ -63,8 +58,14 @@
           <div><img src="image/cookie4.png"></div>
       </div>
     <div class="center">
+      <div class="stats">
+        <h1>Cookies: <span id="cookieCount">0</span></h1>
+        <p>Per Click: <span id="clickPower">1</span></p>
+        <p>Cookies Per Second: <span id="cps">0</span></p>
+      </div>
       <img id="cookie" src="image/cookie.png" alt="Cookie" />
     </div>
+    </section>
 
     <!-- RIGHT Section: Achievements, Visualizations, and Save/Load/Reset/Sound -->
     <section class="right">
@@ -83,17 +84,20 @@
           <span id="autoClickersCountVisual">0</span>
         </div>
       </div>
+      <!-- <img id="cookie" src="image/cookie.png" alt="Cookie" /> -->
+    </div>
+  </div>
 
-      <!-- Cookie Farms Visualization -->
-      <div id="farmsBox" class="upgrade-box">
-        <div class="upgrade-progress">
-          <div id="farmsProgressBar" class="upgrade-progress-bar"></div>
-        </div>
-        <div class="upgrade-counter">
-          <img src="image/farm.png" alt="Cookie Farm" class="upgrade-image" />
-          <span id="farmsCountVisual">0</span>
-        </div>
+     <!-- Cookie Farms Visualization -->
+     <div id="farmsBox" class="upgrade-box">
+      <div class="upgrade-progress">
+        <div id="farmsProgressBar" class="upgrade-progress-bar"></div>
       </div>
+      <div class="upgrade-counter">
+        <img src="image/farm.png" alt="Cookie Farm" class="upgrade-image" />
+        <span id="farmsCountVisual">0</span>
+      </div>
+    </div>
 
       <!-- Grandma's Bakery Visualization -->
       <div id="grandmasBox" class="upgrade-box">

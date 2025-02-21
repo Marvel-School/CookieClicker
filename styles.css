@@ -1,499 +1,571 @@
 /* Global Styles */
 body {
-  font-family: 'Roboto', sans-serif;
-  background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
-  margin: 0;
-  padding: 0;
-  color: #333;
-}
-
-/* LEFT Section: Upgrade Buttons */
-.left {
-  position: fixed;
-  top: 50%;
-  left: 20px;
-  transform: translateY(-50%);
-  width: 220px;
-  background: rgba(255, 255, 255, 0.95);
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-  overflow-y: auto;
-  max-height: 90%;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-}
-
-.left button {
-  background: linear-gradient(145deg, #2980b9, #3498db);
-  color: #fff;
-  font-size: 18px;
-  font-weight: 500;
-  padding: 14px;
-  width: 100%;
-  border: none;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-}
-
-.left button:hover {
-  transform: scale(1.05);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
-}
-
-.left button:active {
-  transform: scale(0.98);
-  box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.25);
-}
-
-/* TOP Section: Stats (fixed at top center) */
-.stats {
-  position: fixed;
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(255, 255, 255, 0.9);
-  padding: 15px 20px;
-  border-radius: 12px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-  z-index: 10;
-  text-align: center;
-}
-
-.achievements {
-  width: 100%;
-  background-color: white;
-  border-radius: 10px;
-  padding: 10px;
-}
-
-/* CENTER Section: Stats and Cookie Image */
-.background{
-    position: relative;
-    width: 100%;
-    height: 100vh;
-    background: radial-gradient(#333,#000);
-    overflow: hidden;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-.background h2{
-    color: #fff;
-    font-style: 8em;
-    text-transform: uppercase;
-}
-.background .set{
-    position: absolute;
-    width: 50%;
+    font-family: Arial, sans-serif;
+    background-color: #f0e4d8;
+    margin: 0;
+    padding: 0;
+  }
+  
+  /* LEFT Section: Upgrade Buttons */
+  .left {
+    position: fixed;
+    top: 0;
+    left: 5px;
+    width: 25%;
     height: 100%;
-    top: 0%;
-    left: 25%;
-    pointer-events: none;
-    filter: brightness(50%);
-    overflow: hidden;
-}
-.background .set div{
+    background: rgba(255, 255, 255, 0.9);
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around; /* Evenly space buttons */
+    z-index: 888;
+  }
+  
+  /* Override left button styles so they are not a gradient */
+  .left button {
+    background: #ffcc33; /* Solid background instead of a gradient */
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 12px;
+    width: 100%;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2);
+  }
+  
+  .left button:hover {
+    background: #ffaa00;
+    transform: scale(1.05);
+    box-shadow: 6px 6px 15px rgba(0, 0, 0, 0.3);
+  }
+  
+  .left button:active {
+    transform: scale(0.95);
+    box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.3);
+  }
+  
+  /* Disabled left buttons: solid grey background and white text */
+  .left button:disabled {
+    background-color: #777 !important;
+    color: white !important;
+    cursor: not-allowed !important;
+    box-shadow: none !important;
+    transform: none !important;
+  }
+  
+  /* RIGHT Section */
+  .right {
+    position: fixed;
+    top: 0;
+    right: 5px;
+    width: 25%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 15px;
+  }
+  
+  .achievements {
+    width: 100%;
+    background-color: white;
+    border-radius: 10px;
+    padding: 10px;
+  }
+  
+  /* CENTER Section: Stats and Cookie Image */
+  .background{
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      background: radial-gradient(#333,#000);
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+  }
+  .background h2{
+      color: #fff;
+      font-style: 8em;
+      text-transform: uppercase;
+  }
+  .background .set{
+      position: absolute;
+      width: 50%;
+      height: 100%;
+      top: 0%;
+      left: 25%;
+      pointer-events: none;
+      filter: brightness(50%);
+      overflow: hidden;
+  }
+  .background .set div{
+      position: absolute;
+      display: block;
+  }
+  .background .set div img{
+      width: 30px;
+      height: 50px;
+  }
+  .background .set div:nth-child(1){
+      left:10%;
+      animation: animate 15s linear infinite;
+      animation-delay: -7s;
+  }
+  .background .set div:nth-child(2){
+      left:30%;
+      animation: animate 20s linear infinite;
+      animation-delay: -5s;
+  }
+  .background .set div:nth-child(3){
+      left:50%;
+      animation: animate 20s linear infinite;
+      animation-delay: 0s;
+  }
+  .background .set div:nth-child(4){
+      left:70%;
+      animation: animate 15s linear infinite;
+      animation-delay: -5s;
+  }
+  .background .set div:nth-child(5){
+      left:90%;
+      animation: animate 18s linear infinite;
+      animation-delay: -10s;
+  }
+  .background .set div:nth-child(6){
+      left:10%;
+      animation: animate 12s linear infinite;
+  }
+  .background .set div:nth-child(7){
+      left:30%;
+      animation: animate 14s linear infinite;
+  }
+  .background .set div:nth-child(8){
+      left:50%;
+      animation: animate 15s linear infinite;
+  }
+  section .set div:nth-child(9){ 
+  
+      left:70%; 
+  
+      animation: animate 15s linear infinite; 
+  
+      animation-delay: -9s; 
+  
+  } 
+  
+  section .set div:nth-child(10){ 
+  
+      left:40%; 
+  
+      animation: animate 20s linear infinite; 
+  
+      animation-delay: -6s; 
+  
+  } 
+  
+  section .set div:nth-child(11){ 
+  
+      left:60%; 
+  
+      animation: animate 20s linear infinite; 
+  
+      animation-delay: -2s; 
+  
+  } 
+  
+  section .set div:nth-child(12){ 
+  
+      left:10%; 
+  
+      animation: animate 15s linear infinite; 
+  
+      animation-delay: 0s; 
+  
+  } 
+  
+  section .set div:nth-child(13){ 
+  
+      left:75%; 
+  
+      animation: animate 10s linear infinite; 
+  
+      animation-delay: 0s; 
+  
+  } 
+  
+  section .set div:nth-child(14){ 
+  
+      left:0%; 
+  
+      animation: animate 0s linear infinite; 
+  
+  } 
+  
+  section .set div:nth-child(15){ 
+  
+      left:10%;
+      animation: animate 5s linear infinite;
+      animation-delay: -7s;
+  
+  } 
+  
+  section .set div:nth-child(16){ 
+  
+      left:10%;
+      animation: animate 15s linear infinite;
+      
+  
+  } 
+  section .set div:nth-child(17){ 
+  
+      left:80%;
+      animation: animate 10s linear infinite;
+      animation-delay: -5s;
+  
+  } 
+  
+  section .set div:nth-child(18){ 
+  
+      left:60%; 
+  
+      animation: animate 30s linear infinite; 
+  
+      animation-delay: -7s; 
+  
+  } 
+  
+  section .set div:nth-child(19) { 
+      left: 90%; 
+      animation: animate 10s linear infinite; 
+      animation-delay: -4s; 
+  } 
+  
+  section .set div:nth-child(20) { 
+      left: 20%; 
+      animation: animate 10s linear infinite; 
+      animation-delay: -8s; 
+  } 
+  
+  section .set div:nth-child(21) { 
+      left: 55%; 
+      animation: animate 10s linear infinite; 
+      animation-delay: 2s; 
+  } 
+  
+  section .set div:nth-child(22) { 
+      left: 15%; 
+      animation: animate 9s linear infinite; 
+      animation-delay: 0s;
+  } 
+  
+  section .set div:nth-child(23) { 
+      left: 20%; 
+      animation: animate 7s linear infinite; 
+      animation-delay: 1s;
+  } 
+  
+  section .set div:nth-child(24) { 
+      left: 50%; 
+      animation: animate 8s linear infinite; 
+      /* animation-delay: -3s; */
+  } 
+  section .set div:nth-child(25) { 
+      left: 40%; 
+      animation: animate 6s linear infinite; 
+      animation-delay: -1s;
+  } 
+   
+  @keyframes animate {
+      0% {
+          opacity: 0;
+          top: -10%;
+          transform: translateX(20px) rotate(0deg);
+      }
+      10% {
+          opacity: 1;
+      }
+      20% {
+          transform: translateX(-20px) rotate(45deg);
+      }
+      40% {
+          transform: translateX(-20px) rotate(90deg);
+      }
+      60% {
+          transform: translateX(20px) rotate(180deg);
+      }
+      80% {
+          transform: translateX(-20px) rotate(180deg);
+      }
+      100% {
+          top: 110%; 
+          transform: translateX(-20px) rotate(225deg);
+      }
+  }
+  .center {
     position: absolute;
-    display: block;
-}
-.background .set div img{
-    width: 30px;
-    height: 50px;
-}
-.background .set div:nth-child(1){
-    left:10%;
-    animation: animate 15s linear infinite;
-    animation-delay: -7s;
-}
-.background .set div:nth-child(2){
-    left:30%;
-    animation: animate 20s linear infinite;
-    animation-delay: -5s;
-}
-.background .set div:nth-child(3){
-    left:50%;
-    animation: animate 20s linear infinite;
-    animation-delay: 0s;
-}
-.background .set div:nth-child(4){
-    left:70%;
-    animation: animate 15s linear infinite;
-    animation-delay: -5s;
-}
-.background .set div:nth-child(5){
-    left:90%;
-    animation: animate 18s linear infinite;
-    animation-delay: -10s;
-}
-.background .set div:nth-child(6){
-    left:10%;
-    animation: animate 12s linear infinite;
-}
-.background .set div:nth-child(7){
-    left:30%;
-    animation: animate 14s linear infinite;
-}
-.background .set div:nth-child(8){
-    left:50%;
-    animation: animate 15s linear infinite;
-}
-section .set div:nth-child(9){ 
-
-    left:70%; 
-
-    animation: animate 15s linear infinite; 
-
-    animation-delay: -9s; 
-
-} 
-
-section .set div:nth-child(10){ 
-
-    left:40%; 
-
-    animation: animate 20s linear infinite; 
-
-    animation-delay: -6s; 
-
-} 
-
-section .set div:nth-child(11){ 
-
-    left:60%; 
-
-    animation: animate 20s linear infinite; 
-
-    animation-delay: -2s; 
-
-} 
-
-section .set div:nth-child(12){ 
-
-    left:10%; 
-
-    animation: animate 15s linear infinite; 
-
-    animation-delay: 0s; 
-
-} 
-
-section .set div:nth-child(13){ 
-
-    left:75%; 
-
-    animation: animate 10s linear infinite; 
-
-    animation-delay: 0s; 
-
-} 
-
-section .set div:nth-child(14){ 
-
-    left:0%; 
-
-    animation: animate 0s linear infinite; 
-
-} 
-
-section .set div:nth-child(15){ 
-
-    left:10%;
-    animation: animate 5s linear infinite;
-    animation-delay: -7s;
-
-} 
-
-section .set div:nth-child(16){ 
-
-    left:10%;
-    animation: animate 15s linear infinite;
-    
-
-} 
-section .set div:nth-child(17){ 
-
-    left:80%;
-    animation: animate 10s linear infinite;
-    animation-delay: -5s;
-
-} 
-
-section .set div:nth-child(18){ 
-
-    left:60%; 
-
-    animation: animate 30s linear infinite; 
-
-    animation-delay: -7s; 
-
-} 
-
-section .set div:nth-child(19) { 
-    left: 90%; 
-    animation: animate 10s linear infinite; 
-    animation-delay: -4s; 
-} 
-
-section .set div:nth-child(20) { 
-    left: 20%; 
-    animation: animate 10s linear infinite; 
-    animation-delay: -8s; 
-} 
-
-section .set div:nth-child(21) { 
-    left: 55%; 
-    animation: animate 10s linear infinite; 
-    animation-delay: 2s; 
-} 
-
-section .set div:nth-child(22) { 
-    left: 15%; 
-    animation: animate 9s linear infinite; 
-    animation-delay: 0s;
-} 
-
-section .set div:nth-child(23) { 
-    left: 20%; 
-    animation: animate 7s linear infinite; 
-    animation-delay: 1s;
-} 
-
-section .set div:nth-child(24) { 
-    left: 50%; 
-    animation: animate 8s linear infinite; 
-    /* animation-delay: -3s; */
-} 
-section .set div:nth-child(25) { 
-    left: 40%; 
-    animation: animate 6s linear infinite; 
-    animation-delay: -1s;
-} 
- 
-@keyframes animate {
+    top: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    z-index: 10;
+  }
+  
+  .stats {
+    background-color: white;
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+    margin-bottom: 20px;
+  }
+  
+  /* Main Cookie Image */
+  #cookie {
+    width: 250px;
+    height: 250px;
+    cursor: pointer;
+    transition: transform 0.1s;
+    z-index: 10;
+  }
+  
+  #cookie:active {
+    transform: scale(0.95);
+  }
+  
+  /* Common button styles for RIGHT section (save/load/reset/sound) */
+  .right button {
+    background: linear-gradient(145deg, #ffcc33, #ff9900);
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 12px;
+    width: 100%;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2);
+  }
+  
+  .right button:hover {
+    background: linear-gradient(145deg, #ffaa00, #ff6600);
+    transform: scale(1.05);
+    box-shadow: 6px 6px 15px rgba(0, 0, 0, 0.3);
+  }
+  
+  .right button:active {
+    transform: scale(0.95);
+    box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.3);
+  }
+  
+  /* Disabled buttons (for both left and right) */
+  .upgrade:disabled,
+  .left button:disabled,
+  .right button:disabled {
+    background-color: #777 !important;
+    color: white !important;
+    cursor: not-allowed !important;
+    box-shadow: none !important;
+    transform: none !important;
+  }
+  
+  /* Confetti Particle Styles */
+  .confetti {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    pointer-events: none;
+    opacity: 1;
+    border-radius: 50%;
+    animation: confettiAnimation 1s ease-out forwards;
+  }
+  
+  @keyframes confettiAnimation {
     0% {
-        opacity: 0;
-        top: -10%;
-        transform: translateX(20px) rotate(0deg);
-    }
-    10% {
-        opacity: 1;
-    }
-    20% {
-        transform: translateX(-20px) rotate(45deg);
-    }
-    40% {
-        transform: translateX(-20px) rotate(90deg);
-    }
-    60% {
-        transform: translateX(20px) rotate(180deg);
-    }
-    80% {
-        transform: translateX(-20px) rotate(180deg);
+      transform: translate(0, 0) rotate(0deg);
+      opacity: 1;
     }
     100% {
-        top: 110%; 
-        transform: translateX(-20px) rotate(225deg);
+      transform: translate(var(--x), var(--y)) rotate(360deg);
+      opacity: 0;
     }
-}
-.center {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 10;
-}
-
-#cookie {
-  width: 220px;
-  cursor: pointer;
-  transition: transform 0.1s ease;
-}
-
-/* On hover, scale the cookie image up slightly */
-#cookie:hover {
-  transform: scale(1.05);
-}
-
-#cookie:active {
-  transform: scale(0.95);
-}
-
-/* RIGHT Section: Achievements, Visualizations, and Save/Load/Reset/Sound */
-.right {
-  position: fixed;
-  top: 50%;
-  right: 20px;
-  transform: translateY(-50%);
-  width: 220px;
-  background: rgba(255, 255, 255, 0.95);
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 15px;
-  overflow-y: auto;
-  max-height: 90%;
-}
-
-.achievements {
-  width: 100%;
-  background-color: white;
-  border-radius: 12px;
-  padding: 10px;
-}
-
-.right button {
-  background: linear-gradient(145deg, #2980b9, #3498db);
-  color: #fff;
-  font-size: 18px;
-  font-weight: 500;
-  padding: 14px;
-  width: 100%;
-  border: none;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-}
-
-.right button:hover {
-  transform: scale(1.05);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
-}
-
-.right button:active {
-  transform: scale(0.98);
-  box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.25);
-}
-
-/* Force disabled buttons to have a grey background and clear styling */
-button:disabled {
-  background: #777 !important;
-  color: #fff !important;
-  border: none !important;
-  box-shadow: none !important;
-  transform: none !important;
-  cursor: not-allowed !important;
-}
-
-/* Confetti Particle Styles */
-.confetti {
-  position: absolute;
-  width: 8px;
-  height: 8px;
-  pointer-events: none;
-  opacity: 1;
-  border-radius: 50%;
-  animation: confettiAnimation 1s ease-out forwards;
-}
-
-@keyframes confettiAnimation {
-  0% {
-    transform: translate(0, 0) rotate(0deg);
-    opacity: 1;
   }
-  100% {
-    transform: translate(var(--x), var(--y)) rotate(360deg);
-    opacity: 0;
+  
+  /* Floating Numbers */
+  .floating-number {
+    position: absolute;
+    color: red;
+    font-size: 20px;
+    animation: floatUp 1s ease-out;
+    pointer-events: none;
   }
-}
-
-/* Floating Numbers */
-.floating-number {
-  position: absolute;
-  color: red;
-  font-size: 20px;
-  animation: floatUp 1s ease-out;
-  pointer-events: none;
-}
-
-@keyframes floatUp {
-  0% {
-    transform: translateY(0);
-    opacity: 1;
+  
+  @keyframes floatUp {
+    0% {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(-50px);
+      opacity: 0;
+    }
   }
-  100% {
-    transform: translateY(-50px);
-    opacity: 0;
-  }
-}
-
-/* Upgrade Visualization Boxes (inside RIGHT section) */
-.upgrade-box {
-  background-color: #fff;
-  border-radius: 12px;
-  padding: 12px;
-  width: 240px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.upgrade-progress {
-  width: 100px;
-  height: 10px;
-  background-color: #e0e0e0;
-  border-radius: 5px;
-  overflow: hidden;
-}
-
-.upgrade-progress-bar {
-  height: 100%;
-  background-color: #ff8c42;
-  width: 0;
-  transition: width 0.3s ease;
-}
-
-.upgrade-counter {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.upgrade-image {
-  width: 30px;
-  animation: bounce 1s infinite;
-}
-
-@keyframes bounce {
-  0% { transform: translateY(0); }
-  50% { transform: translateY(-5px); }
-  100% { transform: translateY(0); }
-}
-
-.upgrade-counter span {
-  font-size: 18px;
-  font-weight: bold;
-  color: #333;
-}
-
-/* Responsive Layout for Mobile */
-@media (max-width: 700px) {
-  .left, .right {
-    position: relative;
-    width: 90%;
-    margin: 10px auto;
-    height: auto;
-    flex-direction: column;
+  
+  /* Upgrade Visualization Boxes (in RIGHT section) */
+  .upgrade-box {
+    background-color: white;
+    border-radius: 10px;
+    padding: 10px;
+    width: 220px;
+    display: flex;
     align-items: center;
     gap: 10px;
-    transform: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   }
-  .center, .stats {
-    position: relative;
-    top: auto;
-    left: auto;
-    transform: none;
-    margin: 20px auto;
+  
+  .upgrade-progress {
+    width: 100px;
+    height: 10px;
+    background-color: #e0e0e0;
+    border-radius: 5px;
+    overflow: hidden;
   }
-  #cookie {
-    margin: 20px auto;
+  
+  .upgrade-progress-bar {
+    height: 100%;
+    background-color: #ff8c42;
+    width: 0;
+    transition: width 0.3s ease;
   }
-}
+  
+  .upgrade-counter {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  
+  .upgrade-image {
+    width: 30px;
+    animation: bounce 1s infinite;
+  }
+  
+  @keyframes bounce {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+    100% { transform: translateY(0); }
+  }
+  
+  .upgrade-counter span {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+  }
+  .right {
+      position: fixed;
+      top: 0px;
+      right: 5px;
+      width: 25%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 15px; 
+      background: rgba(255, 255, 255, 0.9); 
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* .save {
+      margin-bottom: 20px;
+  } */
+  
+  /* 🌟  Style button  */
+  .right button {
+      background: linear-gradient(145deg, #ffcc33, #ff9900);
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      padding: 12px 20px;
+      margin: 10px 0;
+      width: 100%;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease-in-out;
+      box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2);
+  }
+  
+  
+  .right button:hover {
+      background: linear-gradient(145deg, #ffaa00, #ff6600);
+      transform: scale(1.05);
+      box-shadow: 6px 6px 15px rgba(0, 0, 0, 0.3);
+  }
+  
+  
+  .right button:active {
+      transform: scale(0.95);
+      box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.3);
+  }
+  
+  .right button.special {
+      background: linear-gradient(145deg, #ff4444, #cc0000);
+  }
+  
+  .right button.special:hover {
+      background: linear-gradient(145deg, #ff2222, #aa0000);
+  }
+  
+  
+  .achievements {
+      background-color: white;
+      border-radius: 10px;
+      padding: 10px;
+      max-width: 200px;
+  }
+  
+  .achievements h2 {
+      margin: 0 0 10px 0;
+  }
+  
+  .achievements ul {
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+  }
+  
+  /* Responsive Layout for Mobile */
+  @media (max-width: 700px) {
+    .left, .right {
+      position: relative;
+      width: 90%;
+      margin: 10px auto;
+      height: auto;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+    .center {
+      position: relative;
+      top: auto;
+      left: auto;
+      transform: none;
+      margin: 20px auto;
+    }
+    #cookie {
+      margin: 20px auto;
+    }
+  }
+  
+  /* Responsive Layout for Tablet */
+  /* lol */
