@@ -143,7 +143,6 @@ class Game {
     this.loadGameButton.addEventListener('click', () => this.loadGame());
     this.resetGameButton.addEventListener('click', () => this.resetGame());
     this.toggleSoundButton.addEventListener('click', () => {
->>>>>>> Stashed changes
       this.soundOn = !this.soundOn;
       alert(`Sound is now ${this.soundOn ? 'ON' : 'OFF'}.`);
       this.log("Sound toggled:", this.soundOn);
