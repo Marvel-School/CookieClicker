@@ -109,7 +109,6 @@ body {
   left: 10%;
   animation: animate 15s linear infinite;
   animation-delay: -7s;
->>>>>>> Stashed changes
 }
 .background .set div:nth-child(2){
     left:30%;
@@ -356,8 +355,6 @@ body {
     transition: width 0.3s ease;
   }
 
-<<<<<<< Updated upstream
-=======
 /* Floating Numbers */
 .floating-number {
   position: absolute;
@@ -376,7 +373,6 @@ body {
     opacity: 0;
   }
 }
->>>>>>> Stashed changes
 
 /* Upgrade Visualization Boxes */
 .upgrade-box {
