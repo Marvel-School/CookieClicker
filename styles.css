@@ -109,26 +109,27 @@ body {
   left: 10%;
   animation: animate 15s linear infinite;
   animation-delay: -7s;
+>>>>>>> Stashed changes
 }
-.background .set div:nth-child(2) {
-  left: 30%;
-  animation: animate 20s linear infinite;
-  animation-delay: -5s;
+.background .set div:nth-child(2){
+    left:30%;
+    animation: animate 20s linear infinite;
+    animation-delay: -5s;
 }
-.background .set div:nth-child(3) {
-  left: 50%;
-  animation: animate 20s linear infinite;
-  animation-delay: 0s;
+.background .set div:nth-child(3){
+    left:50%;
+    animation: animate 20s linear infinite;
+    animation-delay: 0s;
 }
-.background .set div:nth-child(4) {
-  left: 70%;
-  animation: animate 15s linear infinite;
-  animation-delay: -5s;
+.background .set div:nth-child(4){
+    left:70%;
+    animation: animate 15s linear infinite;
+    animation-delay: -5s;
 }
-.background .set div:nth-child(5) {
-  left: 90%;
-  animation: animate 18s linear infinite;
-  animation-delay: -10s;
+.background .set div:nth-child(5){
+    left:90%;
+    animation: animate 18s linear infinite;
+    animation-delay: -10s;
 }
 @keyframes animate {
   0% {
@@ -327,12 +328,36 @@ body {
     transform: translate(0, 0) rotate(0deg);
     opacity: 1;
   }
-  100% {
-    transform: translate(var(--x), var(--y)) rotate(360deg);
-    opacity: 0;
-  }
 }
+  /* Upgrade Visualization Boxes (in RIGHT section) */
+  .upgrade-box {
+    background-color: white;
+    border-radius: 10px;
+    padding: 10px;
+    width: 220px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .upgrade-progress {
+    width: 100px;
+    height: 10px;
+    background-color: #e0e0e0;
+    border-radius: 5px;
+    overflow: hidden;
+  }
+  
+  .upgrade-progress-bar {
+    height: 100%;
+    background-color: #ff8c42;
+    width: 0;
+    transition: width 0.3s ease;
+  }
 
+<<<<<<< Updated upstream
+=======
 /* Floating Numbers */
 .floating-number {
   position: absolute;
@@ -351,6 +376,7 @@ body {
     opacity: 0;
   }
 }
+>>>>>>> Stashed changes
 
 /* Upgrade Visualization Boxes */
 .upgrade-box {
@@ -405,17 +431,122 @@ body {
     height: auto;
     flex-direction: column;
     align-items: center;
-    gap: 10px;
-    transform: none;
+    gap: 5px;
   }
-  .center, .stats {
-    position: relative;
-    top: auto;
-    left: auto;
-    transform: none;
-    margin: 20px auto;
+  
+  .upgrade-image {
+    width: 30px;
+    animation: bounce 1s infinite;
   }
-  #cookie {
-    margin: 20px auto;
+  
+  @keyframes bounce {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+    100% { transform: translateY(0); }
+  }
+  
+  .upgrade-counter span {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+  }
+  .right {
+      position: fixed;
+      top: 0px;
+      right: 5px;
+      width: 25%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 15px; 
+      background: rgba(255, 255, 255, 0.9); 
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* .save {
+      margin-bottom: 20px;
+  } */
+  
+  /* 🌟  Style button  */
+  .right button {
+      background: linear-gradient(145deg, #ffcc33, #ff9900);
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      padding: 12px 20px;
+      margin: 10px 0;
+      width: 100%;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease-in-out;
+      box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2);
+  }
+  
+  
+  .right button:hover {
+      background: linear-gradient(145deg, #ffaa00, #ff6600);
+      transform: scale(1.05);
+      box-shadow: 6px 6px 15px rgba(0, 0, 0, 0.3);
+  }
+  
+  
+  .right button:active {
+      transform: scale(0.95);
+      box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.3);
+  }
+  
+  .right button.special {
+      background: linear-gradient(145deg, #ff4444, #cc0000);
+  }
+  
+  .right button.special:hover {
+      background: linear-gradient(145deg, #ff2222, #aa0000);
+  }
+  
+  
+  .achievements {
+      background-color: white;
+      border-radius: 10px;
+      padding: 10px;
+      max-width: 200px;
+  }
+  
+  .achievements h2 {
+      margin: 0 0 10px 0;
+  }
+  
+  .achievements ul {
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+  }
+  
+  /* Responsive Layout for Mobile */
+  @media (max-width: 700px) {
+    .left, .right {
+      position: relative;
+      width: 90%;
+      margin: 10px auto;
+      height: auto;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+    .center {
+      position: relative;
+      top: auto;
+      left: auto;
+      transform: none;
+      margin: 20px auto;
+    }
+    #cookie {
+      margin: 20px auto;
+    }
   }
 }
+  /* Responsive Layout for Tablet */
+  

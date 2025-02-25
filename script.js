@@ -24,11 +24,17 @@ class Game {
 
     // Upgrades configuration and state
     this.upgrades = {
-      clickUpgrade: { cost: 10, multiplier: 3, action: 'multiplyClickPower' },
-      autoClicker: { cost: 50, count: 0, multiplier: 1.5, action: 'increment' },
-      grandma: { cost: 100, count: 0, multiplier: 1.5, action: 'increment', extra: 'updateGrandmasVisual' },
-      farm: { cost: 500, count: 0, multiplier: 1.5, action: 'increment' },
-      luckyClick: { cost: 20, action: 'lucky', multiplier: 1 }
+      clickUpgrade: { cost: 10, multiplier: 3, action: "multiplyClickPower" },
+      autoClicker: { cost: 50, count: 0, multiplier: 1.5, action: "increment" },
+      grandma: {
+        cost: 100,
+        count: 0,
+        multiplier: 1.5,
+        action: "increment",
+        extra: "updateGrandmasVisual",
+      },
+      farm: { cost: 500, count: 0, multiplier: 1.5, action: "increment" },
+      luckyClick: { cost: 20, action: "lucky", multiplier: 1 },
     };
 
     // Achievements array
@@ -36,7 +42,7 @@ class Game {
 
     // Sound settings
     this.soundOn = true;
-    this.clickSound = new Audio('sounds/click.mp3');
+    this.clickSound = new Audio("sounds/click.mp3");
     this.clickSound.volume = 0.2;
 
     this.init();
@@ -62,22 +68,23 @@ class Game {
   init() {
     this.log("Initializing DOM elements...");
     // Cache DOM elements
-    this.cookie = document.getElementById('cookie');
-    this.cookieCount = document.getElementById('cookieCount');
-    this.clickPowerDisplay = document.getElementById('clickPower');
-    this.cpsDisplay = document.getElementById('cps');
+    this.cookie = document.getElementById("cookie");
+    this.cookieCount = document.getElementById("cookieCount");
+    this.count = document.getElementById("count");
+    this.clickPowerDisplay = document.getElementById("clickPower");
+    this.cpsDisplay = document.getElementById("cps");
 
     // Stats elements
-    this.autoClickersDisplay = document.getElementById('autoClickers');
-    this.grandmasDisplay = document.getElementById('grandmas');
-    this.farmsDisplay = document.getElementById('farms');
+    this.autoClickersDisplay = document.getElementById("autoClickers");
+    this.grandmasDisplay = document.getElementById("grandmas");
+    this.farmsDisplay = document.getElementById("farms");
 
     // Upgrade buttons
-    this.clickUpgradeButton = document.getElementById('clickUpgrade');
-    this.autoClickerButton = document.getElementById('autoClicker');
-    this.grandmaButton = document.getElementById('grandma');
-    this.farmButton = document.getElementById('farm');
-    this.luckyClickButton = document.getElementById('luckyClick');
+    this.clickUpgradeButton = document.getElementById("clickUpgrade");
+    this.autoClickerButton = document.getElementById("autoClicker");
+    this.grandmaButton = document.getElementById("grandma");
+    this.farmButton = document.getElementById("farm");
+    this.luckyClickButton = document.getElementById("luckyClick");
 
     // Settings panel elements
     this.saveGameButton = document.getElementById('saveGame');
@@ -136,6 +143,7 @@ class Game {
     this.loadGameButton.addEventListener('click', () => this.loadGame());
     this.resetGameButton.addEventListener('click', () => this.resetGame());
     this.toggleSoundButton.addEventListener('click', () => {
+>>>>>>> Stashed changes
       this.soundOn = !this.soundOn;
       alert(`Sound is now ${this.soundOn ? 'ON' : 'OFF'}.`);
       this.log("Sound toggled:", this.soundOn);
@@ -163,13 +171,13 @@ class Game {
       this.state.cookies -= config.cost;
       this.log(`Purchased ${upgradeType}. Old count: ${config.count}`);
       switch (config.action) {
-        case 'multiplyClickPower':
+        case "multiplyClickPower":
           this.state.clickPower *= 2;
           break;
-        case 'increment':
+        case "increment":
           config.count = (config.count || 0) + 1;
           break;
-        case 'lucky':
+        case "lucky":
           const bonus = Math.floor(Math.random() * 10) + 1;
           this.state.cookies += bonus;
           this.showFloatingNumber(bonus, true);
@@ -180,7 +188,7 @@ class Game {
       config.cost = Math.floor(config.cost * config.multiplier);
       this.log(`${upgradeType} new count: ${config.count}, new cost: ${config.cost}`);
       this.updateDisplay();
-      if (config.extra && typeof this[config.extra] === 'function') {
+      if (config.extra && typeof this[config.extra] === "function") {
         this[config.extra]();
       }
     } else {
@@ -194,9 +202,9 @@ class Game {
       const delta = (now - lastTime) / 1000;
       lastTime = now;
       const cps =
-        ((this.upgrades.autoClicker.count || 0) * 1) +
-        ((this.upgrades.grandma.count || 0) * 5) +
-        ((this.upgrades.farm.count || 0) * 10);
+        (this.upgrades.autoClicker.count || 0) * 1 +
+        (this.upgrades.grandma.count || 0) * 5 +
+        (this.upgrades.farm.count || 0) * 10;
       this.state.cookies += cps * delta;
       this.updateDisplay();
       requestAnimationFrame(loop);
@@ -218,19 +226,19 @@ class Game {
     this.farmButton.disabled = this.state.cookies < this.upgrades.farm.cost;
     this.luckyClickButton.disabled = this.state.cookies < this.upgrades.luckyClick.cost;
     const cps =
-      ((this.upgrades.autoClicker.count || 0) * 1) +
-      ((this.upgrades.grandma.count || 0) * 5) +
-      ((this.upgrades.farm.count || 0) * 10);
+      (this.upgrades.autoClicker.count || 0) * 1 +
+      (this.upgrades.grandma.count || 0) * 5 +
+      (this.upgrades.farm.count || 0) * 10;
     this.cpsDisplay.textContent = Math.floor(cps);
     this.updateAutoClickersVisual();
     this.updateFarmsVisual();
   }
 
   showFloatingNumber(amount, isBonus = false) {
-    const floatingNumber = document.createElement('div');
-    floatingNumber.className = 'floating-number';
+    const floatingNumber = document.createElement("div");
+    floatingNumber.className = "floating-number";
     floatingNumber.textContent = `+${amount}`;
-    floatingNumber.style.color = isBonus ? 'blue' : 'red';
+    floatingNumber.style.color = isBonus ? "blue" : "red";
     const { left, top, width } = this.cookie.getBoundingClientRect();
     floatingNumber.style.left = `${left + width / 2 - 15}px`;
     floatingNumber.style.top = `${top - 10}px`;
@@ -239,18 +247,19 @@ class Game {
   }
 
   createConfetti(x, y) {
-    const colors = ['#FFC107', '#FF5722', '#4CAF50', '#2196F3', '#9C27B0'];
+    const colors = ["#FFC107", "#FF5722", "#4CAF50", "#2196F3", "#9C27B0"];
     const numConfetti = 20;
     for (let i = 0; i < numConfetti; i++) {
-      const confetti = document.createElement('div');
-      confetti.className = 'confetti';
-      confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+      const confetti = document.createElement("div");
+      confetti.className = "confetti";
+      confetti.style.backgroundColor =
+        colors[Math.floor(Math.random() * colors.length)];
       confetti.style.left = `${x}px`;
       confetti.style.top = `${y}px`;
       const offsetX = `${(Math.random() * 200 - 100).toFixed(0)}px`;
       const offsetY = `${(Math.random() * 200 - 100).toFixed(0)}px`;
-      confetti.style.setProperty('--x', offsetX);
-      confetti.style.setProperty('--y', offsetY);
+      confetti.style.setProperty("--x", offsetX);
+      confetti.style.setProperty("--y", offsetY);
       document.body.appendChild(confetti);
       setTimeout(() => confetti.remove(), 1000);
     }
@@ -269,7 +278,10 @@ class Game {
     const maxAutoClickers = 10;
     const count = this.upgrades.autoClicker.count || 0;
     const progressWidth = (count / maxAutoClickers) * 100;
-    this.autoClickersProgressBar.style.width = `${Math.min(progressWidth, 100)}%`;
+    this.autoClickersProgressBar.style.width = `${Math.min(
+      progressWidth,
+      100
+    )}%`;
     this.autoClickersCountVisual.textContent = count;
   }
 
@@ -283,10 +295,16 @@ class Game {
 
   checkAchievements() {
     const achievementsToCheck = [
-      { condition: this.state.cookies >= 100, text: '100 Cookies!' },
-      { condition: this.state.cookies >= 1000, text: '1000 Cookies!' },
-      { condition: (this.upgrades.autoClicker.count || 0) >= 5, text: '5 Auto Clickers!' },
-      { condition: (this.upgrades.grandma.count || 0) >= 3, text: "3 Grandma's Bakeries!" }
+      { condition: this.state.cookies >= 100, text: "100 Cookies!" },
+      { condition: this.state.cookies >= 1000, text: "1000 Cookies!" },
+      {
+        condition: (this.upgrades.autoClicker.count || 0) >= 5,
+        text: "5 Auto Clickers!",
+      },
+      {
+        condition: (this.upgrades.grandma.count || 0) >= 3,
+        text: "3 Grandma's Bakeries!",
+      },
     ];
     achievementsToCheck.forEach(({ condition, text }) => {
       if (condition && !this.achievements.includes(text)) {
@@ -309,7 +327,7 @@ class Game {
       state: this.state,
       upgrades: this.upgrades,
       achievements: this.achievements,
-      soundOn: this.soundOn
+      soundOn: this.soundOn,
     };
     localStorage.setItem('cookieGameSave', JSON.stringify(gameState));
     this.log("Game saved", gameState);
@@ -358,15 +376,26 @@ class Game {
   }
 
   resetGame() {
-    if (!confirm("Are you sure you want to reset your game? This action cannot be undone.")) return;
-    localStorage.removeItem('cookieGameSave');
+    if (
+      !confirm(
+        "Are you sure you want to reset your game? This action cannot be undone."
+      )
+    )
+      return;
+    localStorage.removeItem("cookieGameSave");
     this.state = { cookies: 0, clickPower: 1 };
     this.upgrades = {
-      clickUpgrade: { cost: 10, multiplier: 3, action: 'multiplyClickPower' },
-      autoClicker: { cost: 50, count: 0, multiplier: 1.5, action: 'increment' },
-      grandma: { cost: 100, count: 0, multiplier: 1.5, action: 'increment', extra: 'updateGrandmasVisual' },
-      farm: { cost: 500, count: 0, multiplier: 1.5, action: 'increment' },
-      luckyClick: { cost: 20, action: 'lucky', multiplier: 1 }
+      clickUpgrade: { cost: 10, multiplier: 3, action: "multiplyClickPower" },
+      autoClicker: { cost: 50, count: 0, multiplier: 1.5, action: "increment" },
+      grandma: {
+        cost: 100,
+        count: 0,
+        multiplier: 1.5,
+        action: "increment",
+        extra: "updateGrandmasVisual",
+      },
+      farm: { cost: 500, count: 0, multiplier: 1.5, action: "increment" },
+      luckyClick: { cost: 20, action: "lucky", multiplier: 1 },
     };
     this.achievements = [];
     this.soundOn = true;
