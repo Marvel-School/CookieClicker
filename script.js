@@ -2,12 +2,16 @@
  * Game class
  * ----------
  * Handles core logic for Cookie Clicker using an OOP approach.
- * This version centralizes state & upgrade data, plays hover sounds,
- * uses a smooth game loop, and organizes settings into a compact panel
- * toggled by a custom settings button.
+ * Centralizes state & upgrade data, plays hover sounds, uses a smooth game loop,
+ * and organizes settings into a compact panel toggled by a custom settings button.
  *
- * A logging system has been added to help trace load/update issues.
+ * A logging system has been added to trace state changes and diagnose issues.
  */
+
+// Constants for particle effects
+const PARTICLE_SIZE = 40;         // 40px particles
+const PARTICLE_LIFETIME = 1000;   // 1000ms lifetime for particles
+
 class Game {
   constructor() {
     // Enable debug logging
@@ -18,8 +22,7 @@ class Game {
     this.state = {
       cookies: 0,
       clickPower: 1,
-      // Fallback for older saves that stored grandma count in state
-      grandmas: 0
+      grandmas: 0, // fallback for older saves
     };
 
     // Upgrades configuration and state
@@ -48,13 +51,9 @@ class Game {
     this.init();
   }
 
-  log(message, data) {
+  log(message, ...data) {
     if (this.debug) {
-      if (data !== undefined) {
-        console.log(message, data);
-      } else {
-        console.log(message);
-      }
+      console.log(message, ...data);
     }
   }
 
@@ -70,7 +69,6 @@ class Game {
     // Cache DOM elements
     this.cookie = document.getElementById("cookie");
     this.cookieCount = document.getElementById("cookieCount");
-    this.count = document.getElementById("count");
     this.clickPowerDisplay = document.getElementById("clickPower");
     this.cpsDisplay = document.getElementById("cps");
 
@@ -87,23 +85,22 @@ class Game {
     this.luckyClickButton = document.getElementById("luckyClick");
 
     // Settings panel elements
-    this.saveGameButton = document.getElementById('saveGame');
-    this.loadGameButton = document.getElementById('loadGame');
-    this.resetGameButton = document.getElementById('resetGame');
-    this.toggleSoundButton = document.getElementById('toggleSound');
-    this.settingsIcon = document.getElementById('settingsIcon');
-    this.settingsMenu = document.getElementById('settingsMenu');
+    this.saveGameButton = document.getElementById("saveGame");
+    this.loadGameButton = document.getElementById("loadGame");
+    this.resetGameButton = document.getElementById("resetGame");
+    this.toggleSoundButton = document.getElementById("toggleSound");
+    this.settingsIcon = document.getElementById("settingsIcon");
+    this.settingsMenu = document.getElementById("settingsMenu");
 
     // Visualization elements (using a progress bar for grandma)
-    this.grandmaProgressBar = document.getElementById('grandmaProgressBar');
-    this.grandmaCountDisplay = document.getElementById('grandmaCount');
-    this.autoClickersProgressBar = document.getElementById('autoClickersProgressBar');
-    this.autoClickersCountVisual = document.getElementById('autoClickersCountVisual');
-    this.farmsProgressBar = document.getElementById('farmsProgressBar');
-    this.farmsCountVisual = document.getElementById('farmsCountVisual');
+    this.grandmaProgressBar = document.getElementById("grandmaProgressBar");
+    this.grandmaCountDisplay = document.getElementById("grandmaCount");
+    this.autoClickersProgressBar = document.getElementById("autoClickersProgressBar");
+    this.autoClickersCountVisual = document.getElementById("autoClickersCountVisual");
+    this.farmsProgressBar = document.getElementById("farmsProgressBar");
+    this.farmsCountVisual = document.getElementById("farmsCountVisual");
 
-    // Log DOM element check
-    if (!document.getElementById('achievementsList')) {
+    if (!document.getElementById("achievementsList")) {
       this.log("ERROR: achievementsList element not found!");
     } else {
       this.log("achievementsList element loaded.");
@@ -116,39 +113,39 @@ class Game {
   }
 
   setupEventListeners() {
-    const leftSection = document.querySelector('.left');
-    leftSection.addEventListener('click', (e) => {
-      if (e.target.matches('button.upgrade')) {
+    const leftSection = document.querySelector(".left");
+    leftSection.addEventListener("click", (e) => {
+      if (e.target.matches("button.upgrade")) {
         this.log("Upgrade button clicked:", e.target.id);
         this.performPurchase(e.target.id);
       }
     });
     [this.clickUpgradeButton, this.autoClickerButton, this.grandmaButton, this.farmButton, this.luckyClickButton]
-      .forEach(btn => btn.addEventListener('mouseover', () => this.playHoverSound()));
+      .forEach((btn) => btn.addEventListener("mouseover", () => this.playHoverSound()));
 
-    this.settingsIcon.addEventListener('click', () => {
-      if (!this.settingsMenu.style.display || this.settingsMenu.style.display === 'none') {
-        this.settingsMenu.style.display = 'block';
+    this.settingsIcon.addEventListener("click", () => {
+      if (!this.settingsMenu.style.display || this.settingsMenu.style.display === "none") {
+        this.settingsMenu.style.display = "block";
         this.log("Settings menu shown");
       } else {
-        this.settingsMenu.style.display = 'none';
+        this.settingsMenu.style.display = "none";
         this.log("Settings menu hidden");
       }
     });
 
     [this.saveGameButton, this.loadGameButton, this.resetGameButton, this.toggleSoundButton]
-      .forEach(btn => btn.addEventListener('mouseover', () => this.playHoverSound()));
+      .forEach((btn) => btn.addEventListener("mouseover", () => this.playHoverSound()));
 
-    this.saveGameButton.addEventListener('click', () => this.saveGame());
-    this.loadGameButton.addEventListener('click', () => this.loadGame());
-    this.resetGameButton.addEventListener('click', () => this.resetGame());
-    this.toggleSoundButton.addEventListener('click', () => {
+    this.saveGameButton.addEventListener("click", () => this.saveGame());
+    this.loadGameButton.addEventListener("click", () => this.loadGame());
+    this.resetGameButton.addEventListener("click", () => this.resetGame());
+    this.toggleSoundButton.addEventListener("click", () => {
       this.soundOn = !this.soundOn;
-      alert(`Sound is now ${this.soundOn ? 'ON' : 'OFF'}.`);
+      alert(`Sound is now ${this.soundOn ? "ON" : "OFF"}.`);
       this.log("Sound toggled:", this.soundOn);
     });
 
-    this.cookie.addEventListener('click', (e) => this.handleClick(e));
+    this.cookie.addEventListener("click", (e) => this.handleClick(e));
   }
 
   handleClick(e) {
@@ -201,9 +198,9 @@ class Game {
       const delta = (now - lastTime) / 1000;
       lastTime = now;
       const cps =
-        (this.upgrades.autoClicker.count || 0) * 1 +
-        (this.upgrades.grandma.count || 0) * 5 +
-        (this.upgrades.farm.count || 0) * 10;
+        ((this.upgrades.autoClicker.count || 0) * 1) +
+        ((this.upgrades.grandma.count || 0) * 5) +
+        ((this.upgrades.farm.count || 0) * 10);
       this.state.cookies += cps * delta;
       this.updateDisplay();
       requestAnimationFrame(loop);
@@ -225,9 +222,9 @@ class Game {
     this.farmButton.disabled = this.state.cookies < this.upgrades.farm.cost;
     this.luckyClickButton.disabled = this.state.cookies < this.upgrades.luckyClick.cost;
     const cps =
-      (this.upgrades.autoClicker.count || 0) * 1 +
-      (this.upgrades.grandma.count || 0) * 5 +
-      (this.upgrades.farm.count || 0) * 10;
+      ((this.upgrades.autoClicker.count || 0) * 1) +
+      ((this.upgrades.grandma.count || 0) * 5) +
+      ((this.upgrades.farm.count || 0) * 10);
     this.cpsDisplay.textContent = Math.floor(cps);
     this.updateAutoClickersVisual();
     this.updateFarmsVisual();
@@ -245,27 +242,47 @@ class Game {
     setTimeout(() => floatingNumber.remove(), 1000);
   }
 
+  /**
+   * createConfetti spawns cookie-image particles.
+   * Particles are sized using PARTICLE_SIZE and live for PARTICLE_LIFETIME.
+   * Multiple cookie images are randomly chosen.
+   */
   createConfetti(x, y) {
-    const colors = ["#FFC107", "#FF5722", "#4CAF50", "#2196F3", "#9C27B0"];
-    const numConfetti = 20;
-    for (let i = 0; i < numConfetti; i++) {
-      const confetti = document.createElement("div");
-      confetti.className = "confetti";
-      confetti.style.backgroundColor =
-        colors[Math.floor(Math.random() * colors.length)];
-      confetti.style.left = `${x}px`;
-      confetti.style.top = `${y}px`;
+    this.log("createConfetti triggered at:", { x, y });
+    const numParticles = 20;
+    const cookieImages = [
+      "image/cookie.png",
+      "image/cookie3.png",
+      "image/cookie4.png",
+      "image/cookie1.png",
+      "image/cookie2.png" // Add more as needed
+    ];
+    for (let i = 0; i < numParticles; i++) {
+      const particle = document.createElement("img");
+      const randomIndex = Math.floor(Math.random() * cookieImages.length);
+      particle.src = cookieImages[randomIndex];
+      particle.className = "confetti";
+      particle.style.width = `${PARTICLE_SIZE}px`;
+      particle.style.height = `${PARTICLE_SIZE}px`;
+      particle.style.borderRadius = "0";
+      particle.style.position = "absolute";
+      particle.style.left = `${x}px`;
+      particle.style.top = `${y}px`;
       const offsetX = `${(Math.random() * 200 - 100).toFixed(0)}px`;
       const offsetY = `${(Math.random() * 200 - 100).toFixed(0)}px`;
-      confetti.style.setProperty("--x", offsetX);
-      confetti.style.setProperty("--y", offsetY);
-      document.body.appendChild(confetti);
-      setTimeout(() => confetti.remove(), 1000);
+      this.log(`Particle ${i} offset:`, { offsetX, offsetY });
+      particle.style.setProperty("--x", offsetX);
+      particle.style.setProperty("--y", offsetY);
+      document.body.appendChild(particle);
+      setTimeout(() => {
+        particle.remove();
+        this.log(`Particle ${i} removed`);
+      }, PARTICLE_LIFETIME);
     }
   }
 
   updateGrandmasVisual() {
-    const maxGrandmas = 20;
+    const maxGrandmas = 100; // Updated maximum for scalability
     const count = this.upgrades.grandma.count || 0;
     const progressWidth = (count / maxGrandmas) * 100;
     this.grandmaProgressBar.style.width = `${Math.min(progressWidth, 100)}%`;
@@ -274,18 +291,15 @@ class Game {
   }
 
   updateAutoClickersVisual() {
-    const maxAutoClickers = 10;
+    const maxAutoClickers = 100;
     const count = this.upgrades.autoClicker.count || 0;
     const progressWidth = (count / maxAutoClickers) * 100;
-    this.autoClickersProgressBar.style.width = `${Math.min(
-      progressWidth,
-      100
-    )}%`;
+    this.autoClickersProgressBar.style.width = `${Math.min(progressWidth, 100)}%`;
     this.autoClickersCountVisual.textContent = count;
   }
 
   updateFarmsVisual() {
-    const maxFarms = 10;
+    const maxFarms = 100;
     const count = this.upgrades.farm.count || 0;
     const progressWidth = (count / maxFarms) * 100;
     this.farmsProgressBar.style.width = `${Math.min(progressWidth, 100)}%`;
@@ -296,14 +310,8 @@ class Game {
     const achievementsToCheck = [
       { condition: this.state.cookies >= 100, text: "100 Cookies!" },
       { condition: this.state.cookies >= 1000, text: "1000 Cookies!" },
-      {
-        condition: (this.upgrades.autoClicker.count || 0) >= 5,
-        text: "5 Auto Clickers!",
-      },
-      {
-        condition: (this.upgrades.grandma.count || 0) >= 3,
-        text: "3 Grandma's Bakeries!",
-      },
+      { condition: (this.upgrades.autoClicker.count || 0) >= 5, text: "5 Auto Clickers!" },
+      { condition: (this.upgrades.grandma.count || 0) >= 3, text: "3 Grandma's Bakeries!" }
     ];
     achievementsToCheck.forEach(({ condition, text }) => {
       if (condition && !this.achievements.includes(text)) {
@@ -315,7 +323,7 @@ class Game {
 
   updateAchievements() {
     if (this.achievementsList) {
-      this.achievementsList.innerHTML = this.achievements.map(ach => `<li>${ach}</li>`).join('');
+      this.achievementsList.innerHTML = this.achievements.map(ach => `<li>${ach}</li>`).join("");
     } else {
       this.log("ERROR: achievementsList element is undefined!");
     }
@@ -328,9 +336,9 @@ class Game {
       achievements: this.achievements,
       soundOn: this.soundOn,
     };
-    localStorage.setItem('cookieGameSave', JSON.stringify(gameState));
+    localStorage.setItem("cookieGameSave", JSON.stringify(gameState));
     this.log("Game saved", gameState);
-    alert('Game saved!');
+    alert("Game saved!");
   }
 
   loadGame() {
@@ -339,34 +347,27 @@ class Game {
       alert("Game load canceled.");
       return;
     }
-    const savedGame = JSON.parse(localStorage.getItem('cookieGameSave'));
+    const savedGame = JSON.parse(localStorage.getItem("cookieGameSave"));
     if (!savedGame) {
       alert("No saved game found!");
       return;
     }
     this.log("Saved game data loaded:", savedGame);
-    // Load main state
     this.state = savedGame.state || this.state;
-    // Merge upgrades from saved data into defaults
-    if (typeof savedGame.upgrades === 'object') {
-      this.upgrades = {
-        ...this.upgrades,
-        ...savedGame.upgrades
-      };
-      if (!this.upgrades.grandma || typeof this.upgrades.grandma !== 'object') {
-        this.upgrades.grandma = { cost: 100, count: 0, multiplier: 1.5, action: 'increment', extra: 'updateGrandmasVisual' };
+    if (typeof savedGame.upgrades === "object") {
+      this.upgrades = { ...this.upgrades, ...savedGame.upgrades };
+      if (!this.upgrades.grandma || typeof this.upgrades.grandma !== "object") {
+        this.upgrades.grandma = { cost: 100, count: 0, multiplier: 1.5, action: "increment", extra: "updateGrandmasVisual" };
       }
       this.upgrades.grandma.count = parseInt(this.upgrades.grandma.count, 10) || 0;
       this.log("After merge, grandma count =", this.upgrades.grandma.count);
     }
-    // Fallback for older saves that stored grandmas in state.grandmas
-    if (typeof this.state.grandmas === 'number' && this.state.grandmas > this.upgrades.grandma.count) {
+    if (typeof this.state.grandmas === "number" && this.state.grandmas > this.upgrades.grandma.count) {
       this.upgrades.grandma.count = this.state.grandmas;
       this.log("Fallback: using state.grandmas =", this.state.grandmas);
     }
     this.achievements = savedGame.achievements || [];
-    this.soundOn = (savedGame.soundOn !== undefined) ? savedGame.soundOn : true;
-    // Now fully update UI
+    this.soundOn = savedGame.soundOn !== undefined ? savedGame.soundOn : true;
     this.updateDisplay();
     this.updateAchievements();
     this.updateGrandmasVisual();
@@ -375,26 +376,15 @@ class Game {
   }
 
   resetGame() {
-    if (
-      !confirm(
-        "Are you sure you want to reset your game? This action cannot be undone."
-      )
-    )
-      return;
+    if (!confirm("Are you sure you want to reset your game? This action cannot be undone.")) return;
     localStorage.removeItem("cookieGameSave");
     this.state = { cookies: 0, clickPower: 1 };
     this.upgrades = {
       clickUpgrade: { cost: 10, multiplier: 3, action: "multiplyClickPower" },
       autoClicker: { cost: 50, count: 0, multiplier: 1.5, action: "increment" },
-      grandma: {
-        cost: 100,
-        count: 0,
-        multiplier: 1.5,
-        action: "increment",
-        extra: "updateGrandmasVisual",
-      },
+      grandma: { cost: 100, count: 0, multiplier: 1.5, action: "increment", extra: "updateGrandmasVisual" },
       farm: { cost: 500, count: 0, multiplier: 1.5, action: "increment" },
-      luckyClick: { cost: 20, action: "lucky", multiplier: 1 },
+      luckyClick: { cost: 20, action: "lucky", multiplier: 1 }
     };
     this.achievements = [];
     this.soundOn = true;
@@ -402,7 +392,7 @@ class Game {
     this.updateAchievements();
     this.updateGrandmasVisual();
     this.log("Game reset.");
-    alert('Game has been reset.');
+    alert("Game has been reset.");
   }
 }
 
