@@ -8,9 +8,10 @@
  * A logging system has been added to trace state changes and diagnose issues.
  */
 
-// Constants for particle effects
-const PARTICLE_SIZE = 40;         // 40px particles
-const PARTICLE_LIFETIME = 1000;   // 1000ms lifetime for particles
+// Constants for particle effects and auto-save interval
+const PARTICLE_SIZE = 40;         // Particle image size in pixels
+const PARTICLE_LIFETIME = 1000;   // Particle lifetime in milliseconds
+const AUTO_SAVE_INTERVAL = 300000; // 5 minutes in milliseconds
 
 class Game {
   constructor() {
@@ -110,6 +111,9 @@ class Game {
     this.updateDisplay();
     this.updateGrandmasVisual();
     this.startGameLoop();
+
+    // Start auto-save every 5 minutes (without alert)
+    setInterval(() => this.autoSave(), AUTO_SAVE_INTERVAL);
   }
 
   setupEventListeners() {
@@ -120,8 +124,13 @@ class Game {
         this.performPurchase(e.target.id);
       }
     });
-    [this.clickUpgradeButton, this.autoClickerButton, this.grandmaButton, this.farmButton, this.luckyClickButton]
-      .forEach((btn) => btn.addEventListener("mouseover", () => this.playHoverSound()));
+    [
+      this.clickUpgradeButton,
+      this.autoClickerButton,
+      this.grandmaButton,
+      this.farmButton,
+      this.luckyClickButton,
+    ].forEach((btn) => btn.addEventListener("mouseover", () => this.playHoverSound()));
 
     this.settingsIcon.addEventListener("click", () => {
       if (!this.settingsMenu.style.display || this.settingsMenu.style.display === "none") {
@@ -133,10 +142,16 @@ class Game {
       }
     });
 
-    [this.saveGameButton, this.loadGameButton, this.resetGameButton, this.toggleSoundButton]
-      .forEach((btn) => btn.addEventListener("mouseover", () => this.playHoverSound()));
+    [
+      this.saveGameButton,
+      this.loadGameButton,
+      this.resetGameButton,
+      this.toggleSoundButton,
+    ].forEach((btn) => btn.addEventListener("mouseover", () => this.playHoverSound()));
 
+    // Manual save now uses a toast notification instead of an alert
     this.saveGameButton.addEventListener("click", () => this.saveGame());
+    // Load game now executes without confirmation
     this.loadGameButton.addEventListener("click", () => this.loadGame());
     this.resetGameButton.addEventListener("click", () => this.resetGame());
     this.toggleSoundButton.addEventListener("click", () => {
@@ -161,6 +176,7 @@ class Game {
     this.updateDisplay();
   }
 
+  // Generic purchase function using the upgrades configuration
   performPurchase(upgradeType) {
     const config = this.upgrades[upgradeType];
     if (this.state.cookies >= config.cost) {
@@ -192,6 +208,7 @@ class Game {
     }
   }
 
+  // Smooth game loop using requestAnimationFrame
   startGameLoop() {
     let lastTime = performance.now();
     const loop = (now) => {
@@ -255,7 +272,7 @@ class Game {
       "image/cookie3.png",
       "image/cookie4.png",
       "image/cookie1.png",
-      "image/cookie2.png" // Add more as needed
+      "image/cookie2.png",
     ];
     for (let i = 0; i < numParticles; i++) {
       const particle = document.createElement("img");
@@ -282,7 +299,7 @@ class Game {
   }
 
   updateGrandmasVisual() {
-    const maxGrandmas = 100; // Updated maximum for scalability
+    const maxGrandmas = 100; // For the progress bar visualization
     const count = this.upgrades.grandma.count || 0;
     const progressWidth = (count / maxGrandmas) * 100;
     this.grandmaProgressBar.style.width = `${Math.min(progressWidth, 100)}%`;
@@ -311,7 +328,7 @@ class Game {
       { condition: this.state.cookies >= 100, text: "100 Cookies!" },
       { condition: this.state.cookies >= 1000, text: "1000 Cookies!" },
       { condition: (this.upgrades.autoClicker.count || 0) >= 5, text: "5 Auto Clickers!" },
-      { condition: (this.upgrades.grandma.count || 0) >= 3, text: "3 Grandma's Bakeries!" }
+      { condition: (this.upgrades.grandma.count || 0) >= 3, text: "3 Grandma's Bakeries!" },
     ];
     achievementsToCheck.forEach(({ condition, text }) => {
       if (condition && !this.achievements.includes(text)) {
@@ -329,7 +346,8 @@ class Game {
     }
   }
 
-  saveGame() {
+  // Internal method to perform save without alert
+  doSaveGame() {
     const gameState = {
       state: this.state,
       upgrades: this.upgrades,
@@ -338,18 +356,39 @@ class Game {
     };
     localStorage.setItem("cookieGameSave", JSON.stringify(gameState));
     this.log("Game saved", gameState);
-    alert("Game saved!");
   }
 
+  // Manual save now uses a toast notification instead of an alert
+  saveGame() {
+    this.doSaveGame();
+    this.showAutoSaveNotification("Game saved!");
+    this.log("Manual save complete.");
+  }
+
+  // Auto-save: no alert, only visual feedback
+  autoSave() {
+    this.doSaveGame();
+    this.showAutoSaveNotification("Game auto-saved!");
+    this.log("Auto-saved game at", new Date());
+  }
+
+  // Show a non-disruptive toast notification for save/load actions
+  showAutoSaveNotification(message) {
+    const notification = document.createElement("div");
+    notification.className = "auto-save-notification";
+    notification.textContent = message;
+    document.body.appendChild(notification);
+    setTimeout(() => {
+      notification.remove();
+      this.log("Notification removed");
+    }, 3000);
+  }
+
+  // Load game without confirmation; immediately load and show toast notification
   loadGame() {
-    const confirmLoad = confirm("Do you want to load the saved game?");
-    if (!confirmLoad) {
-      alert("Game load canceled.");
-      return;
-    }
     const savedGame = JSON.parse(localStorage.getItem("cookieGameSave"));
     if (!savedGame) {
-      alert("No saved game found!");
+      this.showAutoSaveNotification("No saved game found!");
       return;
     }
     this.log("Saved game data loaded:", savedGame);
@@ -372,7 +411,7 @@ class Game {
     this.updateAchievements();
     this.updateGrandmasVisual();
     this.log("Load complete. Upgrades:", this.upgrades);
-    alert("Game loaded successfully!");
+    this.showAutoSaveNotification("Game loaded successfully!");
   }
 
   resetGame() {
@@ -384,7 +423,7 @@ class Game {
       autoClicker: { cost: 50, count: 0, multiplier: 1.5, action: "increment" },
       grandma: { cost: 100, count: 0, multiplier: 1.5, action: "increment", extra: "updateGrandmasVisual" },
       farm: { cost: 500, count: 0, multiplier: 1.5, action: "increment" },
-      luckyClick: { cost: 20, action: "lucky", multiplier: 1 }
+      luckyClick: { cost: 20, action: "lucky", multiplier: 1 },
     };
     this.achievements = [];
     this.soundOn = true;
