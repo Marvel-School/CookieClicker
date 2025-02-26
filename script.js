@@ -1,17 +1,20 @@
 /**
  * Game class
  * ----------
- * Handles core logic for Cookie Clicker using an OOP approach.
- * Centralizes state & upgrade data, plays hover sounds, uses a smooth game loop,
- * and organizes settings into a compact panel toggled by a custom settings button.
+ * Centralizes state & upgrade data, uses a smooth game loop,
+ * organizes settings into a compact panel, and includes a Shop section
+ * for special items such as the "Time Accelerator."
  *
- * A logging system has been added to trace state changes and diagnose issues.
+ * The Time Accelerator is purchased by clicking its image in the Shop.
+ * Its description appears as a speech bubble on hover, and when active,
+ * the shop item is highlighted with a countdown.
+ *
+ * A logging system is included to help debug.
  */
 
-// Constants for particle effects and auto-save interval
-const PARTICLE_SIZE = 40;         // Particle image size in pixels
-const PARTICLE_LIFETIME = 1000;   // Particle lifetime in milliseconds
-const AUTO_SAVE_INTERVAL = 300000; // 5 minutes in milliseconds
+const PARTICLE_SIZE = 40;
+const PARTICLE_LIFETIME = 1000;
+const AUTO_SAVE_INTERVAL = 300000; // 5 minutes
 
 class Game {
   constructor() {
@@ -24,9 +27,14 @@ class Game {
       cookies: 0,
       clickPower: 1,
       grandmas: 0, // fallback for older saves
+
+      // Time Accelerator state
+      timeAcceleratorActive: false,
+      timeAcceleratorMultiplier: 1,
+      timeAcceleratorEndTime: 0,
     };
 
-    // Upgrades configuration and state
+    // Standard Upgrades (left side)
     this.upgrades = {
       clickUpgrade: { cost: 10, multiplier: 3, action: "multiplyClickPower" },
       autoClicker: { cost: 50, count: 0, multiplier: 1.5, action: "increment" },
@@ -41,7 +49,16 @@ class Game {
       luckyClick: { cost: 20, action: "lucky", multiplier: 1 },
     };
 
-    // Achievements array
+    // Shop Upgrades
+    this.shopUpgrades = {
+      timeAccelerator: {
+        cost: 300,
+        multiplier: 2,
+        baseCost: 300, // used for duration calculations
+      },
+    };
+
+    // Achievements
     this.achievements = [];
 
     // Sound settings
@@ -58,6 +75,7 @@ class Game {
     }
   }
 
+  // playHoverSound remains but is no longer attached to left or shop items
   playHoverSound() {
     if (this.soundOn) {
       this.clickSound.currentTime = 0;
@@ -73,19 +91,17 @@ class Game {
     this.clickPowerDisplay = document.getElementById("clickPower");
     this.cpsDisplay = document.getElementById("cps");
 
-    // Stats elements
-    this.autoClickersDisplay = document.getElementById("autoClickers");
-    this.grandmasDisplay = document.getElementById("grandmas");
-    this.farmsDisplay = document.getElementById("farms");
-
-    // Upgrade buttons
+    // Standard Upgrade Buttons
     this.clickUpgradeButton = document.getElementById("clickUpgrade");
     this.autoClickerButton = document.getElementById("autoClicker");
     this.grandmaButton = document.getElementById("grandma");
     this.farmButton = document.getElementById("farm");
     this.luckyClickButton = document.getElementById("luckyClick");
 
-    // Settings panel elements
+    // Shop Section
+    this.shopElement = document.getElementById("shop");
+
+    // Settings Panel
     this.saveGameButton = document.getElementById("saveGame");
     this.loadGameButton = document.getElementById("loadGame");
     this.resetGameButton = document.getElementById("resetGame");
@@ -93,7 +109,7 @@ class Game {
     this.settingsIcon = document.getElementById("settingsIcon");
     this.settingsMenu = document.getElementById("settingsMenu");
 
-    // Visualization elements (using a progress bar for grandma)
+    // Visualization Elements
     this.grandmaProgressBar = document.getElementById("grandmaProgressBar");
     this.grandmaCountDisplay = document.getElementById("grandmaCount");
     this.autoClickersProgressBar = document.getElementById("autoClickersProgressBar");
@@ -101,37 +117,38 @@ class Game {
     this.farmsProgressBar = document.getElementById("farmsProgressBar");
     this.farmsCountVisual = document.getElementById("farmsCountVisual");
 
-    if (!document.getElementById("achievementsList")) {
-      this.log("ERROR: achievementsList element not found!");
-    } else {
-      this.log("achievementsList element loaded.");
-    }
-
     this.setupEventListeners();
     this.updateDisplay();
     this.updateGrandmasVisual();
     this.startGameLoop();
 
-    // Start auto-save every 5 minutes (without alert)
+    // Auto-save every 5 minutes
     setInterval(() => this.autoSave(), AUTO_SAVE_INTERVAL);
   }
 
   setupEventListeners() {
+    // Standard Upgrades (Left Section)
     const leftSection = document.querySelector(".left");
     leftSection.addEventListener("click", (e) => {
       if (e.target.matches("button.upgrade")) {
         this.log("Upgrade button clicked:", e.target.id);
-        this.performPurchase(e.target.id);
+        this.purchaseStandardUpgrade(e.target.id);
       }
     });
-    [
-      this.clickUpgradeButton,
-      this.autoClickerButton,
-      this.grandmaButton,
-      this.farmButton,
-      this.luckyClickButton,
-    ].forEach((btn) => btn.addEventListener("mouseover", () => this.playHoverSound()));
+    // (No hover sound for left buttons)
 
+    // Shop Items: Purchase by clicking the item image
+    const shopItems = this.shopElement.querySelectorAll(".shop-item");
+    shopItems.forEach((item) => {
+      const itemImage = item.querySelector("img");
+      itemImage.addEventListener("click", () => {
+        const upgradeKey = item.getAttribute("data-upgrade");
+        this.purchaseShopUpgrade(upgradeKey);
+      });
+    });
+    // (No hover sound for shop items)
+
+    // Settings Panel: Remove hover sound for settings buttons as well
     this.settingsIcon.addEventListener("click", () => {
       if (!this.settingsMenu.style.display || this.settingsMenu.style.display === "none") {
         this.settingsMenu.style.display = "block";
@@ -141,17 +158,10 @@ class Game {
         this.log("Settings menu hidden");
       }
     });
+    // Do not attach hover sound events to settings buttons
 
-    [
-      this.saveGameButton,
-      this.loadGameButton,
-      this.resetGameButton,
-      this.toggleSoundButton,
-    ].forEach((btn) => btn.addEventListener("mouseover", () => this.playHoverSound()));
-
-    // Manual save now uses a toast notification instead of an alert
+    // Save, Load, Reset, Toggle Sound actions
     this.saveGameButton.addEventListener("click", () => this.saveGame());
-    // Load game now executes without confirmation
     this.loadGameButton.addEventListener("click", () => this.loadGame());
     this.resetGameButton.addEventListener("click", () => this.resetGame());
     this.toggleSoundButton.addEventListener("click", () => {
@@ -160,10 +170,11 @@ class Game {
       this.log("Sound toggled:", this.soundOn);
     });
 
-    this.cookie.addEventListener("click", (e) => this.handleClick(e));
+    // Cookie click handler
+    this.cookie.addEventListener("click", (e) => this.handleCookieClick(e));
   }
 
-  handleClick(e) {
+  handleCookieClick(e) {
     if (this.soundOn) {
       this.clickSound.currentTime = 0;
       this.clickSound.play();
@@ -176,12 +187,13 @@ class Game {
     this.updateDisplay();
   }
 
-  // Generic purchase function using the upgrades configuration
-  performPurchase(upgradeType) {
-    const config = this.upgrades[upgradeType];
+  purchaseStandardUpgrade(upgradeKey) {
+    const config = this.upgrades[upgradeKey];
+    if (!config) return;
     if (this.state.cookies >= config.cost) {
       this.state.cookies -= config.cost;
-      this.log(`Purchased ${upgradeType}. Old count: ${config.count}`);
+      this.log(`Purchased standard upgrade: ${upgradeKey}, cost was: ${config.cost}`);
+
       switch (config.action) {
         case "multiplyClickPower":
           this.state.clickPower *= 2;
@@ -198,27 +210,80 @@ class Game {
           break;
       }
       config.cost = Math.floor(config.cost * config.multiplier);
-      this.log(`${upgradeType} new count: ${config.count}, new cost: ${config.cost}`);
-      this.updateDisplay();
       if (config.extra && typeof this[config.extra] === "function") {
         this[config.extra]();
       }
+      this.updateDisplay();
     } else {
-      this.log(`Not enough cookies for ${upgradeType}. Needed: ${config.cost}, have: ${this.state.cookies}`);
+      this.log(`Not enough cookies for ${upgradeKey}. Cost: ${config.cost}, have: ${this.state.cookies}`);
     }
   }
 
-  // Smooth game loop using requestAnimationFrame
+  purchaseShopUpgrade(upgradeKey) {
+    const item = this.shopUpgrades[upgradeKey];
+    if (!item) return;
+    if (this.state.cookies >= item.cost) {
+      this.state.cookies -= item.cost;
+      this.log(`Purchased shop item: ${upgradeKey}, cost was: ${item.cost}`);
+
+      if (upgradeKey === "timeAccelerator") {
+        this.activateTimeAccelerator(item);
+      }
+
+      // Increase cost for subsequent purchases
+      item.cost = Math.floor(item.cost * 1.2);
+
+      // Update the cost in the shop UI
+      const costSpan = document.querySelector(`[data-upgrade="${upgradeKey}"] .item-cost span`);
+      if (costSpan) {
+        costSpan.textContent = item.cost;
+      }
+
+      this.updateDisplay();
+      this.showToast(`${upgradeKey} purchased!`);
+    } else {
+      this.log(`Not enough cookies for ${upgradeKey}. Need: ${item.cost}, have: ${this.state.cookies}`);
+      this.showToast(`Not enough cookies for ${upgradeKey}`);
+    }
+  }
+
+  activateTimeAccelerator(item) {
+    const baseCost = item.baseCost || 300;
+    const minDuration = 120; // 2 minutes
+    const maxDuration = 300; // 5 minutes
+    let duration = minDuration + ((item.cost - baseCost) * 0.2);
+    duration = Math.min(duration, maxDuration);
+
+    this.state.timeAcceleratorActive = true;
+    this.state.timeAcceleratorMultiplier = item.multiplier;
+    this.state.timeAcceleratorEndTime = Date.now() + duration * 1000;
+
+    this.log("Time Accelerator activated for", duration, "seconds, multiplier:", item.multiplier);
+    this.showToast("Time Accelerator activated!");
+
+    setTimeout(() => {
+      this.state.timeAcceleratorActive = false;
+      this.state.timeAcceleratorMultiplier = 1;
+      this.state.timeAcceleratorEndTime = 0;
+      this.log("Time Accelerator expired");
+      this.showToast("Time Accelerator expired");
+    }, duration * 1000);
+  }
+
   startGameLoop() {
     let lastTime = performance.now();
     const loop = (now) => {
       const delta = (now - lastTime) / 1000;
       lastTime = now;
-      const cps =
-        ((this.upgrades.autoClicker.count || 0) * 1) +
-        ((this.upgrades.grandma.count || 0) * 5) +
-        ((this.upgrades.farm.count || 0) * 10);
-      this.state.cookies += cps * delta;
+
+      const autoClickers = this.upgrades.autoClicker.count || 0;
+      const grandmas = this.upgrades.grandma.count || 0;
+      const farms = this.upgrades.farm.count || 0;
+      const cps = (autoClickers * 1) + (grandmas * 5) + (farms * 10);
+
+      const timeAccelMult = this.state.timeAcceleratorActive ? this.state.timeAcceleratorMultiplier : 1;
+      this.state.cookies += cps * timeAccelMult * delta;
+
       this.updateDisplay();
       requestAnimationFrame(loop);
     };
@@ -228,21 +293,45 @@ class Game {
   updateDisplay() {
     this.cookieCount.textContent = Math.floor(this.state.cookies);
     this.clickPowerDisplay.textContent = this.state.clickPower;
+
     this.clickUpgradeButton.textContent = `Upgrade Click Power (Cost: ${this.upgrades.clickUpgrade.cost})`;
     this.autoClickerButton.textContent = `Buy Auto Clicker (Cost: ${this.upgrades.autoClicker.cost})`;
     this.grandmaButton.textContent = `Buy Grandma's Bakery (Cost: ${this.upgrades.grandma.cost})`;
     this.farmButton.textContent = `Buy Cookie Farm (Cost: ${this.upgrades.farm.cost})`;
     this.luckyClickButton.textContent = `Lucky Click (Cost: ${this.upgrades.luckyClick.cost})`;
+
+    const timeAcceleratorEl = document.querySelector('[data-upgrade="timeAccelerator"] .item-cost span');
+    if (timeAcceleratorEl && this.shopUpgrades.timeAccelerator) {
+      timeAcceleratorEl.textContent = this.shopUpgrades.timeAccelerator.cost;
+    }
+
     this.clickUpgradeButton.disabled = this.state.cookies < this.upgrades.clickUpgrade.cost;
     this.autoClickerButton.disabled = this.state.cookies < this.upgrades.autoClicker.cost;
     this.grandmaButton.disabled = this.state.cookies < this.upgrades.grandma.cost;
     this.farmButton.disabled = this.state.cookies < this.upgrades.farm.cost;
     this.luckyClickButton.disabled = this.state.cookies < this.upgrades.luckyClick.cost;
-    const cps =
-      ((this.upgrades.autoClicker.count || 0) * 1) +
-      ((this.upgrades.grandma.count || 0) * 5) +
-      ((this.upgrades.farm.count || 0) * 10);
+
+    const autoClickers = this.upgrades.autoClicker.count || 0;
+    const grandmas = this.upgrades.grandma.count || 0;
+    const farms = this.upgrades.farm.count || 0;
+    const cps = (autoClickers * 1) + (grandmas * 5) + (farms * 10);
     this.cpsDisplay.textContent = Math.floor(cps);
+
+    const itemEl = document.querySelector('[data-upgrade="timeAccelerator"]');
+    const timerSpan = itemEl ? itemEl.querySelector(".time-accelerator-timer") : null;
+    if (this.state.timeAcceleratorActive && this.state.timeAcceleratorEndTime) {
+      if (itemEl) itemEl.classList.add("active");
+      const secondsLeft = Math.floor((this.state.timeAcceleratorEndTime - Date.now()) / 1000);
+      if (secondsLeft > 0 && timerSpan) {
+        timerSpan.textContent = `Active: ${secondsLeft}s left`;
+      } else if (timerSpan) {
+        timerSpan.textContent = "";
+      }
+    } else {
+      if (itemEl) itemEl.classList.remove("active");
+      if (timerSpan) timerSpan.textContent = "";
+    }
+
     this.updateAutoClickersVisual();
     this.updateFarmsVisual();
   }
@@ -259,11 +348,6 @@ class Game {
     setTimeout(() => floatingNumber.remove(), 1000);
   }
 
-  /**
-   * createConfetti spawns cookie-image particles.
-   * Particles are sized using PARTICLE_SIZE and live for PARTICLE_LIFETIME.
-   * Multiple cookie images are randomly chosen.
-   */
   createConfetti(x, y) {
     this.log("createConfetti triggered at:", { x, y });
     const numParticles = 20;
@@ -281,13 +365,11 @@ class Game {
       particle.className = "confetti";
       particle.style.width = `${PARTICLE_SIZE}px`;
       particle.style.height = `${PARTICLE_SIZE}px`;
-      particle.style.borderRadius = "0";
       particle.style.position = "absolute";
       particle.style.left = `${x}px`;
       particle.style.top = `${y}px`;
       const offsetX = `${(Math.random() * 200 - 100).toFixed(0)}px`;
       const offsetY = `${(Math.random() * 200 - 100).toFixed(0)}px`;
-      this.log(`Particle ${i} offset:`, { offsetX, offsetY });
       particle.style.setProperty("--x", offsetX);
       particle.style.setProperty("--y", offsetY);
       document.body.appendChild(particle);
@@ -299,7 +381,7 @@ class Game {
   }
 
   updateGrandmasVisual() {
-    const maxGrandmas = 100; // For the progress bar visualization
+    const maxGrandmas = 100;
     const count = this.upgrades.grandma.count || 0;
     const progressWidth = (count / maxGrandmas) * 100;
     this.grandmaProgressBar.style.width = `${Math.min(progressWidth, 100)}%`;
@@ -339,18 +421,21 @@ class Game {
   }
 
   updateAchievements() {
+    this.achievementsList = document.getElementById("achievementsList");
     if (this.achievementsList) {
-      this.achievementsList.innerHTML = this.achievements.map(ach => `<li>${ach}</li>`).join("");
+      this.achievementsList.innerHTML = this.achievements
+        .map((ach) => `<li>${ach}</li>`)
+        .join("");
     } else {
       this.log("ERROR: achievementsList element is undefined!");
     }
   }
 
-  // Internal method to perform save without alert
   doSaveGame() {
     const gameState = {
       state: this.state,
       upgrades: this.upgrades,
+      shopUpgrades: this.shopUpgrades,
       achievements: this.achievements,
       soundOn: this.soundOn,
     };
@@ -358,22 +443,19 @@ class Game {
     this.log("Game saved", gameState);
   }
 
-  // Manual save now uses a toast notification instead of an alert
   saveGame() {
     this.doSaveGame();
-    this.showAutoSaveNotification("Game saved!");
+    this.showToast("Game saved!");
     this.log("Manual save complete.");
   }
 
-  // Auto-save: no alert, only visual feedback
   autoSave() {
     this.doSaveGame();
-    this.showAutoSaveNotification("Game auto-saved!");
+    this.showToast("Game auto-saved!");
     this.log("Auto-saved game at", new Date());
   }
 
-  // Show a non-disruptive toast notification for save/load actions
-  showAutoSaveNotification(message) {
+  showToast(message) {
     const notification = document.createElement("div");
     notification.className = "auto-save-notification";
     notification.textContent = message;
@@ -384,46 +466,59 @@ class Game {
     }, 3000);
   }
 
-  // Load game without confirmation; immediately load and show toast notification
   loadGame() {
     const savedGame = JSON.parse(localStorage.getItem("cookieGameSave"));
     if (!savedGame) {
-      this.showAutoSaveNotification("No saved game found!");
+      this.showToast("No saved game found!");
       return;
     }
     this.log("Saved game data loaded:", savedGame);
+
     this.state = savedGame.state || this.state;
     if (typeof savedGame.upgrades === "object") {
       this.upgrades = { ...this.upgrades, ...savedGame.upgrades };
-      if (!this.upgrades.grandma || typeof this.upgrades.grandma !== "object") {
-        this.upgrades.grandma = { cost: 100, count: 0, multiplier: 1.5, action: "increment", extra: "updateGrandmasVisual" };
-      }
-      this.upgrades.grandma.count = parseInt(this.upgrades.grandma.count, 10) || 0;
-      this.log("After merge, grandma count =", this.upgrades.grandma.count);
     }
-    if (typeof this.state.grandmas === "number" && this.state.grandmas > this.upgrades.grandma.count) {
-      this.upgrades.grandma.count = this.state.grandmas;
-      this.log("Fallback: using state.grandmas =", this.state.grandmas);
+    if (typeof savedGame.shopUpgrades === "object") {
+      this.shopUpgrades = { ...this.shopUpgrades, ...savedGame.shopUpgrades };
     }
     this.achievements = savedGame.achievements || [];
     this.soundOn = savedGame.soundOn !== undefined ? savedGame.soundOn : true;
+
+    if (this.upgrades.grandma && typeof this.upgrades.grandma.extra === "string") {
+      this.upgrades.grandma.extra = "updateGrandmasVisual";
+    }
+    if (typeof this.state.grandmas === "number" && this.state.grandmas > (this.upgrades.grandma.count || 0)) {
+      this.upgrades.grandma.count = this.state.grandmas;
+    }
+
     this.updateDisplay();
     this.updateAchievements();
     this.updateGrandmasVisual();
     this.log("Load complete. Upgrades:", this.upgrades);
-    this.showAutoSaveNotification("Game loaded successfully!");
+    this.log("Load complete. ShopUpgrades:", this.shopUpgrades);
+    this.showToast("Game loaded successfully!");
   }
 
   resetGame() {
     if (!confirm("Are you sure you want to reset your game? This action cannot be undone.")) return;
     localStorage.removeItem("cookieGameSave");
-    this.state = { cookies: 0, clickPower: 1 };
+    this.state = {
+      cookies: 0,
+      clickPower: 1,
+      grandmas: 0,
+      timeAcceleratorActive: false,
+      timeAcceleratorMultiplier: 1,
+      timeAcceleratorEndTime: 0,
+    };
     this.upgrades = {
       clickUpgrade: { cost: 10, multiplier: 3, action: "multiplyClickPower" },
       autoClicker: { cost: 50, count: 0, multiplier: 1.5, action: "increment" },
       grandma: { cost: 100, count: 0, multiplier: 1.5, action: "increment", extra: "updateGrandmasVisual" },
       farm: { cost: 500, count: 0, multiplier: 1.5, action: "increment" },
       luckyClick: { cost: 20, action: "lucky", multiplier: 1 },
+    };
+    this.shopUpgrades = {
+      timeAccelerator: { cost: 300, multiplier: 2, baseCost: 300 },
     };
     this.achievements = [];
     this.soundOn = true;

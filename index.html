@@ -33,10 +33,29 @@
       <div class="set">
         <div><img src="image/cookie1.png" alt="decorative cookie"></div>
         <div><img src="image/cookie3.png" alt="decorative cookie"></div>
+        <div><img src="image/cookie3.png" alt="decorative cookie"></div>
+        <div><img src="image/cookie4.png" alt="decorative cookie"></div>
+        <div><img src="image/cookie1.png" alt="decorative cookie"></div>
+        <div><img src="image/cookie4.png" alt="decorative cookie"></div>
+        <div><img src="image/cookie3.png" alt="decorative cookie"></div>
         <div><img src="image/cookie4.png" alt="decorative cookie"></div>
         <div><img src="image/cookie1.png" alt="decorative cookie"></div>
         <div><img src="image/cookie3.png" alt="decorative cookie"></div>
-        <!-- Add more decorative elements as desired -->
+        <div><img src="image/cookie3.png" alt="decorative cookie"></div>
+        <div><img src="image/cookie4.png" alt="decorative cookie"></div>
+        <div><img src="image/cookie1.png" alt="decorative cookie"></div>
+        <div><img src="image/cookie1.png" alt="decorative cookie"></div>
+        <div><img src="image/cookie3.png" alt="decorative cookie"></div>
+        <div><img src="image/cookie4.png" alt="decorative cookie"></div>
+        <div><img src="image/cookie4.png" alt="decorative cookie"></div>
+        <div><img src="image/cookie1.png" alt="decorative cookie"></div>
+        <div><img src="image/cookie3.png" alt="decorative cookie"></div>
+        <div><img src="image/cookie3.png" alt="decorative cookie"></div>
+        <div><img src="image/cookie4.png" alt="decorative cookie"></div>
+        <div><img src="image/cookie1.png" alt="decorative cookie"></div>
+        <div><img src="image/cookie1.png" alt="decorative cookie"></div>
+        <div><img src="image/cookie3.png" alt="decorative cookie"></div>
+        <div><img src="image/cookie4.png" alt="decorative cookie"></div>
       </div>
       <div class="center">
         <div class="stats">
@@ -74,27 +93,41 @@
           <span id="farmsCountVisual">0</span>
         </div>
       </div>
-      <!-- Grandma's Bakery Visualization as a Loading Bar -->
+      <!-- Grandma's Bakery Visualization -->
       <div id="grandmasBox" class="upgrade-box">
         <div class="upgrade-progress">
           <div id="grandmaProgressBar" class="upgrade-progress-bar"></div>
         </div>
         <div class="upgrade-counter">
-          <img src="image/grandma.png" alt="Grandma's Bakery" class="upgrade-image" />
+          <img src="image/grandma.png" alt="Grandma" class="upgrade-image" />
           <span id="grandmaCount">0</span>
         </div>
       </div>
     </section>
 
+    <!-- SHOP Section: Special Items -->
+    <section id="shop">
+      <h2>Shop</h2>
+      <!-- Time Accelerator Shop Item (Clickable Image) -->
+      <div class="shop-item" data-upgrade="timeAccelerator">
+        <img src="image/timeaccelerator.png" alt="Time Accelerator" class="shop-item-image" />
+        <span class="item-cost">Cost: <span>300</span></span>
+        <!-- Tooltip: Description appears as a speech bubble on hover -->
+        <span class="item-desc">
+          Temporarily boosts cookie production x2 for 2-5 minutes based on cost.
+        </span>
+        <!-- Countdown timer when active -->
+        <span class="time-accelerator-timer"></span>
+      </div>
+    </section>
+
     <!-- Settings Container in Bottom Right -->
     <div id="settingsContainer">
-      <!-- Uiverse.io Settings Button -->
       <button id="settingsIcon" class="setting-btn">
         <span class="bar bar1"></span>
         <span class="bar bar2"></span>
         <span class="bar bar1"></span>
       </button>
-      <!-- Settings Menu -->
       <div id="settingsMenu" style="display: none;">
         <button id="saveGame">Save Game</button>
         <button id="loadGame">Load Game</button>
