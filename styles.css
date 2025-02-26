@@ -8,6 +8,7 @@ body {
 }
 
 /* LEFT Section: Upgrade Buttons */
+/* Shifted down slightly (top: 60%) */
 .left {
   position: fixed;
   top: 60%;
@@ -70,6 +71,19 @@ body {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
   z-index: 200;
   text-align: center;
+}
+
+/* ACHIEVEMENTS Container: Independent at top right */
+#achievementsContainer {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 220px;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  z-index: 210;
 }
 
 /* Background and Center Section */
@@ -172,32 +186,27 @@ body {
   transform: scale(0.95);
 }
 
-/* RIGHT Section: Achievements & Upgrade Visualizations */
+/* RIGHT Section: Upgrade Visualizations Only (Mirrors Left Section) */
 .right {
   position: fixed;
-  top: 0;
-  right: 5px;
-  width: 25%;
-  height: 100%;
-  background: rgba(255, 255, 255, 0.9);
-  padding: 15px;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  top: 60%;
+  right: 20px;
+  transform: translateY(-60%);
+  width: 220px;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-height: 90%;
+  z-index: 100;
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
   gap: 15px;
-  overflow-y: auto;
-  z-index: 100;
-}
-.achievements {
-  width: 100%;
-  background-color: white;
-  border-radius: 12px;
-  padding: 10px;
 }
 
-/* SHOP Section: Fixed dimensions, moved to the top left */
+/* SHOP Section: Fixed dimensions, positioned at top left */
 #shop {
   position: fixed;
   top: 20px;
@@ -290,7 +299,7 @@ body {
   border: 2px solid #ff4444;
 }
 
-/* Settings Container */
+/* SETTINGS Container */
 #settingsContainer {
   position: fixed;
   bottom: 20px;
@@ -310,7 +319,7 @@ body {
   border-radius: 10px;
   cursor: pointer;
   border: none;
-  box-shadow: 0px 0px 0px 2px rgb(212, 209, 255);
+  /* Removed box-shadow */
 }
 .bar {
   width: 50%;
@@ -486,7 +495,7 @@ body {
 
 /* Responsive Layout */
 @media (max-width: 700px) {
-  .left, .right {
+  .left, .right, #achievementsContainer {
     position: relative;
     width: 90%;
     margin: 10px auto;
@@ -517,7 +526,7 @@ body {
     position: fixed;
     top: 0px;
     right: 5px;
-    width: 25%;
+    width: 220px;
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -529,46 +538,15 @@ body {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   }
   
-  .right button {
-    background: linear-gradient(145deg, #ffcc33, #ff9900);
-    color: white;
-    font-size: 16px;
-    font-weight: bold;
-    padding: 12px 20px;
-    margin: 10px 0;
-    width: 100%;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.3s ease-in-out;
-    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2);
-  }
-  
-  .right button:hover {
-    background: linear-gradient(145deg, #ffaa00, #ff6600);
-    transform: scale(1.05);
-    box-shadow: 6px 6px 15px rgba(0, 0, 0, 0.3);
-  }
-  
-  .right button:active {
-    transform: scale(0.95);
-    box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.3);
-  }
-  
-  .achievements {
-    background-color: white;
-    border-radius: 10px;
-    padding: 10px;
-    max-width: 200px;
-  }
-  
-  .achievements h2 {
-    margin: 0 0 10px 0;
-  }
-  
-  .achievements ul {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
+  #achievementsContainer {
+    position: fixed;
+    top: 20px;
+    right: 5px;
+    width: 220px;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    z-index: 210;
   }
 }
