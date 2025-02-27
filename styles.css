@@ -73,17 +73,33 @@ body {
   text-align: center;
 }
 
-/* ACHIEVEMENTS Container: Independent at top right */
+/* ACHIEVEMENTS Container */
 #achievementsContainer {
+  display: none;
   position: fixed;
   top: 20px;
-  right: 20px;
+  right: 70px; /* Positioned to the right of the icon */
   width: 220px;
   background: rgba(255, 255, 255, 0.95);
   padding: 15px;
   border-radius: 12px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
   z-index: 210;
+}
+
+/* Achievements Icon Wrapper */
+#achievementsWrapper {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+  cursor: pointer;
+}
+#achievementsIcon {
+  width: 40px;
+  height: 40px;
+  position: relative;
+  z-index: 9999;
 }
 
 /* Background and Center Section */
@@ -319,7 +335,6 @@ body {
   border-radius: 10px;
   cursor: pointer;
   border: none;
-  /* Removed box-shadow */
 }
 .bar {
   width: 50%;

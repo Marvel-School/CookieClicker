@@ -27,13 +27,16 @@
       </button>
     </section>
 
-    <!-- ACHIEVEMENTS Container: Independent at top right -->
-    <section id="achievementsContainer">
-      <div class="achievements">
-        <h2>Achievements</h2>
-        <ul id="achievementsList"></ul>
-      </div>
-    </section>
+    <!-- ACHIEVEMENTS Section: Toggled via the Achievements Icon -->
+    <div id="achievementsWrapper">
+      <img id="achievementsIcon" src="image/achievements.png" alt="Achievements Icon" />
+      <section id="achievementsContainer">
+        <div class="achievements">
+          <h2>Achievements</h2>
+          <ul id="achievementsList"></ul>
+        </div>
+      </section>
+    </div>
 
     <!-- SHOP Section: Special Items (Top Left) -->
     <section id="shop">
@@ -42,7 +45,7 @@
       <div class="shop-item" data-upgrade="timeAccelerator">
         <img src="image/timeaccelerator.png" alt="Time Accelerator" class="shop-item-image" />
         <span class="item-cost">Cost: <span>300</span></span>
-        <!-- Tooltip: Description appears as a speech bubble on hover -->
+        <!-- Tooltip Speech Bubble for item description -->
         <span class="item-desc">
           Temporarily boosts cookie production x2 for 2-5 minutes based on cost.
         </span>
@@ -93,7 +96,6 @@
 
     <!-- RIGHT Section: Upgrade Visualizations Only -->
     <section class="right">
-      <!-- Auto Clickers Visualization -->
       <div id="autoClickersBox" class="upgrade-box">
         <div class="upgrade-progress">
           <div id="autoClickersProgressBar" class="upgrade-progress-bar"></div>
@@ -103,7 +105,6 @@
           <span id="autoClickersCountVisual">0</span>
         </div>
       </div>
-      <!-- Cookie Farms Visualization -->
       <div id="farmsBox" class="upgrade-box">
         <div class="upgrade-progress">
           <div id="farmsProgressBar" class="upgrade-progress-bar"></div>
@@ -113,7 +114,6 @@
           <span id="farmsCountVisual">0</span>
         </div>
       </div>
-      <!-- Grandma's Bakery Visualization -->
       <div id="grandmasBox" class="upgrade-box">
         <div class="upgrade-progress">
           <div id="grandmaProgressBar" class="upgrade-progress-bar"></div>
