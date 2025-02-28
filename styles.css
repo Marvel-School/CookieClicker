@@ -8,11 +8,12 @@ body {
 }
 
 /* LEFT Section: Upgrade Buttons */
+/* Shifted down slightly (top: 60%) */
 .left {
   position: fixed;
-  top: 50%;
+  top: 60%;
   left: 20px;
-  transform: translateY(-50%);
+  transform: translateY(-60%);
   width: 220px;
   background: rgba(255, 255, 255, 0.95);
   padding: 20px;
@@ -25,6 +26,7 @@ body {
   justify-content: space-around;
   z-index: 100;
 }
+
 .left button:disabled {
   background: #777 !important;
   color: #fff !important;
@@ -32,6 +34,7 @@ body {
   transform: none !important;
   cursor: not-allowed !important;
 }
+
 .left button {
   background: linear-gradient(145deg, #2980b9, #3498db);
   color: #fff;
@@ -45,10 +48,12 @@ body {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
+
 .left button:hover {
   transform: scale(1.05);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
 }
+
 .left button:active {
   transform: scale(0.98);
   box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.25);
@@ -68,6 +73,35 @@ body {
   text-align: center;
 }
 
+/* ACHIEVEMENTS Container */
+#achievementsContainer {
+  display: none;
+  position: fixed;
+  top: 20px;
+  right: 70px; /* Positioned to the right of the icon */
+  width: 220px;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  z-index: 210;
+}
+
+/* Achievements Icon Wrapper */
+#achievementsWrapper {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+  cursor: pointer;
+}
+#achievementsIcon {
+  width: 40px;
+  height: 40px;
+  position: relative;
+  z-index: 9999;
+}
+
 /* Background and Center Section */
 .background {
   position: relative;
@@ -79,8 +113,6 @@ body {
   justify-content: center;
   align-items: center;
 }
-
-/* Animated background decoration */
 .background .set {
   position: absolute;
   width: 50%;
@@ -170,97 +202,120 @@ body {
   transform: scale(0.95);
 }
 
-/* RIGHT Section: Achievements & Upgrade Visualizations */
+/* RIGHT Section: Upgrade Visualizations Only (Mirrors Left Section) */
 .right {
   position: fixed;
-  top: 0;
-  right: 5px;
-  width: 25%;
-  height: 100%;
-  background: rgba(255, 255, 255, 0.9);
-  padding: 15px;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  top: 60%;
+  right: 20px;
+  transform: translateY(-60%);
+  width: 220px;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-height: 90%;
+  z-index: 100;
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
   gap: 15px;
-  overflow-y: auto;
-  z-index: 100;
 }
 
-.achievements {
-  width: 100%;
-  background-color: white;
+/* SHOP Section: Fixed dimensions, positioned at top left */
+#shop {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  width: 200px;
+  height: 200px;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 15px;
   border-radius: 12px;
-  padding: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  z-index: 150;
+  overflow: auto;
 }
-
-/* Upgrade Visualization Boxes (Right Section) */
-.upgrade-box {
-  background-color: #fff;
-  border-radius: 10px;
-  padding: 10px;
-  width: 180px; /* Reduced width */
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+#shop h2 {
+  margin-top: 0;
 }
-.upgrade-progress {
-  width: 80px; /* Reduced width */
-  height: 10px;
-  background-color: #e0e0e0;
-  border-radius: 5px;
-  overflow: hidden;
+.shop-item {
+  margin-bottom: 10px;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 10px;
+  position: relative;
 }
-.upgrade-progress-bar {
-  height: 100%;
-  background-color: #ff8c42;
-  width: 0;
-  transition: width 0.3s ease;
+.shop-item:last-child {
+  border-bottom: none;
 }
-.upgrade-counter {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-.upgrade-image {
-  width: 30px;
-  animation: bounce 1s infinite;
-}
-@keyframes bounce {
-  0% { transform: translateY(0); }
-  50% { transform: translateY(-5px); }
-  100% { transform: translateY(0); }
-}
-.upgrade-counter span {
-  font-size: 18px;
+.shop-item .item-name {
   font-weight: bold;
-  color: #333;
+  display: block;
+  margin-bottom: 4px;
 }
-
-/* Confetti Particle Styles */
-.confetti {
+.shop-item .item-cost {
+  display: block;
+  margin-bottom: 4px;
+}
+/* Tooltip Speech Bubble for item description */
+.shop-item .item-desc {
   position: absolute;
+  bottom: 110%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #fff;
+  color: #333;
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  max-width: 250px;
+  white-space: normal;
+  font-size: 14px;
+  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  z-index: 101;
+}
+.shop-item .item-desc::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 5px;
+  border-style: solid;
+  border-color: #fff transparent transparent transparent;
+}
+.shop-item:hover .item-desc {
+  opacity: 1;
+  visibility: visible;
+}
+/* Time Accelerator Countdown */
+.time-accelerator-timer {
+  display: block;
+  margin-top: 4px;
+  font-weight: bold;
+  color: #c33;
+}
+/* Shop Item Image: Reduced size */
+.shop-item img.shop-item-image {
+  display: block;
   width: 40px;
   height: 40px;
-  pointer-events: none;
-  animation: confettiFly 1s ease-out forwards;
-  z-index: 999999;
+  cursor: pointer;
+  margin-bottom: 4px;
+  transition: transform 0.2s ease;
 }
-@keyframes confettiFly {
-  0% {
-    transform: translate(0, 0) rotate(0deg);
-    opacity: 1;
-  }
-  100% {
-    transform: translate(var(--x), var(--y)) rotate(720deg);
-    opacity: 0;
-  }
+.shop-item img.shop-item-image:hover {
+  transform: scale(1.05);
+}
+/* Highlight active shop item */
+.shop-item.active {
+  border: 2px solid #ff4444;
 }
 
-/* Settings Container at Bottom Right */
+/* SETTINGS Container */
 #settingsContainer {
   position: fixed;
   bottom: 20px;
@@ -268,8 +323,6 @@ body {
   z-index: 999;
   text-align: right;
 }
-
-/* Uiverse.io Settings Button */
 .setting-btn {
   width: 45px;
   height: 45px;
@@ -282,7 +335,6 @@ body {
   border-radius: 10px;
   cursor: pointer;
   border: none;
-  box-shadow: 0px 0px 0px 2px rgb(212, 209, 255);
 }
 .bar {
   width: 50%;
@@ -314,8 +366,6 @@ body {
 .setting-btn:hover .bar2::before {
   transform: translateX(-4px);
 }
-
-/* Settings Menu */
 #settingsMenu {
   display: none;
   position: absolute;
@@ -327,8 +377,6 @@ body {
   width: 200px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
-
-/* Settings Menu Buttons */
 #settingsMenu button {
   background: rgb(129, 110, 216);
   color: white;
@@ -353,6 +401,28 @@ body {
   box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
+/* Confetti Particle Styles */
+.confetti {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  pointer-events: none;
+  opacity: 1;
+  border-radius: 50%;
+  animation: confettiAnimation 1s ease-out forwards;
+  z-index: 999999;
+}
+@keyframes confettiAnimation {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--x), var(--y)) rotate(720deg);
+    opacity: 0;
+  }
+}
+
 /* Floating Numbers */
 .floating-number {
   position: absolute;
@@ -372,30 +442,51 @@ body {
   }
 }
 
-/* Responsive Layout */
-@media (max-width: 700px) {
-  .left, .right {
-    position: relative;
-    width: 90%;
-    margin: 10px auto;
-    height: auto;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    transform: none;
-  }
-  .center, .stats {
-    position: relative;
-    top: auto;
-    left: auto;
-    transform: none;
-    margin: 20px auto;
-  }
-  #cookie {
-    margin: 20px auto;
-  }
+/* Upgrade Visualization Boxes */
+.upgrade-box {
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 10px;
+  width: 220px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
-/* Auto-Save Notification (Toast) */
+.upgrade-progress {
+  width: 100px;
+  height: 10px;
+  background-color: #e0e0e0;
+  border-radius: 5px;
+  overflow: hidden;
+}
+.upgrade-progress-bar {
+  height: 100%;
+  background-color: #ff8c42;
+  width: 0;
+  transition: width 0.3s ease;
+}
+.upgrade-counter {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.upgrade-image {
+  width: 30px;
+  animation: bounce 1s infinite;
+}
+@keyframes bounce {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+  100% { transform: translateY(0); }
+}
+.upgrade-counter span {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+}
+
+/* Toast Notification */
 .auto-save-notification {
   position: fixed;
   bottom: 80px;
@@ -410,7 +501,6 @@ body {
   opacity: 0;
   animation: fadeInOut 3s forwards;
 }
-
 @keyframes fadeInOut {
   0% { opacity: 0; }
   10% { opacity: 1; }
@@ -418,4 +508,60 @@ body {
   100% { opacity: 0; }
 }
 
-
+/* Responsive Layout */
+@media (max-width: 700px) {
+  .left, .right, #achievementsContainer {
+    position: relative;
+    width: 90%;
+    margin: 10px auto;
+    height: auto;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+  }
+  
+  .upgrade-image {
+    width: 30px;
+    animation: bounce 1s infinite;
+  }
+  
+  @keyframes bounce {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+    100% { transform: translateY(0); }
+  }
+  
+  .upgrade-counter span {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+  }
+  
+  .right {
+    position: fixed;
+    top: 0px;
+    right: 5px;
+    width: 220px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 15px;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  #achievementsContainer {
+    position: fixed;
+    top: 20px;
+    right: 5px;
+    width: 220px;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    z-index: 210;
+  }
+}

@@ -27,16 +27,62 @@
       </button>
     </section>
 
+    <!-- ACHIEVEMENTS Section: Toggled via the Achievements Icon -->
+    <div id="achievementsWrapper">
+      <img id="achievementsIcon" src="image/achievements.png" alt="Achievements Icon" />
+      <section id="achievementsContainer">
+        <div class="achievements">
+          <h2>Achievements</h2>
+          <ul id="achievementsList"></ul>
+        </div>
+      </section>
+    </div>
+
+    <!-- SHOP Section: Special Items (Top Left) -->
+    <section id="shop">
+      <h2>Shop</h2>
+      <!-- Time Accelerator Shop Item -->
+      <div class="shop-item" data-upgrade="timeAccelerator">
+        <img src="image/timeaccelerator.png" alt="Time Accelerator" class="shop-item-image" />
+        <span class="item-cost">Cost: <span>300</span></span>
+        <!-- Tooltip Speech Bubble for item description -->
+        <span class="item-desc">
+          Temporarily boosts cookie production x2 for 2-5 minutes based on cost.
+        </span>
+        <!-- Countdown timer when active -->
+        <span class="time-accelerator-timer"></span>
+      </div>
+    </section>
+
     <!-- CENTER Section: Background, Stats, and Cookie -->
     <section class="background">
       <!-- Animated Background Decoration -->
       <div class="set">
         <div><img src="image/cookie1.png" alt="decorative cookie"></div>
         <div><img src="image/cookie3.png" alt="decorative cookie"></div>
+        <div><img src="image/cookie3.png" alt="decorative cookie"></div>
+        <div><img src="image/cookie4.png" alt="decorative cookie"></div>
+        <div><img src="image/cookie1.png" alt="decorative cookie"></div>
+        <div><img src="image/cookie4.png" alt="decorative cookie"></div>
+        <div><img src="image/cookie3.png" alt="decorative cookie"></div>
         <div><img src="image/cookie4.png" alt="decorative cookie"></div>
         <div><img src="image/cookie1.png" alt="decorative cookie"></div>
         <div><img src="image/cookie3.png" alt="decorative cookie"></div>
-        <!-- Add more decorative elements as desired -->
+        <div><img src="image/cookie3.png" alt="decorative cookie"></div>
+        <div><img src="image/cookie4.png" alt="decorative cookie"></div>
+        <div><img src="image/cookie1.png" alt="decorative cookie"></div>
+        <div><img src="image/cookie1.png" alt="decorative cookie"></div>
+        <div><img src="image/cookie3.png" alt="decorative cookie"></div>
+        <div><img src="image/cookie4.png" alt="decorative cookie"></div>
+        <div><img src="image/cookie4.png" alt="decorative cookie"></div>
+        <div><img src="image/cookie1.png" alt="decorative cookie"></div>
+        <div><img src="image/cookie3.png" alt="decorative cookie"></div>
+        <div><img src="image/cookie3.png" alt="decorative cookie"></div>
+        <div><img src="image/cookie4.png" alt="decorative cookie"></div>
+        <div><img src="image/cookie1.png" alt="decorative cookie"></div>
+        <div><img src="image/cookie1.png" alt="decorative cookie"></div>
+        <div><img src="image/cookie3.png" alt="decorative cookie"></div>
+        <div><img src="image/cookie4.png" alt="decorative cookie"></div>
       </div>
       <div class="center">
         <div class="stats">
@@ -48,13 +94,8 @@
       </div>
     </section>
 
-    <!-- RIGHT Section: Achievements and Upgrade Visualizations -->
+    <!-- RIGHT Section: Upgrade Visualizations Only -->
     <section class="right">
-      <div class="achievements">
-        <h2>Achievements</h2>
-        <ul id="achievementsList"></ul>
-      </div>
-      <!-- Auto Clickers Visualization -->
       <div id="autoClickersBox" class="upgrade-box">
         <div class="upgrade-progress">
           <div id="autoClickersProgressBar" class="upgrade-progress-bar"></div>
@@ -64,7 +105,6 @@
           <span id="autoClickersCountVisual">0</span>
         </div>
       </div>
-      <!-- Cookie Farms Visualization -->
       <div id="farmsBox" class="upgrade-box">
         <div class="upgrade-progress">
           <div id="farmsProgressBar" class="upgrade-progress-bar"></div>
@@ -74,27 +114,24 @@
           <span id="farmsCountVisual">0</span>
         </div>
       </div>
-      <!-- Grandma's Bakery Visualization as a Loading Bar -->
       <div id="grandmasBox" class="upgrade-box">
         <div class="upgrade-progress">
           <div id="grandmaProgressBar" class="upgrade-progress-bar"></div>
         </div>
         <div class="upgrade-counter">
-          <img src="image/grandma.png" alt="Grandma's Bakery" class="upgrade-image" />
+          <img src="image/grandma.png" alt="Grandma" class="upgrade-image" />
           <span id="grandmaCount">0</span>
         </div>
       </div>
     </section>
 
-    <!-- Settings Container in Bottom Right -->
+    <!-- SETTINGS Container in Bottom Right -->
     <div id="settingsContainer">
-      <!-- Uiverse.io Settings Button -->
       <button id="settingsIcon" class="setting-btn">
         <span class="bar bar1"></span>
         <span class="bar bar2"></span>
         <span class="bar bar1"></span>
       </button>
-      <!-- Settings Menu -->
       <div id="settingsMenu" style="display: none;">
         <button id="saveGame">Save Game</button>
         <button id="loadGame">Load Game</button>
