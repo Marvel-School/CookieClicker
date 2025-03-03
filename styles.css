@@ -525,12 +525,6 @@ body {
     animation: bounce 1s infinite;
   }
   
-  @keyframes bounce {
-    0% { transform: translateY(0); }
-    50% { transform: translateY(-5px); }
-    100% { transform: translateY(0); }
-  }
-  
   .upgrade-counter span {
     font-size: 18px;
     font-weight: bold;

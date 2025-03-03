@@ -1,16 +1,76 @@
-/**
- * Game class
- * ----------
- * Centralizes state & upgrade data, uses a smooth game loop,
- * organizes settings into a compact panel, includes a Shop section
- * for special items (e.g., the "Time Accelerator"), and features
- * an achievements menu toggled by clicking the achievements icon.
- * A logging system is included to help with debugging.
- */
+const PARTICLE_SIZE = 20;
+const PARTICLE_LIFETIME = 2000;
+const AUTO_SAVE_INTERVAL = 60000; // 5 minutes
 
-const PARTICLE_SIZE = 40;
-const PARTICLE_LIFETIME = 1000;
-const AUTO_SAVE_INTERVAL = 300000; // 5 minutes
+// NEW: Base Upgrade Class
+class Upgrade {
+  constructor(cost, multiplier, action) {
+    this.cost = cost;
+    this.multiplier = multiplier;
+    this.action = action;
+  }
+}
+
+// NEW: StandardUpgrade extends Upgrade
+class StandardUpgrade extends Upgrade {
+  constructor(cost, multiplier, action, count = 0, extra = null) {
+    super(cost, multiplier, action);
+    this.count = count;
+    this.extra = extra;
+  }
+  purchase(game) {
+    if (game.state.cookies >= this.cost) {
+      game.state.cookies -= this.cost;
+      switch (this.action) {
+        case "multiplyClickPower":
+          game.state.clickPower *= 2;
+          break;
+        case "increment":
+          this.count++;
+          break;
+        case "lucky":
+          const bonus = Math.floor(Math.random() * 10) + 1;
+          game.state.cookies += bonus;
+          game.showFloatingNumber(bonus, true);
+          break;
+        default:
+          break;
+      }
+      this.cost = Math.floor(this.cost * this.multiplier);
+      if (this.extra && typeof game[this.extra] === "function") {
+        game[this.extra]();
+      }
+      game.updateDisplay();
+    } else {
+      game.log(`Not enough cookies for ${this.action}. Cost: ${this.cost}, have: ${game.state.cookies}`);
+    }
+  }
+}
+
+// NEW: ShopUpgrade extends Upgrade
+class ShopUpgrade extends Upgrade {
+  constructor(cost, multiplier, extra = null, baseCost) {
+    super(cost, multiplier, null);
+    this.baseCost = baseCost;
+    this.extra = extra;
+  }
+  purchase(game) {
+    if (game.state.cookies >= this.cost) {
+      game.state.cookies -= this.cost;
+      if (this.extra === "timeAccelerator") {
+        game.activateTimeAccelerator(this);
+      }
+      this.cost = Math.floor(this.cost * 1.2);
+      const costSpan = document.querySelector(`[data-upgrade="timeAccelerator"] .item-cost span`);
+      if (costSpan) costSpan.textContent = this.cost;
+      game.updateDisplay();
+      game.showToast("timeAccelerator purchased!");
+    } else {
+      game.log(`Not enough cookies for timeAccelerator. Need: ${this.cost}, have: ${game.state.cookies}`);
+      game.showToast(`Not enough cookies for timeAccelerator`);
+    }
+  }
+}
 
 class Game {
   constructor() {
@@ -22,7 +82,7 @@ class Game {
     this.state = {
       cookies: 0,
       clickPower: 1,
-      grandmas: 0, // fallback for older saves
+      grandmas: 0,
 
       // Time Accelerator state
       timeAcceleratorActive: false,
@@ -30,28 +90,17 @@ class Game {
       timeAcceleratorEndTime: 0,
     };
 
-    // Standard Upgrades (left side)
+    // NEW: Define upgrades using inheritance
     this.upgrades = {
-      clickUpgrade: { cost: 10, multiplier: 3, action: "multiplyClickPower" },
-      autoClicker: { cost: 50, count: 0, multiplier: 1.5, action: "increment" },
-      grandma: {
-        cost: 100,
-        count: 0,
-        multiplier: 1.5,
-        action: "increment",
-        extra: "updateGrandmasVisual",
-      },
-      farm: { cost: 500, count: 0, multiplier: 1.5, action: "increment" },
-      luckyClick: { cost: 20, action: "lucky", multiplier: 1 },
+      clickUpgrade: new StandardUpgrade(10, 3, "multiplyClickPower"),
+      autoClicker: new StandardUpgrade(50, 1.5, "increment"),
+      grandma: new StandardUpgrade(100, 1.5, "increment", 0, "updateGrandmasVisual"),
+      farm: new StandardUpgrade(500, 1.5, "increment"),
+      luckyClick: new StandardUpgrade(20, 1, "lucky")
     };
 
-    // Shop Upgrades
     this.shopUpgrades = {
-      timeAccelerator: {
-        cost: 300,
-        multiplier: 2,
-        baseCost: 300, // used for duration calculations
-      },
+      timeAccelerator: new ShopUpgrade(300, 2, "timeAccelerator", 300)
     };
 
     // Achievements
@@ -133,26 +182,21 @@ class Game {
         this.purchaseStandardUpgrade(e.target.id);
       }
     });
+
     // Shop Items: Purchase by clicking the item image
-    const shopItems = this.shopElement.querySelectorAll(".shop-item");
-    shopItems.forEach((item) => {
-      const itemImage = item.querySelector("img");
+    this.shopElement.querySelectorAll(".shop-item img").forEach((itemImage) => {
       itemImage.addEventListener("click", () => {
-        const upgradeKey = item.getAttribute("data-upgrade");
+        const upgradeKey = itemImage.closest(".shop-item").getAttribute("data-upgrade");
         this.purchaseShopUpgrade(upgradeKey);
       });
     });
 
     // Settings Panel: Toggle display on settings icon click
     this.settingsIcon.addEventListener("click", () => {
-      if (!this.settingsMenu.style.display || this.settingsMenu.style.display === "none") {
-        this.settingsMenu.style.display = "block";
-        this.log("Settings menu shown");
-      } else {
-        this.settingsMenu.style.display = "none";
-        this.log("Settings menu hidden");
-      }
+      this.settingsMenu.style.display = this.settingsMenu.style.display === "block" ? "none" : "block";
+      this.log(`Settings menu ${this.settingsMenu.style.display === "block" ? "shown" : "hidden"}`);
     });
+
     this.saveGameButton.addEventListener("click", () => this.saveGame());
     this.loadGameButton.addEventListener("click", () => this.loadGame());
     this.resetGameButton.addEventListener("click", () => this.resetGame());
@@ -167,13 +211,8 @@ class Game {
     if (achievementsIcon) {
       achievementsIcon.style.zIndex = "9999"; // ensure icon is on top
       achievementsIcon.addEventListener("click", () => {
-        if (!this.achievementsContainer.style.display || this.achievementsContainer.style.display === "none") {
-          this.achievementsContainer.style.display = "block";
-          this.log("Achievements menu shown");
-        } else {
-          this.achievementsContainer.style.display = "none";
-          this.log("Achievements menu hidden");
-        }
+        this.achievementsContainer.style.display = this.achievementsContainer.style.display === "block" ? "none" : "block";
+        this.log(`Achievements menu ${this.achievementsContainer.style.display === "block" ? "shown" : "hidden"}`);
       });
     } else {
       this.log("ERROR: achievementsIcon not found!");
@@ -197,56 +236,15 @@ class Game {
   }
 
   purchaseStandardUpgrade(upgradeKey) {
-    const config = this.upgrades[upgradeKey];
-    if (!config) return;
-    if (this.state.cookies >= config.cost) {
-      this.state.cookies -= config.cost;
-      this.log(`Purchased standard upgrade: ${upgradeKey}, cost was: ${config.cost}`);
-      switch (config.action) {
-        case "multiplyClickPower":
-          this.state.clickPower *= 2;
-          break;
-        case "increment":
-          config.count = (config.count || 0) + 1;
-          break;
-        case "lucky":
-          const bonus = Math.floor(Math.random() * 10) + 1;
-          this.state.cookies += bonus;
-          this.showFloatingNumber(bonus, true);
-          break;
-        default:
-          break;
-      }
-      config.cost = Math.floor(config.cost * config.multiplier);
-      if (config.extra && typeof this[config.extra] === "function") {
-        this[config.extra]();
-      }
-      this.updateDisplay();
-    } else {
-      this.log(`Not enough cookies for ${upgradeKey}. Cost: ${config.cost}, have: ${this.state.cookies}`);
-    }
+    const upgrade = this.upgrades[upgradeKey];
+    if (!upgrade) return;
+    upgrade.purchase(this);
   }
 
   purchaseShopUpgrade(upgradeKey) {
-    const item = this.shopUpgrades[upgradeKey];
-    if (!item) return;
-    if (this.state.cookies >= item.cost) {
-      this.state.cookies -= item.cost;
-      this.log(`Purchased shop item: ${upgradeKey}, cost was: ${item.cost}`);
-      if (upgradeKey === "timeAccelerator") {
-        this.activateTimeAccelerator(item);
-      }
-      item.cost = Math.floor(item.cost * 1.2);
-      const costSpan = document.querySelector(`[data-upgrade="${upgradeKey}"] .item-cost span`);
-      if (costSpan) {
-        costSpan.textContent = item.cost;
-      }
-      this.updateDisplay();
-      this.showToast(`${upgradeKey} purchased!`);
-    } else {
-      this.log(`Not enough cookies for ${upgradeKey}. Need: ${item.cost}, have: ${this.state.cookies}`);
-      this.showToast(`Not enough cookies for ${upgradeKey}`);
-    }
+    const shopUpgrade = this.shopUpgrades[upgradeKey];
+    if (!shopUpgrade) return;
+    shopUpgrade.purchase(this);
   }
 
   activateTimeAccelerator(item) {
@@ -419,13 +417,13 @@ class Game {
   }
 
   updateAchievements() {
-    this.achievementsList = document.getElementById("achievementsList");
+    // Use the cached achievementsList element from init.
     if (this.achievementsList) {
       this.achievementsList.innerHTML = this.achievements
         .map((ach) => `<li>${ach}</li>`)
         .join("");
     } else {
-      this.log("ERROR: achievementsList element is undefined!");
+      this.log("ERROR: achievementsList element is not cached!");
     }
   }
 
@@ -465,39 +463,41 @@ class Game {
   }
 
   loadGame() {
-    const savedGame = JSON.parse(localStorage.getItem("cookieGameSave"));
-    if (!savedGame) {
-      this.showToast("No saved game found!");
-      return;
-    }
-    this.log("Saved game data loaded:", savedGame);
-    // Load main state
-    this.state = savedGame.state || this.state;
-    // Merge upgrades from saved data into defaults
-    if (typeof savedGame.upgrades === "object") {
-      this.upgrades = { ...this.upgrades, ...savedGame.upgrades };
-      if (!this.upgrades.grandma || typeof this.upgrades.grandma !== "object") {
-        this.upgrades.grandma = { cost: 100, count: 0, multiplier: 1.5, action: "increment", extra: "updateGrandmasVisual" };
+    try {
+      const savedStr = localStorage.getItem("cookieGameSave");
+      if (!savedStr) {
+        this.showToast("No saved game found!");
+        return;
       }
-      this.upgrades.grandma.count = parseInt(this.upgrades.grandma.count, 10) || 0;
-      this.log("After merge, grandma count =", this.upgrades.grandma.count);
+      const savedGame = JSON.parse(savedStr);
+      this.log("Saved game data loaded:", savedGame);
+      // Load main state and upgrades...
+      this.state = savedGame.state || this.state;
+      if (typeof savedGame.upgrades === "object") {
+        this.upgrades = { ...this.upgrades, ...savedGame.upgrades };
+        if (!this.upgrades.grandma || typeof this.upgrades.grandma !== "object") {
+          this.upgrades.grandma = { cost: 100, count: 0, multiplier: 1.5, action: "increment", extra: "updateGrandmasVisual" };
+        }
+        this.upgrades.grandma.count = parseInt(this.upgrades.grandma.count, 10) || 0;
+      }
+      if (typeof savedGame.shopUpgrades === "object") {
+        this.shopUpgrades = { ...this.shopUpgrades, ...savedGame.shopUpgrades };
+      }
+      if (typeof this.state.grandmas === "number" && this.state.grandmas > (this.upgrades.grandma.count || 0)) {
+        this.upgrades.grandma.count = this.state.grandmas;
+      }
+      this.achievements = savedGame.achievements || [];
+      this.soundOn = savedGame.soundOn !== undefined ? savedGame.soundOn : true;
+      
+      this.updateDisplay();
+      this.updateAchievements();
+      this.updateGrandmasVisual();
+      this.log("Load complete.");
+      this.showToast("Game loaded successfully!");
+    } catch (e) {
+      this.log("Failed to load game:", e);
+      this.showToast("Failed to load game data!");
     }
-    if (typeof savedGame.shopUpgrades === "object") {
-      this.shopUpgrades = { ...this.shopUpgrades, ...savedGame.shopUpgrades };
-    }
-    if (typeof this.state.grandmas === "number" && this.state.grandmas > (this.upgrades.grandma.count || 0)) {
-      this.upgrades.grandma.count = this.state.grandmas;
-      this.log("Fallback: using state.grandmas =", this.state.grandmas);
-    }
-    this.achievements = savedGame.achievements || [];
-    this.soundOn = savedGame.soundOn !== undefined ? savedGame.soundOn : true;
-
-    this.updateDisplay();
-    this.updateAchievements();
-    this.updateGrandmasVisual();
-    this.log("Load complete. Upgrades:", this.upgrades);
-    this.log("Load complete. ShopUpgrades:", this.shopUpgrades);
-    this.showToast("Game loaded successfully!");
   }
 
   resetGame() {
@@ -512,14 +512,14 @@ class Game {
       timeAcceleratorEndTime: 0,
     };
     this.upgrades = {
-      clickUpgrade: { cost: 10, multiplier: 3, action: "multiplyClickPower" },
-      autoClicker: { cost: 50, count: 0, multiplier: 1.5, action: "increment" },
-      grandma: { cost: 100, count: 0, multiplier: 1.5, action: "increment", extra: "updateGrandmasVisual" },
-      farm: { cost: 500, count: 0, multiplier: 1.5, action: "increment" },
-      luckyClick: { cost: 20, action: "lucky", multiplier: 1 },
+      clickUpgrade: new StandardUpgrade(10, 3, "multiplyClickPower"),
+      autoClicker: new StandardUpgrade(50, 1.5, "increment"),
+      grandma: new StandardUpgrade(100, 1.5, "increment", 0, "updateGrandmasVisual"),
+      farm: new StandardUpgrade(500, 1.5, "increment"),
+      luckyClick: new StandardUpgrade(20, 1, "lucky")
     };
     this.shopUpgrades = {
-      timeAccelerator: { cost: 300, multiplier: 2, baseCost: 300 },
+      timeAccelerator: new ShopUpgrade(300, 2, "timeAccelerator", 300)
     };
     this.achievements = [];
     this.soundOn = true;
