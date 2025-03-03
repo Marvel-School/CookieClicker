@@ -112,6 +112,12 @@ class Game {
     this.clickSound.volume = 0.2;
 
     this.init();
+
+    // Auto-load saved game if exists
+    if (localStorage.getItem("cookieGameSave")) {
+      this.loadGame();
+      this.log("Auto-loaded saved game.");
+    }
   }
 
   log(message, ...data) {
@@ -471,21 +477,41 @@ class Game {
       }
       const savedGame = JSON.parse(savedStr);
       this.log("Saved game data loaded:", savedGame);
-      // Load main state and upgrades...
+
+      // Load main state
       this.state = savedGame.state || this.state;
+
+      // Reinitialize upgrades using class constructors and override with saved data
       if (typeof savedGame.upgrades === "object") {
-        this.upgrades = { ...this.upgrades, ...savedGame.upgrades };
-        if (!this.upgrades.grandma || typeof this.upgrades.grandma !== "object") {
-          this.upgrades.grandma = { cost: 100, count: 0, multiplier: 1.5, action: "increment", extra: "updateGrandmasVisual" };
-        }
-        this.upgrades.grandma.count = parseInt(this.upgrades.grandma.count, 10) || 0;
+        this.upgrades = {
+          clickUpgrade: new StandardUpgrade(10, 3, "multiplyClickPower"),
+          autoClicker: new StandardUpgrade(50, 1.5, "increment"),
+          grandma: new StandardUpgrade(100, 1.5, "increment", 0, "updateGrandmasVisual"),
+          farm: new StandardUpgrade(500, 1.5, "increment"),
+          luckyClick: new StandardUpgrade(20, 1, "lucky")
+        };
+        Object.keys(savedGame.upgrades).forEach(key => {
+          if (savedGame.upgrades[key].cost !== undefined) {
+            this.upgrades[key].cost = savedGame.upgrades[key].cost;
+          }
+          if (savedGame.upgrades[key].count !== undefined) {
+            this.upgrades[key].count = savedGame.upgrades[key].count;
+          }
+        });
       }
+
+      // Reinitialize shopUpgrades similarly
       if (typeof savedGame.shopUpgrades === "object") {
-        this.shopUpgrades = { ...this.shopUpgrades, ...savedGame.shopUpgrades };
+        this.shopUpgrades = {
+          timeAccelerator: new ShopUpgrade(300, 2, "timeAccelerator", 300)
+        };
+        Object.keys(savedGame.shopUpgrades).forEach(key => {
+          if (savedGame.shopUpgrades[key].cost !== undefined) {
+            this.shopUpgrades[key].cost = savedGame.shopUpgrades[key].cost;
+          }
+        });
       }
-      if (typeof this.state.grandmas === "number" && this.state.grandmas > (this.upgrades.grandma.count || 0)) {
-        this.upgrades.grandma.count = this.state.grandmas;
-      }
+
       this.achievements = savedGame.achievements || [];
       this.soundOn = savedGame.soundOn !== undefined ? savedGame.soundOn : true;
       
