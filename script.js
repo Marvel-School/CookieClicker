@@ -183,6 +183,16 @@ class Game {
         this.purchaseStandardUpgrade(e.target.id);
       }
     });
+        // Add hover sound to upgrade buttons
+        [
+          this.clickUpgradeButton,
+          this.autoClickerButton,
+          this.grandmaButton,
+          this.farmButton,
+          this.luckyClickButton,
+        ].forEach((btn) =>
+          btn.addEventListener("mouseover", () => this.playHoverSound())
+        );
 
     // Shop Items: Purchase by clicking the item image
     this.shopElement.querySelectorAll(".shop-item img").forEach((itemImage) => {
@@ -197,7 +207,15 @@ class Game {
       this.settingsMenu.style.display = this.settingsMenu.style.display === "block" ? "none" : "block";
       this.log(`Settings menu ${this.settingsMenu.style.display === "block" ? "shown" : "hidden"}`);
     });
-
+ // Add hover sound to settings control buttons
+ [
+  this.saveGameButton,
+  this.loadGameButton,
+  this.resetGameButton,
+  this.toggleSoundButton,
+].forEach((btn) =>
+  btn.addEventListener("mouseover", () => this.playHoverSound())
+);
     this.saveGameButton.addEventListener("click", () => this.saveGame());
     this.loadGameButton.addEventListener("click", () => this.loadGame());
     this.resetGameButton.addEventListener("click", () => this.resetGame());

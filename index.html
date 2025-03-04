@@ -99,58 +99,64 @@
         </div>
         <img id="cookie" src="image/cookie.png" alt="Cookie" />
       </div>
-    
 
-    <!-- RIGHT Section: Upgrade Visualizations Only -->
-    <section class="right">
-      <div id="autoClickersBox" class="upgrade-box">
-        <div class="upgrade-progress">
-          <div id="autoClickersProgressBar" class="upgrade-progress-bar"></div>
+      <!-- RIGHT Section: Upgrade Visualizations Only -->
+      <section class="right">
+        <div id="autoClickersBox" class="upgrade-box">
+          <div class="upgrade-progress">
+            <div
+              id="autoClickersProgressBar"
+              class="upgrade-progress-bar"
+            ></div>
+          </div>
+          <div class="upgrade-counter">
+            <img
+              src="image/hand.png"
+              alt="Auto Clicker"
+              class="upgrade-image"
+            />
+            <span id="autoClickersCountVisual">0</span>
+          </div>
         </div>
-        <div class="upgrade-counter">
-          <img src="image/hand.png" alt="Auto Clicker" class="upgrade-image" />
-          <span id="autoClickersCountVisual">0</span>
+        <div id="farmsBox" class="upgrade-box">
+          <div class="upgrade-progress">
+            <div id="farmsProgressBar" class="upgrade-progress-bar"></div>
+          </div>
+          <div class="upgrade-counter">
+            <img src="image/farm.png" alt="Cookie Farm" class="upgrade-image" />
+            <span id="farmsCountVisual">0</span>
+          </div>
         </div>
-      </div>
-      <div id="farmsBox" class="upgrade-box">
-        <div class="upgrade-progress">
-          <div id="farmsProgressBar" class="upgrade-progress-bar"></div>
+        <div id="grandmasBox" class="upgrade-box">
+          <div class="upgrade-progress">
+            <div id="grandmaProgressBar" class="upgrade-progress-bar"></div>
+          </div>
+          <div class="upgrade-counter">
+            <img src="image/grandma.png" alt="Grandma" class="upgrade-image" />
+            <span id="grandmaCount">0</span>
+          </div>
         </div>
-        <div class="upgrade-counter">
-          <img src="image/farm.png" alt="Cookie Farm" class="upgrade-image" />
-          <span id="farmsCountVisual">0</span>
-        </div>
-      </div>
-      <div id="grandmasBox" class="upgrade-box">
-        <div class="upgrade-progress">
-          <div id="grandmaProgressBar" class="upgrade-progress-bar"></div>
-        </div>
-        <div class="upgrade-counter">
-          <img src="image/grandma.png" alt="Grandma" class="upgrade-image" />
-          <span id="grandmaCount">0</span>
+      </section>
+
+      <!-- SETTINGS Container in Bottom Right -->
+      <div id="settingsContainer">
+        <button
+          id="settingsIcon"
+          class="setting-btn"
+          aria-label="Toggle Settings"
+        >
+          <span class="bar bar1"></span>
+          <span class="bar bar2"></span>
+          <span class="bar bar1"></span>
+        </button>
+        <div id="settingsMenu" style="display: none">
+          <button id="saveGame">Save Game</button>
+          <button id="loadGame">Load Game</button>
+          <button id="resetGame">Reset Game</button>
+          <button id="toggleSound">Toggle Sound</button>
         </div>
       </div>
     </section>
-
-    <!-- SETTINGS Container in Bottom Right -->
-    <div id="settingsContainer">
-      <button
-        id="settingsIcon"
-        class="setting-btn"
-        aria-label="Toggle Settings"
-      >
-        <span class="bar bar1"></span>
-        <span class="bar bar2"></span>
-        <span class="bar bar1"></span>
-      </button>
-      <div id="settingsMenu" style="display: none">
-        <button id="saveGame">Save Game</button>
-        <button id="loadGame">Load Game</button>
-        <button id="resetGame">Reset Game</button>
-        <button id="toggleSound">Toggle Sound</button>
-      </div>
-    </div>
-  </section>
     <script src="script.js" defer></script>
   </body>
 </html>
