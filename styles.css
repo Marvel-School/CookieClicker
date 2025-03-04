@@ -1,6 +1,6 @@
 /* Global Styles */
 body {
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
   background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
   margin: 0;
   padding: 0;
@@ -155,6 +155,128 @@ body {
   left: 90%;
   animation: animate 18s linear infinite;
   animation-delay: -10s;
+}
+.background .set div:nth-child(6) {
+  left: 10%;
+  animation: animate 12s linear infinite;
+}
+.background .set div:nth-child(7) {
+  left: 30%;
+  animation: animate 14s linear infinite;
+}
+.background .set div:nth-child(8) {
+  left: 50%;
+  animation: animate 15s linear infinite;
+}
+section .set div:nth-child(9) {
+  left: 70%;
+
+  animation: animate 15s linear infinite;
+
+  animation-delay: -9s;
+}
+
+section .set div:nth-child(10) {
+  left: 40%;
+
+  animation: animate 20s linear infinite;
+
+  animation-delay: -6s;
+}
+
+section .set div:nth-child(11) {
+  left: 60%;
+
+  animation: animate 20s linear infinite;
+
+  animation-delay: -2s;
+}
+
+section .set div:nth-child(12) {
+  left: 10%;
+
+  animation: animate 15s linear infinite;
+
+  animation-delay: 0s;
+}
+
+section .set div:nth-child(13) {
+  left: 75%;
+
+  animation: animate 10s linear infinite;
+
+  animation-delay: 0s;
+}
+
+section .set div:nth-child(14) {
+  left: 0%;
+
+  animation: animate 0s linear infinite;
+}
+
+section .set div:nth-child(15) {
+  left: 10%;
+  animation: animate 5s linear infinite;
+  animation-delay: -7s;
+}
+
+section .set div:nth-child(16) {
+  left: 10%;
+  animation: animate 15s linear infinite;
+}
+section .set div:nth-child(17) {
+  left: 80%;
+  animation: animate 10s linear infinite;
+  animation-delay: -5s;
+}
+
+section .set div:nth-child(18) {
+  left: 60%;
+
+  animation: animate 30s linear infinite;
+
+  animation-delay: -7s;
+}
+
+section .set div:nth-child(19) {
+  left: 90%;
+  animation: animate 10s linear infinite;
+  animation-delay: -4s;
+}
+
+section .set div:nth-child(20) {
+  left: 20%;
+  animation: animate 10s linear infinite;
+  animation-delay: -8s;
+}
+
+section .set div:nth-child(21) {
+  left: 55%;
+  animation: animate 10s linear infinite;
+  animation-delay: 2s;
+}
+
+section .set div:nth-child(22) {
+  left: 15%;
+  animation: animate 9s linear infinite;
+  animation-delay: 0s;
+}
+
+section .set div:nth-child(23) {
+  left: 20%;
+  animation: animate 7s linear infinite;
+  animation-delay: 1s;
+}
+
+section .set div:nth-child(24) {
+  left: 50%;
+  animation: animate 8s linear infinite;
+  /* animation-delay: -3s; */
+}
+section .set div:nth-child(25) {
+  left: 40%;
+  animation: animate 6s linear infinite;
+  animation-delay: -1s;
 }
 @keyframes animate {
   0% {
@@ -476,9 +598,15 @@ body {
   animation: bounce 1s infinite;
 }
 @keyframes bounce {
-  0% { transform: translateY(0); }
-  50% { transform: translateY(-5px); }
-  100% { transform: translateY(0); }
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+  100% {
+    transform: translateY(0);
+  }
 }
 .upgrade-counter span {
   font-size: 18px;
@@ -502,60 +630,43 @@ body {
   animation: fadeInOut 3s forwards;
 }
 @keyframes fadeInOut {
-  0% { opacity: 0; }
-  10% { opacity: 1; }
-  90% { opacity: 1; }
-  100% { opacity: 0; }
+  0% {
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 
-/* Responsive Layout */
-@media (max-width: 700px) {
-  .left, .right, #achievementsContainer {
-    position: relative;
-    width: 90%;
-    margin: 10px auto;
-    height: auto;
-    flex-direction: column;
-    align-items: center;
-    gap: 5px;
+
+/* responsive */
+
+@media (max-width: 932px) {
+  .upgrade-box {
+    width: 120px;
   }
-  
-  .upgrade-image {
-    width: 30px;
-    animation: bounce 1s infinite;
-  }
-  
-  .upgrade-counter span {
-    font-size: 18px;
-    font-weight: bold;
-    color: #333;
-  }
-  
   .right {
-    position: fixed;
-    top: 0px;
-    right: 5px;
-    width: 220px;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 15px;
-    background: rgba(255, 255, 255, 0.9);
-    padding: 15px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    width: 150px;
   }
-  
-  #achievementsContainer {
-    position: fixed;
-    top: 20px;
-    right: 5px;
-    width: 220px;
-    background: rgba(255, 255, 255, 0.95);
-    padding: 15px;
-    border-radius: 12px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-    z-index: 210;
+  #cookie {
+   padding-top: 130px;
+  }
+  #shop {
+    height: 100px;
+  }
+  #shop h2 {
+    font-size: 15px;
+    font-style: italic;
+  }
+  .left {
+    width: 170px;
+    height: 150px;
+    margin-top: 50px;
   }
 }

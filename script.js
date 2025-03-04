@@ -132,6 +132,7 @@ class Game {
     // Cache DOM elements
     this.cookie = document.getElementById("cookie");
     this.cookieCount = document.getElementById("cookieCount");
+    this.count = document.getElementById("count");
     this.clickPowerDisplay = document.getElementById("clickPower");
     this.cpsDisplay = document.getElementById("cps");
 
@@ -290,6 +291,7 @@ class Game {
   updateDisplay() {
     this.cookieCount.textContent = Math.floor(this.state.cookies);
     this.clickPowerDisplay.textContent = this.state.clickPower;
+    this.count.textContent = Math.floor(this.state.cookies) + " cookies";
     this.clickUpgradeButton.textContent = `Upgrade Click Power (Cost: ${this.upgrades.clickUpgrade.cost})`;
     this.autoClickerButton.textContent = `Buy Auto Clicker (Cost: ${this.upgrades.autoClicker.cost})`;
     this.grandmaButton.textContent = `Buy Grandma's Bakery (Cost: ${this.upgrades.grandma.cost})`;
