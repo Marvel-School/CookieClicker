@@ -191,6 +191,11 @@ class Game {
 
     // Auto-save every 5 minutes
     setInterval(() => this.autoSave(), AUTO_SAVE_INTERVAL);
+
+    // Auto load saved game upon refresh (if available)
+    if (localStorage.getItem("cookieGameSave")) {
+      this.loadGame();
+    }
   }
 
   setupEventListeners() {
@@ -556,34 +561,35 @@ class Game {
       }
       const savedGame = JSON.parse(savedStr);
       this.log("Saved game data loaded:", savedGame);
-      // Load main state and upgrades...
+      
+      // Load main state
       this.state = savedGame.state || this.state;
-      if (typeof savedGame.upgrades === "object") {
-        this.upgrades = { ...this.upgrades, ...savedGame.upgrades };
-        if (
-          !this.upgrades.grandma ||
-          typeof this.upgrades.grandma !== "object"
-        ) {
-          this.upgrades.grandma = {
-            cost: 100,
-            count: 0,
-            multiplier: 1.5,
-            action: "increment",
-            extra: "updateGrandmasVisual",
-          };
+      
+      // Reinitialize upgrade instances from saved data to restore methods
+      const savedUpgrades = savedGame.upgrades || {};
+      this.upgrades = {
+        clickUpgrade: new StandardUpgrade(10, 3, "multiplyClickPower"),
+        autoClicker: new StandardUpgrade(50, 1.5, "increment"),
+        grandma: new StandardUpgrade(100, 1.5, "increment", 0, "updateGrandmasVisual"),
+        farm: new StandardUpgrade(500, 1.5, "increment"),
+        luckyClick: new StandardUpgrade(20, 1, "lucky")
+      };
+      for (const key in savedUpgrades) {
+        if (this.upgrades[key]) {
+          this.upgrades[key].cost = savedUpgrades[key].cost;
+          this.upgrades[key].count = savedUpgrades[key].count;
         }
-        this.upgrades.grandma.count =
-          parseInt(this.upgrades.grandma.count, 10) || 0;
       }
-      if (typeof savedGame.shopUpgrades === "object") {
-        this.shopUpgrades = { ...this.shopUpgrades, ...savedGame.shopUpgrades };
+      
+      // Reinitialize shop upgrade instances
+      const savedShopUpgrades = savedGame.shopUpgrades || {};
+      this.shopUpgrades = {
+        timeAccelerator: new ShopUpgrade(300, 2, "timeAccelerator", 300)
+      };
+      if (savedShopUpgrades.timeAccelerator) {
+        this.shopUpgrades.timeAccelerator.cost = savedShopUpgrades.timeAccelerator.cost;
       }
-      if (
-        typeof this.state.grandmas === "number" &&
-        this.state.grandmas > (this.upgrades.grandma.count || 0)
-      ) {
-        this.upgrades.grandma.count = this.state.grandmas;
-      }
+      
       this.achievements = savedGame.achievements || [];
       this.soundOn = savedGame.soundOn !== undefined ? savedGame.soundOn : true;
 
