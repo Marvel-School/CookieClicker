@@ -571,11 +571,17 @@ class Game {
         this.upgrades = {
           clickUpgrade: new StandardUpgrade(10, 3, "multiplyClickPower"),
           autoClicker: new StandardUpgrade(50, 1.5, "increment"),
-          grandma: new StandardUpgrade(100, 1.5, "increment", 0, "updateGrandmasVisual"),
+          grandma: new StandardUpgrade(
+            100,
+            1.5,
+            "increment",
+            0,
+            "updateGrandmasVisual"
+          ),
           farm: new StandardUpgrade(500, 1.5, "increment"),
-          luckyClick: new StandardUpgrade(20, 1, "lucky")
+          luckyClick: new StandardUpgrade(20, 1, "lucky"),
         };
-        Object.keys(savedGame.upgrades).forEach(key => {
+        Object.keys(savedGame.upgrades).forEach((key) => {
           if (savedGame.upgrades[key].cost !== undefined) {
             this.upgrades[key].cost = savedGame.upgrades[key].cost;
           }
@@ -588,9 +594,9 @@ class Game {
       // Reinitialize shopUpgrades similarly
       if (typeof savedGame.shopUpgrades === "object") {
         this.shopUpgrades = {
-          timeAccelerator: new ShopUpgrade(300, 2, "timeAccelerator", 300)
+          timeAccelerator: new ShopUpgrade(300, 2, "timeAccelerator", 300),
         };
-        Object.keys(savedGame.shopUpgrades).forEach(key => {
+        Object.keys(savedGame.shopUpgrades).forEach((key) => {
           if (savedGame.shopUpgrades[key].cost !== undefined) {
             this.shopUpgrades[key].cost = savedGame.shopUpgrades[key].cost;
           }
@@ -655,45 +661,48 @@ class Game {
 
 const game = new Game();
 
-
+// close dropdown achievement
 document.addEventListener("DOMContentLoaded", function () {
   let achieveWrapper = document.getElementById("achievementsWrapper");
   let dropdownContent = document.getElementById("achievementsContainer");
 
-  // if (!achieveWrapper || !dropdownContent) {
-  //   return;
-  // }
-  
+  let settings_container = document.getElementById("settingsContainer");
+  let settings_menu = document.getElementById("settingsMenu");
 
-  let dropdownContentDisplay = window.getComputedStyle(document.getElementById("achievementsContainer"),null).getPropertyValue('display')
-   
-  
+  // Zorg ervoor dat de dropdowns gesloten starten
+  dropdownContent.style.display = "none";
+ 
+  settings_menu.style.display = "none";
 
   achieveWrapper.addEventListener("click", function (event) {
-    // event.stopPropagation(); 
-    // prompt(dropdownContentDisplay)
-    if (dropdownContentDisplay == "none") {
-      dropdownContent.style.display = "block";
-      return
-    }
-    console.log("first")
-    dropdownContent.style.display = "none";
-    
-    // dropdownContent.classList.toggle("show");
-    // console.error("goede gezien!");
+    event.stopPropagation(); // Voorkomt dat document-click event dit meteen sluit
 
+    if (dropdownContent.style.display === "none") {
+      dropdownContent.style.display = "none";
+    } else {
+      dropdownContent.style.display = "block";
+    }
   });
 
-  // document.addEventListener("click", function (event) {
-  //   if (!achieveWrapper.contains(event.target)) {
-  //     dropdownContent.classList.remove("show");
-  //     console.error("error!");
-     
-  //   }
-  // });
-  achieveWrapper.addEventListener("blur", function (event) {
-    dropdownContent.style.display = "none";
+  settings_container.addEventListener("click", function (event) {
+    event.stopPropagation();
+
+    if (settings_menu.style.display === "none") {
+      settings_menu.style.display = "none";
+    } else {
+      settings_menu.style.display = "block";
+    }
+  });
+
+  // Sluit dropdowns wanneer ergens anders op de pagina wordt geklikt
+  document.addEventListener("click", function (event) {
+    if (dropdownContent.style.display === "block") {
+      dropdownContent.style.display = "none";
+      console.log("close");
+    }
+    if (settings_menu.style.display === "block") {
+      settings_menu.style.display = "none";
+      console.log("close");
+    }
   });
 });
-
-
