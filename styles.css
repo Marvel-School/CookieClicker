@@ -88,7 +88,9 @@ body {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
   z-index: 210;
 }
-
+.show{
+  display: block;
+}
 /* Achievements Icon Wrapper */
 #achievementsWrapper {
   position: fixed;
@@ -103,6 +105,7 @@ body {
   position: relative;
   z-index: 9999;
 }
+
 /* Background and Center Section */
 .background {
   position: relative;
