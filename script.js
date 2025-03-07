@@ -248,9 +248,10 @@ class Game {
       });
     });
 
-    // Settings Panel: Toggle display on settings icon click
-    this.settingsIcon.addEventListener("click", () => {
-      this.settingsMenu.style.display =
+    // Settings Panel: Toggle display on settings icon click with improved handling
+    this.settingsIcon.addEventListener("click", (e) => {
+      e.stopPropagation(); // Prevent document click from immediately closing it
+      this.settingsMenu.style.display = 
         this.settingsMenu.style.display === "block" ? "none" : "block";
       this.log(
         `Settings menu ${
@@ -258,6 +259,19 @@ class Game {
         }`
       );
     });
+    
+    // Prevent clicks inside the settings menu from closing it
+    this.settingsMenu.addEventListener("click", (e) => {
+      e.stopPropagation();
+    });
+    
+    // Add click-outside handling for settings menu
+    document.addEventListener("click", () => {
+      if (this.settingsMenu.style.display === "block") {
+        this.settingsMenu.style.display = "none";
+      }
+    });
+
     // Add hover sound to settings control buttons
     [
       this.saveGameButton,
@@ -276,25 +290,31 @@ class Game {
       this.log("Sound toggled:", this.soundOn);
     });
 
-    // Achievements Icon: Toggle achievements container
+    // Fix achievements icon click handler
     const achievementsIcon = document.getElementById("achievementsIcon");
-    if (achievementsIcon) {
-      achievementsIcon.style.zIndex = "9999"; // ensure icon is on top
-      achievementsIcon.addEventListener("click", () => {
-        this.achievementsContainer.style.display =
-          this.achievementsContainer.style.display === "block"
-            ? "none"
-            : "block";
-        this.log(
-          `Achievements menu ${
-            this.achievementsContainer.style.display === "block"
-              ? "shown"
-              : "hidden"
-          }`
-        );
+    const achievementsContainer = document.getElementById("achievementsContainer");
+    
+    if (achievementsIcon && achievementsContainer) {
+      // Simplified toggle logic
+      achievementsIcon.addEventListener("click", (e) => {
+        e.stopPropagation(); // Prevent closing when clicking the icon
+        const isVisible = achievementsContainer.style.display === "block";
+        achievementsContainer.style.display = isVisible ? "none" : "block";
+      });
+      
+      // Prevent clicks inside the achievements container from closing it
+      achievementsContainer.addEventListener("click", (e) => {
+        e.stopPropagation();
+      });
+      
+      // Close achievements panel when clicking elsewhere
+      document.addEventListener("click", () => {
+        if (achievementsContainer.style.display === "block") {
+          achievementsContainer.style.display = "none";
+        }
       });
     } else {
-      this.log("ERROR: achievementsIcon not found!");
+      this.log("ERROR: achievementsIcon or achievementsContainer not found!");
     }
 
     // Cookie click handler
