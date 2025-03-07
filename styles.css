@@ -29,12 +29,19 @@ body {
   z-index: 100;
 }
 
+.left .button {
+  display: inline-block;
+  padding: 0;
+  margin: 0;
+}
+
 .left button:disabled {
-  background: #777 !important;
+  background: #ccc !important;  /* changed grey background */
   color: #fff !important;
   box-shadow: none !important;
   transform: none !important;
   cursor: not-allowed !important;
+  /* Removed forced padding override */
 }
 
 .left button {
@@ -118,21 +125,23 @@ body {
 }
 .background .set {
   position: absolute;
-  width: 50%;
-  height: 100vh;
+  width: 40%;
+  height: 80vh;
   top: 0;
-  left: 25%;
+  left: 30%;
   pointer-events: none;
-  filter: brightness(50%);
+  filter: brightness(35%);
   overflow: hidden;
+  will-change: transform;
 }
 .background .set div {
   position: absolute;
   display: block;
 }
 .background .set div img {
-  width: 30px;
-  height: 50px;
+  width: 20px;
+  height: 30px;
+  will-change: transform;
 }
 .background .set div:nth-child(1) {
   left: 10%;
@@ -285,26 +294,18 @@ section .set div:nth-child(25) {
   0% {
     opacity: 0;
     top: -10%;
-    transform: translateX(20px) rotate(0deg);
-  }
-  10% {
-    opacity: 1;
+    transform: translateX(20px) rotate(0deg) translateZ(0);
   }
   20% {
-    transform: translateX(-20px) rotate(45deg);
-  }
-  40% {
-    transform: translateX(-20px) rotate(90deg);
-  }
-  60% {
-    transform: translateX(20px) rotate(180deg);
+    opacity: 0.8;
   }
   80% {
-    transform: translateX(-20px) rotate(180deg);
+    opacity: 0.8;
   }
   100% {
     top: 110%;
-    transform: translateX(-20px) rotate(225deg);
+    opacity: 0;
+    transform: translateX(-20px) rotate(225deg) translateZ(0);
   }
 }
 
@@ -319,6 +320,8 @@ section .set div:nth-child(25) {
   height: 250px;
   cursor: pointer;
   transition: transform 0.1s ease;
+  will-change: transform;
+  transform: translateZ(0);
 }
 #cookie:hover {
   transform: scale(1.05);
@@ -431,6 +434,8 @@ section .set div:nth-child(25) {
   cursor: pointer;
   margin-bottom: 4px;
   transition: transform 0.2s ease;
+  will-change: transform;
+  transform: translateZ(0);
 }
 .shop-item img.shop-item-image:hover {
   transform: scale(1.05);
@@ -599,17 +604,12 @@ section .set div:nth-child(25) {
 .upgrade-image {
   width: 30px;
   animation: bounce 1s infinite;
+  will-change: transform;
+  transform: translateZ(0);
 }
 @keyframes bounce {
-  0% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-5px);
-  }
-  100% {
-    transform: translateY(0);
-  }
+  0%, 100% { transform: translateY(0) translateZ(0); }
+  50% { transform: translateY(-5px) translateZ(0); }
 }
 .upgrade-counter span {
   font-size: 18px;
@@ -709,4 +709,102 @@ section .set div:nth-child(25) {
   transition: transform 0.2s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
-/* ...existing hover, active, focus, and disabled styles unchanged... */
+/* Ensure consistent box-sizing for upgrade buttons and their inner span */
+button.upgrade, button.upgrade .button_top {
+  box-sizing: border-box;
+}
+
+/* Override upgrade button styling when disabled */
+button.upgrade:disabled {
+  background: #ccc !important;
+  border: 5px solid #ccc !important;
+  color: #fff !important;
+  pointer-events: none;
+  /* Optional: Reset custom variables if used */
+  --button_outline_color: #ccc;
+}
+button.upgrade:disabled .button_top {
+  border: 5px solid #ccc !important;
+  color: #fff !important;
+}
+
+/* Force consistent box-sizing and disable default appearance */
+button.upgrade,
+button.upgrade .button_top {
+  box-sizing: border-box;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+/* Remove duplicate disabled button overrides and add a single minimal override */
+button.upgrade:disabled,
+button.upgrade:disabled .button_top {
+  background: #ccc !important;
+  border-color: #ccc !important;
+  color: #fff !important;
+  pointer-events: none !important; /* prevent clicking */
+}
+
+/* Ensure all upgrade buttons use consistent box-sizing */
+.upgrade, .upgrade .button_top {
+  box-sizing: border-box;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+/* Unified disabled state override: only override colors (no change in dimensions) */
+button.upgrade:disabled,
+button.upgrade:disabled .button_top {
+  background: linear-gradient(145deg, #aaaaaa, #888888) !important;
+  border-color: #aaaaaa !important;
+  color: #fff !important;
+  pointer-events: none !important;
+}
+
+/* Remove any duplicate or extra disabled rules below */
+
+/* ...existing code... */
+.upgrade {
+  /* ...existing layout properties... */
+  background: linear-gradient(145deg, #2980b9, #3498db);
+}
+.upgrade .button_top {
+  /* ...existing layout properties... */
+  border: 5px solid var(--button_outline_color);
+  color: var(--button_outline_color);
+}
+
+/* Disabled state: only change the colors */
+button.upgrade:disabled,
+button.upgrade:disabled .button_top {
+  background: linear-gradient(145deg, #aaaaaa, #888888) !important;
+  border-color: #aaaaaa !important;
+  color: #fff !important;
+  pointer-events: none !important;
+}
+
+/* CLEAN SLATE: Remove all previous disabled button styling */
+/* Keep only these consolidated rules that preserve dimensions */
+button.upgrade:disabled {
+  background: #ccc !important;
+  color: #fff !important;
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+  /* Don't add any border that would change dimensions */
+  border: none !important;
+  /* Only modify the color variable */
+  --button_outline_color: #ccc;
+}
+
+button.upgrade:disabled .button_top {
+  /* Only change colors, keep the same border width */
+  border-color: #ccc !important; 
+  background: #eee !important;
+  color: #999 !important;
+}
+
+/* Remove all other duplicate disabled styling rules */
+
+/* ...existing code... */
