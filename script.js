@@ -2,79 +2,104 @@ const PARTICLE_SIZE = 20;
 const PARTICLE_LIFETIME = 2000;
 const AUTO_SAVE_INTERVAL = 60000; // 1 minutes
 
-// NEW: Base Upgrade Class
+// Upgrade classes:
+
 class Upgrade {
-  constructor(cost, multiplier, action) {
+  // Modified constructor: now accepts displayPrefix and sets it.
+  constructor(cost, multiplier, displayPrefix, extra = null) {
     this.cost = cost;
     this.multiplier = multiplier;
-    this.action = action;
-  }
-}
-
-// NEW: StandardUpgrade extends Upgrade
-class StandardUpgrade extends Upgrade {
-  constructor(cost, multiplier, action, count = 0, extra = null) {
-    super(cost, multiplier, action);
-    this.count = count;
+    this.displayPrefix = displayPrefix;
     this.extra = extra;
   }
+  // New: returns text for button display.
+  getDisplayText() {
+    return `${this.displayPrefix} (Cost: ${this.cost})`;
+  }
+  canPurchase(game) {
+    return game.state.cookies >= this.cost;
+  }
+  updateCost() {
+    this.cost = Math.floor(this.cost * this.multiplier);
+  }
   purchase(game) {
-    if (game.state.cookies >= this.cost) {
-      game.state.cookies -= this.cost;
-      switch (this.action) {
-        case "multiplyClickPower":
-          game.state.clickPower *= 2;
-          break;
-        case "increment":
-          this.count++;
-          break;
-        case "lucky":
-          const bonus = Math.floor(Math.random() * 10) + 1;
-          game.state.cookies += bonus;
-          game.showFloatingNumber(bonus, true);
-          break;
-        default:
-          break;
-      }
-      this.cost = Math.floor(this.cost * this.multiplier);
-      if (this.extra && typeof game[this.extra] === "function") {
-        game[this.extra]();
-      }
-      game.updateDisplay();
-    } else {
+    if (!this.canPurchase(game)) {
       game.log(
-        `Not enough cookies for ${this.action}. Cost: ${this.cost}, have: ${game.state.cookies}`
+        `Not enough cookies for ${this.constructor.name}. Cost: ${this.cost}, have: ${game.state.cookies}`
       );
+      return;
     }
+    game.state.cookies -= this.cost;
+    this.executePurchase(game);
+    this.updateCost();
+    if (this.extra && typeof game[this.extra] === "function") {
+      game[this.extra]();
+    }
+    game.updateDisplay();
+  }
+  // To be defined in subclasses.
+  executePurchase(game) {
+    // ...override in subclass...
   }
 }
 
-// NEW: ShopUpgrade extends Upgrade
+class ClickMultiplierUpgrade extends Upgrade {
+  constructor(cost, multiplier, displayPrefix) {
+    super(cost, multiplier, displayPrefix);
+  }
+  executePurchase(game) {
+    game.state.clickPower *= 2;
+  }
+}
+
+class IncrementUpgrade extends Upgrade {
+  constructor(cost, multiplier, displayPrefix, extra = null) {
+    super(cost, multiplier, displayPrefix, extra);
+    this.count = 0;
+  }
+  executePurchase(game) {
+    this.count++;
+  }
+}
+
+class LuckyUpgrade extends Upgrade {
+  constructor(cost, multiplier, displayPrefix) {
+    super(cost, multiplier, displayPrefix);
+  }
+  executePurchase(game) {
+    const bonus = Math.floor(Math.random() * 10) + 1;
+    game.state.cookies += bonus;
+    game.showFloatingNumber(bonus, true);
+  }
+}
+
+// ShopUpgrade using similar pattern:
 class ShopUpgrade extends Upgrade {
-  constructor(cost, multiplier, extra = null, baseCost) {
-    super(cost, multiplier, null);
+  constructor(cost, multiplier, displayPrefix, extra = null, baseCost) {
+    super(cost, multiplier, displayPrefix, extra);
     this.baseCost = baseCost;
-    this.extra = extra;
   }
+  // Override purchase entirely (different cost update)
   purchase(game) {
-    if (game.state.cookies >= this.cost) {
-      game.state.cookies -= this.cost;
-      if (this.extra === "timeAccelerator") {
-        game.activateTimeAccelerator(this);
-      }
-      this.cost = Math.floor(this.cost * 1.2);
-      const costSpan = document.querySelector(
-        `[data-upgrade="timeAccelerator"] .item-cost span`
-      );
-      if (costSpan) costSpan.textContent = this.cost;
-      game.updateDisplay();
-      game.showToast("timeAccelerator purchased!");
-    } else {
+    if (!this.canPurchase(game)) {
       game.log(
-        `Not enough cookies for timeAccelerator. Need: ${this.cost}, have: ${game.state.cookies}`
+        `Not enough cookies for ${this.extra}. Cost: ${this.cost}, have: ${game.state.cookies}`
       );
-      game.showToast(`Not enough cookies for timeAccelerator`);
+      game.showToast(`Not enough cookies for ${this.extra}`);
+      return;
     }
+    game.state.cookies -= this.cost;
+    if (this.extra === "timeAccelerator") {
+      game.activateTimeAccelerator(this);
+    }
+    // Changed 1.2 to use this.multiplier for cost update.
+    this.cost = Math.floor(this.cost * this.multiplier);
+    const costSpan = document.querySelector(
+      `[data-upgrade="timeAccelerator"] .item-cost span`
+    );
+    if (costSpan) costSpan.textContent = this.cost;
+    game.updateDisplay();
+    game.showToast(`${this.extra} purchased!`);
   }
 }
 
@@ -96,23 +121,17 @@ class Game {
       timeAcceleratorEndTime: 0,
     };
 
-    // NEW: Define upgrades using inheritance
+    // Use the new upgrade classes instead of one size–fits–all:
     this.upgrades = {
-      clickUpgrade: new StandardUpgrade(10, 3, "multiplyClickPower"),
-      autoClicker: new StandardUpgrade(50, 1.5, "increment"),
-      grandma: new StandardUpgrade(
-        100,
-        1.5,
-        "increment",
-        0,
-        "updateGrandmasVisual"
-      ),
-      farm: new StandardUpgrade(500, 1.5, "increment"),
-      luckyClick: new StandardUpgrade(20, 1, "lucky"),
+      clickUpgrade: new ClickMultiplierUpgrade(10, 3, "Upgrade Click Power"),
+      autoClicker: new IncrementUpgrade(50, 1.5, "Buy Auto Clicker"),
+      grandma: new IncrementUpgrade(100, 1.5, "Buy Grandma's Bakery", "updateGrandmasVisual"),
+      farm: new IncrementUpgrade(500, 1.5, "Buy Cookie Farm"),
+      luckyClick: new LuckyUpgrade(20, 1, "Lucky Click"),
     };
 
     this.shopUpgrades = {
-      timeAccelerator: new ShopUpgrade(300, 2, "timeAccelerator", 300),
+      timeAccelerator: new ShopUpgrade(300, 2, "Time Accelerator", "timeAccelerator", 300),
     };
 
     // Achievements
@@ -229,9 +248,10 @@ class Game {
       });
     });
 
-    // Settings Panel: Toggle display on settings icon click
-    this.settingsIcon.addEventListener("click", () => {
-      this.settingsMenu.style.display =
+    // Settings Panel: Toggle display on settings icon click with improved handling
+    this.settingsIcon.addEventListener("click", (e) => {
+      e.stopPropagation(); // Prevent document click from immediately closing it
+      this.settingsMenu.style.display = 
         this.settingsMenu.style.display === "block" ? "none" : "block";
       this.log(
         `Settings menu ${
@@ -239,6 +259,19 @@ class Game {
         }`
       );
     });
+    
+    // Prevent clicks inside the settings menu from closing it
+    this.settingsMenu.addEventListener("click", (e) => {
+      e.stopPropagation();
+    });
+    
+    // Add click-outside handling for settings menu
+    document.addEventListener("click", () => {
+      if (this.settingsMenu.style.display === "block") {
+        this.settingsMenu.style.display = "none";
+      }
+    });
+
     // Add hover sound to settings control buttons
     [
       this.saveGameButton,
@@ -257,25 +290,31 @@ class Game {
       this.log("Sound toggled:", this.soundOn);
     });
 
-    // Achievements Icon: Toggle achievements container
+    // Fix achievements icon click handler
     const achievementsIcon = document.getElementById("achievementsIcon");
-    if (achievementsIcon) {
-      achievementsIcon.style.zIndex = "9999"; // ensure icon is on top
-      achievementsIcon.addEventListener("click", () => {
-        this.achievementsContainer.style.display =
-          this.achievementsContainer.style.display === "block"
-            ? "none"
-            : "block";
-        this.log(
-          `Achievements menu ${
-            this.achievementsContainer.style.display === "block"
-              ? "shown"
-              : "hidden"
-          }`
-        );
+    const achievementsContainer = document.getElementById("achievementsContainer");
+    
+    if (achievementsIcon && achievementsContainer) {
+      // Simplified toggle logic
+      achievementsIcon.addEventListener("click", (e) => {
+        e.stopPropagation(); // Prevent closing when clicking the icon
+        const isVisible = achievementsContainer.style.display === "block";
+        achievementsContainer.style.display = isVisible ? "none" : "block";
+      });
+      
+      // Prevent clicks inside the achievements container from closing it
+      achievementsContainer.addEventListener("click", (e) => {
+        e.stopPropagation();
+      });
+      
+      // Close achievements panel when clicking elsewhere
+      document.addEventListener("click", () => {
+        if (achievementsContainer.style.display === "block") {
+          achievementsContainer.style.display = "none";
+        }
       });
     } else {
-      this.log("ERROR: achievementsIcon not found!");
+      this.log("ERROR: achievementsIcon or achievementsContainer not found!");
     }
 
     // Cookie click handler
@@ -337,9 +376,15 @@ class Game {
 
   startGameLoop() {
     let lastTime = performance.now();
+    let lastUpdateTime = 0;
+    const UPDATE_INTERVAL = 100; // Update display at most every 100ms
+    
     const loop = (now) => {
+      // Calculate accurate delta time
       const delta = (now - lastTime) / 1000;
       lastTime = now;
+      
+      // Core cookie calculation logic
       const autoClickers = this.upgrades.autoClicker.count || 0;
       const grandmas = this.upgrades.grandma.count || 0;
       const farms = this.upgrades.farm.count || 0;
@@ -347,58 +392,69 @@ class Game {
       const timeAccelMult = this.state.timeAcceleratorActive
         ? this.state.timeAcceleratorMultiplier
         : 1;
+      
+      // Update cookie count
       this.state.cookies += cps * timeAccelMult * delta;
-      this.updateDisplay();
+      
+      // Throttle visual updates to reduce DOM operations
+      if (now - lastUpdateTime > UPDATE_INTERVAL) {
+        this.updateDisplay();
+        lastUpdateTime = now;
+      }
+      
       requestAnimationFrame(loop);
     };
+    
     requestAnimationFrame(loop);
   }
 
   updateDisplay() {
-    this.cookieCount.textContent = Math.floor(this.state.cookies);
+    // Cache values to avoid layout thrashing
+    const cookies = Math.floor(this.state.cookies);
+    
+    // Group updates to minimize reflows
+    this.cookieCount.textContent = cookies;
     this.clickPowerDisplay.textContent = this.state.clickPower;
-    this.count.textContent = Math.floor(this.state.cookies) + " cookies";
-
-    {
-      let text;
-      document.querySelectorAll("#clickUpgrade").forEach((btn) => {
-        text = `Upgrade Click Power (Cost: ${this.upgrades.clickUpgrade.cost})`;
-        btn.dataset.content = text;
-        btn.querySelector(".button_top").textContent = text;
+    this.count.textContent = cookies + " cookies";
+  
+    // Cache & update button states in batch
+    const hasCookies = {};
+    Object.keys(this.upgrades).forEach(key => {
+      hasCookies[key] = cookies >= this.upgrades[key].cost;
+    });
+    
+    // Update button texts (optimized to reduce DOM operations)
+    Object.keys(this.upgrades).forEach((key) => {
+      const buttons = document.querySelectorAll(`button#${key}`);
+      
+      // Skip if no buttons found or disabled state is already correct
+      if (!buttons.length) return;
+      
+      const text = this.upgrades[key].getDisplayText();
+      const disabled = !hasCookies[key];
+      
+      buttons.forEach((btn) => {
+        // Only update if changed
+        if (btn.dataset.content !== text) {
+          btn.dataset.content = text;
+          const btnTop = btn.querySelector(".button_top");
+          if (btnTop) btnTop.textContent = text;
+        }
+        
+        // Only update disabled state if it's changed
+        if (btn.disabled !== disabled) {
+          btn.disabled = disabled;
+        }
       });
-
-      document.querySelectorAll("#autoClicker").forEach((btn) => {
-        text = `Buy Auto Clicker (Cost: ${this.upgrades.autoClicker.cost})`;
-        btn.dataset.content = text;
-        btn.querySelector(".button_top").textContent = text;
-      });
-
-      document.querySelectorAll("#grandma").forEach((btn) => {
-        text = `Buy Grandma's Bakery (Cost: ${this.upgrades.grandma.cost})`;
-        btn.dataset.content = text;
-        btn.querySelector(".button_top").textContent = text;
-      });
-
-      document.querySelectorAll("#farm").forEach((btn) => {
-        text = `Buy Cookie Farm (Cost: ${this.upgrades.farm.cost})`;
-        btn.dataset.content = text;
-        btn.querySelector(".button_top").textContent = text;
-      });
-
-      document.querySelectorAll("#luckyClick").forEach((btn) => {
-        text = `Lucky Click (Cost: ${this.upgrades.luckyClick.cost})`;
-        btn.dataset.content = text;
-        btn.querySelector(".button_top").textContent = text;
-      });
-    }
-
+    });
+    
     const timeAccelEl = document.querySelector(
       `[data-upgrade="timeAccelerator"] .item-cost span`
     );
     if (timeAccelEl && this.shopUpgrades.timeAccelerator) {
       timeAccelEl.textContent = this.shopUpgrades.timeAccelerator.cost;
     }
-
+  
     this.clickUpgradeButton.disabled =
       this.state.cookies < this.upgrades.clickUpgrade.cost;
     this.autoClickerButton.disabled =
@@ -408,13 +464,13 @@ class Game {
     this.farmButton.disabled = this.state.cookies < this.upgrades.farm.cost;
     this.luckyClickButton.disabled =
       this.state.cookies < this.upgrades.luckyClick.cost;
-
+  
     const autoClickers = this.upgrades.autoClicker.count || 0;
     const grandmas = this.upgrades.grandma.count || 0;
     const farms = this.upgrades.farm.count || 0;
     const cps = autoClickers * 1 + grandmas * 5 + farms * 10;
     this.cpsDisplay.textContent = Math.floor(cps);
-
+  
     const itemEl = document.querySelector(`[data-upgrade="timeAccelerator"]`);
     const timerSpan = itemEl
       ? itemEl.querySelector(".time-accelerator-timer")
@@ -433,7 +489,7 @@ class Game {
       if (itemEl) itemEl.classList.remove("active");
       if (timerSpan) timerSpan.textContent = "";
     }
-
+  
     this.updateAutoClickersVisual();
     this.updateFarmsVisual();
   }
@@ -451,35 +507,94 @@ class Game {
   }
 
   createConfetti(x, y) {
-    this.log("createConfetti triggered at:", { x, y });
-    const numParticles = 20;
-    const cookieImages = [
-      "image/cookie.png",
-      "image/cookie3.png",
-      "image/cookie4.png",
-      "image/cookie1.png",
-      "image/cookie2.png",
-    ];
-    for (let i = 0; i < numParticles; i++) {
-      const particle = document.createElement("img");
-      const randomIndex = Math.floor(Math.random() * cookieImages.length);
-      particle.src = cookieImages[randomIndex];
-      particle.className = "confetti";
-      particle.style.width = `${PARTICLE_SIZE}px`;
-      particle.style.height = `${PARTICLE_SIZE}px`;
-      particle.style.position = "absolute";
-      particle.style.left = `${x}px`;
-      particle.style.top = `${y}px`;
-      const offsetX = `${(Math.random() * 200 - 100).toFixed(0)}px`;
-      const offsetY = `${(Math.random() * 200 - 100).toFixed(0)}px`;
-      particle.style.setProperty("--x", offsetX);
-      particle.style.setProperty("--y", offsetY);
-      document.body.appendChild(particle);
-      setTimeout(() => {
-        particle.remove();
-        this.log(`Particle ${i} removed`);
-      }, PARTICLE_LIFETIME);
+    // Skip if called too frequently (improved debouncing)
+    const now = Date.now();
+    if (this.lastConfettiTime && now - this.lastConfettiTime < 200) {
+      return;
     }
+    this.lastConfettiTime = now;
+    
+    // Use canvas instead of DOM elements for better performance
+    if (!this.confettiCanvas) {
+      this.confettiCanvas = document.createElement('canvas');
+      this.confettiCanvas.width = window.innerWidth;
+      this.confettiCanvas.height = window.innerHeight;
+      this.confettiCanvas.style.position = 'fixed';
+      this.confettiCanvas.style.top = '0';
+      this.confettiCanvas.style.left = '0';
+      this.confettiCanvas.style.pointerEvents = 'none';
+      this.confettiCanvas.style.zIndex = '999999';
+      document.body.appendChild(this.confettiCanvas);
+      this.confettiCtx = this.confettiCanvas.getContext('2d');
+      
+      // Handle resize events
+      window.addEventListener('resize', () => {
+        this.confettiCanvas.width = window.innerWidth;
+        this.confettiCanvas.height = window.innerHeight;
+      });
+    }
+  
+    // Create particles
+    const numParticles = 10;
+    const particles = [];
+    
+    // Create particle objects (not DOM elements)
+    for (let i = 0; i < numParticles; i++) {
+      particles.push({
+        x: x,
+        y: y,
+        size: PARTICLE_SIZE,
+        color: ['#ff6b6b', '#48dbfb', '#feca57', '#1dd1a1', '#ff9ff3'][Math.floor(Math.random() * 5)],
+        speedX: Math.random() * 6 - 3,
+        speedY: Math.random() * -3 - 2,
+        rotation: 0,
+        rotationSpeed: Math.random() * 0.2 - 0.1,
+        opacity: 1,
+        createdAt: now
+      });
+    }
+  
+    // Animation function for canvas rendering
+    const animate = () => {
+      // Clear only the needed part of canvas
+      this.confettiCtx.clearRect(0, 0, this.confettiCanvas.width, this.confettiCanvas.height);
+      
+      // Check if there are any active particles
+      let hasActiveParticles = false;
+  
+      // Update and draw particles
+      for (const particle of particles) {
+        // Calculate lifetime
+        const lifetime = now + PARTICLE_LIFETIME - particle.createdAt;
+        if (lifetime <= 0) continue;
+        
+        hasActiveParticles = true;
+        
+        // Update position
+        particle.x += particle.speedX;
+        particle.y += particle.speedY;
+        particle.speedY += 0.1; // gravity
+        particle.rotation += particle.rotationSpeed;
+        particle.opacity = lifetime / PARTICLE_LIFETIME;
+        
+        // Draw particle
+        this.confettiCtx.save();
+        this.confettiCtx.globalAlpha = particle.opacity;
+        this.confettiCtx.translate(particle.x, particle.y);
+        this.confettiCtx.rotate(particle.rotation);
+        this.confettiCtx.fillStyle = particle.color;
+        this.confettiCtx.fillRect(-particle.size/2, -particle.size/2, particle.size, particle.size);
+        this.confettiCtx.restore();
+      }
+      
+      // Continue animation if particles are still active
+      if (hasActiveParticles) {
+        requestAnimationFrame(animate);
+      }
+    };
+    
+    // Start animation
+    requestAnimationFrame(animate);
   }
 
   updateGrandmasVisual() {
@@ -598,17 +713,11 @@ class Game {
       // Reinitialize upgrades using class constructors and override with saved data
       if (typeof savedGame.upgrades === "object") {
         this.upgrades = {
-          clickUpgrade: new StandardUpgrade(10, 3, "multiplyClickPower"),
-          autoClicker: new StandardUpgrade(50, 1.5, "increment"),
-          grandma: new StandardUpgrade(
-            100,
-            1.5,
-            "increment",
-            0,
-            "updateGrandmasVisual"
-          ),
-          farm: new StandardUpgrade(500, 1.5, "increment"),
-          luckyClick: new StandardUpgrade(20, 1, "lucky"),
+          clickUpgrade: new ClickMultiplierUpgrade(10, 3, "Upgrade Click Power"),
+          autoClicker: new IncrementUpgrade(50, 1.5, "Buy Auto Clicker"),
+          grandma: new IncrementUpgrade(100, 1.5, "Buy Grandma's Bakery", "updateGrandmasVisual"),
+          farm: new IncrementUpgrade(500, 1.5, "Buy Cookie Farm"),
+          luckyClick: new LuckyUpgrade(20, 1, "Lucky Click"),
         };
         Object.keys(savedGame.upgrades).forEach((key) => {
           if (savedGame.upgrades[key].cost !== undefined) {
@@ -623,7 +732,7 @@ class Game {
       // Reinitialize shopUpgrades similarly
       if (typeof savedGame.shopUpgrades === "object") {
         this.shopUpgrades = {
-          timeAccelerator: new ShopUpgrade(300, 2, "timeAccelerator", 300),
+          timeAccelerator: new ShopUpgrade(300, 2, "Time Accelerator", "timeAccelerator", 300),
         };
         Object.keys(savedGame.shopUpgrades).forEach((key) => {
           if (savedGame.shopUpgrades[key].cost !== undefined) {
@@ -663,20 +772,14 @@ class Game {
       timeAcceleratorEndTime: 0,
     };
     this.upgrades = {
-      clickUpgrade: new StandardUpgrade(10, 3, "multiplyClickPower"),
-      autoClicker: new StandardUpgrade(50, 1.5, "increment"),
-      grandma: new StandardUpgrade(
-        100,
-        1.5,
-        "increment",
-        0,
-        "updateGrandmasVisual"
-      ),
-      farm: new StandardUpgrade(500, 1.5, "increment"),
-      luckyClick: new StandardUpgrade(20, 1, "lucky"),
+      clickUpgrade: new ClickMultiplierUpgrade(10, 3, "Upgrade Click Power"),
+      autoClicker: new IncrementUpgrade(50, 1.5, "Buy Auto Clicker"),
+      grandma: new IncrementUpgrade(100, 1.5, "Buy Grandma's Bakery", "updateGrandmasVisual"),
+      farm: new IncrementUpgrade(500, 1.5, "Buy Cookie Farm"),
+      luckyClick: new LuckyUpgrade(20, 1, "Lucky Click"),
     };
     this.shopUpgrades = {
-      timeAccelerator: new ShopUpgrade(300, 2, "timeAccelerator", 300),
+      timeAccelerator: new ShopUpgrade(300, 2, "Time Accelerator", "timeAccelerator", 300),
     };
     this.achievements = [];
     this.soundOn = true;
@@ -690,48 +793,21 @@ class Game {
 
 const game = new Game();
 
-// close dropdown achievement
 document.addEventListener("DOMContentLoaded", function () {
   let achieveWrapper = document.getElementById("achievementsWrapper");
   let dropdownContent = document.getElementById("achievementsContainer");
 
-  let settings_container = document.getElementById("settingsContainer");
-  let settings_menu = document.getElementById("settingsMenu");
-
-  // Zorg ervoor dat de dropdowns gesloten starten
-  dropdownContent.style.display = "none";
- 
-  settings_menu.style.display = "none";
-
   achieveWrapper.addEventListener("click", function (event) {
-    event.stopPropagation(); // Voorkomt dat document-click event dit meteen sluit
-
-    if (dropdownContent.style.display === "none") {
-      dropdownContent.style.display = "none";
-    } else {
+    // Compute display dynamically on click.
+    let dropdownContentDisplay = window.getComputedStyle(dropdownContent, null).getPropertyValue("display");
+    if (dropdownContentDisplay === "none") {
       dropdownContent.style.display = "block";
-    }
-  });
-
-  settings_container.addEventListener("click", function (event) {
-    event.stopPropagation();
-
-    if (settings_menu.style.display === "none") {
-      settings_menu.style.display = "none";
     } else {
-      settings_menu.style.display = "block";
+      dropdownContent.style.display = "none";
     }
   });
 
-  // Sluit dropdowns wanneer ergens anders op de pagina wordt geklikt
-  document.addEventListener("click", function (event) {
-    if (dropdownContent.style.display === "block") {
-      dropdownContent.style.display = "none";
-      console.log("close");
-    }
-    if (settings_menu.style.display === "block") {
-      settings_menu.style.display = "none";
-      console.log("close");
-    }
+  achieveWrapper.addEventListener("blur", function (event) {
+    dropdownContent.style.display = "none";
   });
 });
