@@ -200,13 +200,14 @@ class Game {
   }
 
   setupEventListeners() {
-    const leftSection = document.querySelector(".left");
-    leftSection.addEventListener("click", (e) => {
-      if (e.target.matches("button.upgrade")) {
-        this.log("Upgrade button clicked:", e.target.id);
-        this.purchaseStandardUpgrade(e.target.id);
-      }
+    // Add event listeners to every upgrade button:
+    document.querySelectorAll("button.upgrade").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        this.log("Upgrade button clicked:", btn.id);
+        this.purchaseStandardUpgrade(btn.id);
+      });
     });
+
     // Add hover sound to upgrade buttons
     [
       this.clickUpgradeButton,
@@ -357,11 +358,39 @@ class Game {
     this.cookieCount.textContent = Math.floor(this.state.cookies);
     this.clickPowerDisplay.textContent = this.state.clickPower;
     this.count.textContent = Math.floor(this.state.cookies) + " cookies";
-    this.clickUpgradeButton.textContent = `Upgrade Click Power (Cost: ${this.upgrades.clickUpgrade.cost})`;
-    this.autoClickerButton.textContent = `Buy Auto Clicker (Cost: ${this.upgrades.autoClicker.cost})`;
-    this.grandmaButton.textContent = `Buy Grandma's Bakery (Cost: ${this.upgrades.grandma.cost})`;
-    this.farmButton.textContent = `Buy Cookie Farm (Cost: ${this.upgrades.farm.cost})`;
-    this.luckyClickButton.textContent = `Lucky Click (Cost: ${this.upgrades.luckyClick.cost})`;
+
+    {
+      let text;
+      document.querySelectorAll("#clickUpgrade").forEach((btn) => {
+        text = `Upgrade Click Power (Cost: ${this.upgrades.clickUpgrade.cost})`;
+        btn.dataset.content = text;
+        btn.querySelector(".button_top").textContent = text;
+      });
+
+      document.querySelectorAll("#autoClicker").forEach((btn) => {
+        text = `Buy Auto Clicker (Cost: ${this.upgrades.autoClicker.cost})`;
+        btn.dataset.content = text;
+        btn.querySelector(".button_top").textContent = text;
+      });
+
+      document.querySelectorAll("#grandma").forEach((btn) => {
+        text = `Buy Grandma's Bakery (Cost: ${this.upgrades.grandma.cost})`;
+        btn.dataset.content = text;
+        btn.querySelector(".button_top").textContent = text;
+      });
+
+      document.querySelectorAll("#farm").forEach((btn) => {
+        text = `Buy Cookie Farm (Cost: ${this.upgrades.farm.cost})`;
+        btn.dataset.content = text;
+        btn.querySelector(".button_top").textContent = text;
+      });
+
+      document.querySelectorAll("#luckyClick").forEach((btn) => {
+        text = `Lucky Click (Cost: ${this.upgrades.luckyClick.cost})`;
+        btn.dataset.content = text;
+        btn.querySelector(".button_top").textContent = text;
+      });
+    }
 
     const timeAccelEl = document.querySelector(
       `[data-upgrade="timeAccelerator"] .item-cost span`

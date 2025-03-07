@@ -40,10 +40,9 @@ body {
 .left button {
   background: linear-gradient(145deg, #2980b9, #3498db);
   color: #fff;
-  font-size: 18px;
-  font-weight: 500;
-  padding: 14px;
-  width: 100%;
+  font-size: 18px;     /* reduced font size */
+  padding: 10px;        /* reduced padding */
+  width: auto;         /* removed full width */
   border: none;
   border-radius: 12px;
   cursor: pointer;
@@ -675,3 +674,39 @@ section .set div:nth-child(25) {
     margin-top: 50px;
   }
 }
+
+/* Uiverse.io Button styling for upgrade buttons - Even Further Reduced Size */
+.upgrade {
+  --button_radius: 0.75em;
+  --button_color: #e0efff;
+  --button_outline_color: #0056b3;
+  --hover_offset: 4px;
+  --active_offset: 2px;
+  --shadow_color: rgba(0, 0, 0, 0.5);
+  --glitch_offset: 2px;
+
+  font-size: 8px; /* further reduced font size */
+  font-weight: bold;
+  border: none;
+  width: 60px; /* further reduced width */
+  border-radius: var(--button_radius);
+  background: var(--button_outline_color);
+  position: relative;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.23, 1, 0.32, 1);
+  overflow: hidden;
+}
+
+.upgrade .button_top {
+  display: block;
+  box-sizing: border-box;
+  border: 5px solid var(--button_outline_color);
+  border-radius: var(--button_radius);
+  padding: 0.2em 0.3em; /* further reduced padding */
+  background: var(--button_color);
+  color: var(--button_outline_color);
+  transform: translateY(-0.2em);
+  transition: transform 0.2s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* ...existing hover, active, focus, and disabled styles unchanged... */
