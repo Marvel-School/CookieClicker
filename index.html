@@ -2,47 +2,92 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Cookie Clicker</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title id="count">Cookie Clicker</title>
     <link rel="icon" type="image/png" href="image/cookie.png" />
-    <!-- Import Google Font for modern typography -->
-    <link
-      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
-      rel="stylesheet"
-    />
     <link rel="stylesheet" href="styles.css" />
+    <link rel="preload" href="image/cookie.png" as="image" />
+    <link rel="preload" href="sounds/click.mp3" as="audio" />
   </head>
   <body>
     <!-- LEFT Section: Upgrade Buttons -->
     <section class="left">
-      <button class="upgrade" id="clickUpgrade">
-        Upgrade Click Power (Cost: 10)
-      </button>
-      <button class="upgrade" id="autoClicker">
-        Buy Auto Clicker (Cost: 50)
-      </button>
-      <button class="upgrade" id="grandma">
-        Buy Grandma's Bakery (Cost: 100)
-      </button>
-      <button class="upgrade" id="farm">
-        Buy Cookie Farm (Cost: 500)
-      </button>
-      <button class="upgrade" id="luckyClick">
-        Lucky Click (Cost: 20)
-      </button>
+      <div class="button">
+        <button id="clickUpgrade" type="button" class="upgrade" data-content="Upgrade Click Power (Cost: 10)">
+          <span class="button_top">Upgrade Click Power (Cost: 10)</span>
+        </button>
+      </div>
+      <div class="button">
+        <button id="autoClicker" type="button" class="upgrade" data-content="Buy Auto Clicker (Cost: 50)">
+          <span class="button_top">Buy Auto Clicker (Cost: 50)</span>
+        </button>
+      </div>
+      <div class="button">
+        <button id="grandma" type="button" class="upgrade" data-content="Buy Grandma's Bakery (Cost: 100)">
+          <span class="button_top">Buy Grandma's Bakery (Cost: 100)</span>
+        </button>
+      </div>
+      <div class="button">
+        <button id="farm" type="button" class="upgrade" data-content="Buy Cookie Farm (Cost: 500)">
+          <span class="button_top">Buy Cookie Farm (Cost: 500)</span>
+        </button>
+      </div>
+      <div class="button">
+        <button id="luckyClick" type="button" class="upgrade" data-content="Lucky Click (Cost: 20)">
+          <span class="button_top">Lucky Click (Cost: 20)</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ACHIEVEMENTS Section: Toggled via the Achievements Icon -->
+    <div id="achievementsWrapper">
+      <img id="achievementsIcon" src="image/achievements.png" alt="Achievements Icon" aria-label="Show Achievements" />
+      <section id="achievementsContainer">
+        <div class="achievements-header">
+          <span class="trophy-icon">🏆</span>
+          <h2>Achievements</h2>
+        </div>
+        <div class="achievements-content">
+          <ul id="achievementsList"></ul>
+        </div>
+      </section>
+    </div>
+
+    <!-- SHOP Section: Special Items (Top Left) -->
+    <section id="shop">
+      <h2>Shop</h2>
+      <!-- Time Accelerator Shop Item -->
+      <div class="shop-item" data-upgrade="timeAccelerator">
+        <img src="image/timeaccelerator.png" alt="Time Accelerator" class="shop-item-image" />
+        <span class="item-cost">Cost: <span>300</span></span>
+        <!-- Tooltip Speech Bubble for item description -->
+        <span class="item-desc">
+          Temporarily boosts cookie production x2 for 2-5 minutes based on cost.
+        </span>
+        <!-- Countdown timer when active -->
+        <span class="time-accelerator-timer"></span>
+      </div>
     </section>
 
     <!-- CENTER Section: Background, Stats, and Cookie -->
     <section class="background">
       <!-- Animated Background Decoration -->
       <div class="set">
-        <div><img src="image/cookie1.png" alt="decorative cookie"></div>
-        <div><img src="image/cookie3.png" alt="decorative cookie"></div>
-        <div><img src="image/cookie4.png" alt="decorative cookie"></div>
-        <div><img src="image/cookie1.png" alt="decorative cookie"></div>
-        <div><img src="image/cookie3.png" alt="decorative cookie"></div>
-        <!-- Add more decorative elements as desired -->
+        <div><img src="image/cookie1.png" alt="decorative cookie" /></div>
+        <div><img src="image/cookie3.png" alt="decorative cookie" /></div>
+        <div><img src="image/cookie4.png" alt="decorative cookie" /></div>
+        <div><img src="image/cookie1.png" alt="decorative cookie" /></div>
+        <div><img src="image/cookie3.png" alt="decorative cookie" /></div>
+        <div><img src="image/cookie4.png" alt="decorative cookie" /></div>
+        <div><img src="image/cookie1.png" alt="decorative cookie" /></div>
+        <div><img src="image/cookie3.png" alt="decorative cookie" /></div>
+        <div><img src="image/cookie4.png" alt="decorative cookie" /></div>
+        <div><img src="image/cookie1.png" alt="decorative cookie" /></div>
+        <div><img src="image/cookie3.png" alt="decorative cookie" /></div>
+        <div><img src="image/cookie4.png" alt="decorative cookie" /></div>
       </div>
+
+      <!-- CENTER Section: Background, Stats, and Cookie -->
       <div class="center">
         <div class="stats">
           <h1>Cookies: <span id="cookieCount">0</span></h1>
@@ -51,63 +96,64 @@
         </div>
         <img id="cookie" src="image/cookie.png" alt="Cookie" />
       </div>
+
+      <!-- RIGHT Section: Upgrade Visualizations Only -->
+      <section class="right">
+        <div id="autoClickersBox" class="upgrade-box">
+          <div class="upgrade-progress">
+            <div
+              id="autoClickersProgressBar"
+              class="upgrade-progress-bar"
+            ></div>
+          </div>
+          <div class="upgrade-counter">
+            <img
+              src="image/hand.png"
+              alt="Auto Clicker"
+              class="upgrade-image"
+            />
+            <span id="autoClickersCountVisual">0</span>
+          </div>
+        </div>
+        <div id="farmsBox" class="upgrade-box">
+          <div class="upgrade-progress">
+            <div id="farmsProgressBar" class="upgrade-progress-bar"></div>
+          </div>
+          <div class="upgrade-counter">
+            <img src="image/farm.png" alt="Cookie Farm" class="upgrade-image" />
+            <span id="farmsCountVisual">0</span>
+          </div>
+        </div>
+        <div id="grandmasBox" class="upgrade-box">
+          <div class="upgrade-progress">
+            <div id="grandmaProgressBar" class="upgrade-progress-bar"></div>
+          </div>
+          <div class="upgrade-counter">
+            <img src="image/grandma.png" alt="Grandma" class="upgrade-image" />
+            <span id="grandmaCount">0</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- SETTINGS Container in Bottom Right -->
+      <div id="settingsContainer">
+        <button
+          id="settingsIcon"
+          class="setting-btn"
+          aria-label="Toggle Settings"
+        >
+          <span class="bar bar1"></span>
+          <span class="bar bar2"></span>
+          <span class="bar bar1"></span>
+        </button>
+        <div id="settingsMenu" style="display: none">
+          <button id="saveGame">Save Game</button>
+          <button id="loadGame">Load Game</button>
+          <button id="resetGame">Reset Game</button>
+          <button id="toggleSound">Toggle Sound</button>
+        </div>
+      </div>
     </section>
-
-    <!-- RIGHT Section: Achievements and Upgrade Visualizations -->
-    <section class="right">
-      <div class="achievements">
-        <h2>Achievements</h2>
-        <ul id="achievementsList"></ul>
-      </div>
-      <!-- Auto Clickers Visualization -->
-      <div id="autoClickersBox" class="upgrade-box">
-        <div class="upgrade-progress">
-          <div id="autoClickersProgressBar" class="upgrade-progress-bar"></div>
-        </div>
-        <div class="upgrade-counter">
-          <img src="image/hand.png" alt="Auto Clicker" class="upgrade-image" />
-          <span id="autoClickersCountVisual">0</span>
-        </div>
-      </div>
-      <!-- Cookie Farms Visualization -->
-      <div id="farmsBox" class="upgrade-box">
-        <div class="upgrade-progress">
-          <div id="farmsProgressBar" class="upgrade-progress-bar"></div>
-        </div>
-        <div class="upgrade-counter">
-          <img src="image/farm.png" alt="Cookie Farm" class="upgrade-image" />
-          <span id="farmsCountVisual">0</span>
-        </div>
-      </div>
-      <!-- Grandma's Bakery Visualization as a Loading Bar -->
-      <div id="grandmasBox" class="upgrade-box">
-        <div class="upgrade-progress">
-          <div id="grandmaProgressBar" class="upgrade-progress-bar"></div>
-        </div>
-        <div class="upgrade-counter">
-          <img src="image/grandma.png" alt="grandma" class="upgrade-image" />
-          <span id="grandmaCount">0</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- Settings Container in Bottom Right -->
-    <div id="settingsContainer">
-      <!-- Uiverse.io Settings Button -->
-      <button id="settingsIcon" class="setting-btn">
-        <span class="bar bar1"></span>
-        <span class="bar bar2"></span>
-        <span class="bar bar1"></span>
-      </button>
-      <!-- Settings Menu -->
-      <div id="settingsMenu" style="display: none;">
-        <button id="saveGame">Save Game</button>
-        <button id="loadGame">Load Game</button>
-        <button id="resetGame">Reset Game</button>
-        <button id="toggleSound">Toggle Sound</button>
-      </div>
-    </div>
-
-    <script src="script.js"></script>
+    <script src="script.js" defer></script>
   </body>
 </html>
