@@ -103,6 +103,19 @@ class ShopUpgrade extends Upgrade {
   }
 }
 
+class Achievement {
+  constructor(id, name, description, condition, rarity = 'common', category = 'general', icon = '🍪') {
+    this.id = id;
+    this.name = name;
+    this.description = description;
+    this.condition = condition; // Function that returns true if achievement is earned
+    this.earned = false;
+    this.rarity = rarity; // common, uncommon, rare, epic, legendary
+    this.category = category; // clicking, production, collection, special
+    this.icon = icon;
+  }
+}
+
 class Game {
   constructor() {
     // Enable debug logging
@@ -134,8 +147,9 @@ class Game {
       timeAccelerator: new ShopUpgrade(300, 2, "Time Accelerator", "timeAccelerator", 300),
     };
 
-    // Achievements
+    // Replace simple achievements array with a more structured system
     this.achievements = [];
+    this.setupAchievements();
 
     // Sound settings
     this.soundOn = true;
@@ -148,6 +162,9 @@ class Game {
     if (localStorage.getItem("cookieGameSave")) {
       this.loadGame();
       this.log("Auto-loaded saved game.");
+    } else {
+      // For new game, check achievements after a short delay
+      setTimeout(() => this.checkAchievements(), 500);
     }
   }
 
@@ -338,6 +355,8 @@ class Game {
     const upgrade = this.upgrades[upgradeKey];
     if (!upgrade) return;
     upgrade.purchase(this);
+    this.lastUpgradePurchased = upgradeKey;
+    this.checkAchievements();
   }
 
   purchaseShopUpgrade(upgradeKey) {
@@ -377,7 +396,9 @@ class Game {
   startGameLoop() {
     let lastTime = performance.now();
     let lastUpdateTime = 0;
+    let lastAchievementCheck = 0;
     const UPDATE_INTERVAL = 100; // Update display at most every 100ms
+    const ACHIEVEMENT_CHECK_INTERVAL = 1000; // Check achievements every second
     
     const loop = (now) => {
       // Calculate accurate delta time
@@ -400,6 +421,12 @@ class Game {
       if (now - lastUpdateTime > UPDATE_INTERVAL) {
         this.updateDisplay();
         lastUpdateTime = now;
+      }
+      
+      // Periodically check for new achievements
+      if (now - lastAchievementCheck > ACHIEVEMENT_CHECK_INTERVAL) {
+        this.checkAchievements();
+        lastAchievementCheck = now;
       }
       
       requestAnimationFrame(loop);
@@ -630,36 +657,320 @@ class Game {
     this.farmsCountVisual.textContent = count;
   }
 
+  setupAchievements() {
+    // Cookie production achievements
+    this.registerAchievement(new Achievement(
+      'cookies_100',
+      'Cookie Novice',
+      'Bake 100 cookies in total.',
+      (game) => game.state.cookies >= 100,
+      'common',
+      'production',
+      '🍪'
+    ));
+    
+    this.registerAchievement(new Achievement(
+      'cookies_1000',
+      'Cookie Apprentice',
+      'Bake 1,000 cookies in total.',
+      (game) => game.state.cookies >= 1000,
+      'common',
+      'production',
+      '🍪'
+    ));
+    
+    this.registerAchievement(new Achievement(
+      'cookies_10000',
+      'Cookie Professional',
+      'Bake 10,000 cookies in total.',
+      (game) => game.state.cookies >= 10000,
+      'uncommon',
+      'production',
+      '🍪'
+    ));
+    
+    this.registerAchievement(new Achievement(
+      'cookies_100000',
+      'Cookie Maestro',
+      'Bake 100,000 cookies in total.',
+      (game) => game.state.cookies >= 100000,
+      'rare',
+      'production',
+      '👨‍🍳'
+    ));
+    
+    this.registerAchievement(new Achievement(
+      'cookies_1000000',
+      'Cookie Mogul',
+      'Bake 1,000,000 cookies in total.',
+      (game) => game.state.cookies >= 1000000,
+      'epic',
+      'production',
+      '👑'
+    ));
+    
+    // Clicking achievements
+    this.registerAchievement(new Achievement(
+      'click_power_10',
+      'Finger of Destiny',
+      'Reach a click power of 10 or higher.',
+      (game) => game.state.clickPower >= 10,
+      'uncommon',
+      'clicking',
+      '👆'
+    ));
+    
+    this.registerAchievement(new Achievement(
+      'click_power_50',
+      'Hand of Destruction',
+      'Reach a click power of 50 or higher.',
+      (game) => game.state.clickPower >= 50, 
+      'rare',
+      'clicking',
+      '✋'
+    ));
+    
+    this.registerAchievement(new Achievement(
+      'click_power_100',
+      'Cookie Annihilator',
+      'Reach a click power of 100 or higher.',
+      (game) => game.state.clickPower >= 100,
+      'epic',
+      'clicking',
+      '💪'
+    ));
+    
+    // Building collection achievements
+    this.registerAchievement(new Achievement(
+      'autoclicker_5',
+      'Automation Beginner',
+      'Own 5 Auto Clickers.',
+      (game) => (game.upgrades.autoClicker.count || 0) >= 5,
+      'common',
+      'collection',
+      '🤖'
+    ));
+    
+    this.registerAchievement(new Achievement(
+      'autoclicker_25',
+      'Automation Expert',
+      'Own 25 Auto Clickers.',
+      (game) => (game.upgrades.autoClicker.count || 0) >= 25,
+      'uncommon',
+      'collection',
+      '🤖'
+    ));
+    
+    this.registerAchievement(new Achievement(
+      'autoclicker_50',
+      'Army of Clickers',
+      'Own 50 Auto Clickers.',
+      (game) => (game.upgrades.autoClicker.count || 0) >= 50,
+      'rare',
+      'collection',
+      '⚙️'
+    ));
+    
+    this.registerAchievement(new Achievement(
+      'grandma_5',
+      'Family Baker',
+      'Recruit 5 Grandmas for your bakery.',
+      (game) => (game.upgrades.grandma.count || 0) >= 5,
+      'common',
+      'collection',
+      '👵'
+    ));
+    
+    this.registerAchievement(new Achievement(
+      'grandma_25',
+      'Grandma Commune',
+      'Recruit 25 Grandmas for your bakery.',
+      (game) => (game.upgrades.grandma.count || 0) >= 25,
+      'uncommon',
+      'collection',
+      '👵'
+    ));
+    
+    this.registerAchievement(new Achievement(
+      'grandma_50',
+      'Grandmapocalypse',
+      'Control an army of 50 Grandmas.',
+      (game) => (game.upgrades.grandma.count || 0) >= 50,
+      'epic',
+      'collection',
+      '👵'
+    ));
+    
+    this.registerAchievement(new Achievement(
+      'farm_5',
+      'Cookie Farmer',
+      'Own 5 Cookie Farms.',
+      (game) => (game.upgrades.farm.count || 0) >= 5,
+      'common',
+      'collection',
+      '🌱'
+    ));
+    
+    this.registerAchievement(new Achievement(
+      'farm_25',
+      'Agribusiness',
+      'Own 25 Cookie Farms.',
+      (game) => (game.upgrades.farm.count || 0) >= 25,
+      'uncommon',
+      'collection', 
+      '🌾'
+    ));
+    
+    this.registerAchievement(new Achievement(
+      'farm_50',
+      'Cookie Plantation Empire',
+      'Own 50 Cookie Farms across the land.',
+      (game) => (game.upgrades.farm.count || 0) >= 50,
+      'rare',
+      'collection',
+      '🚜'
+    ));
+    
+    // Special achievements
+    this.registerAchievement(new Achievement(
+      'cps_100',
+      'Industrial Revolution',
+      'Reach 100 cookies per second.',
+      (game) => {
+        const autoClickers = game.upgrades.autoClicker.count || 0;
+        const grandmas = game.upgrades.grandma.count || 0;
+        const farms = game.upgrades.farm.count || 0;
+        return (autoClickers * 1 + grandmas * 5 + farms * 10) >= 100;
+      },
+      'uncommon',
+      'special',
+      '⚡'
+    ));
+    
+    this.registerAchievement(new Achievement(
+      'cps_500',
+      'Cookie Factory',
+      'Reach 500 cookies per second.',
+      (game) => {
+        const autoClickers = game.upgrades.autoClicker.count || 0;
+        const grandmas = game.upgrades.grandma.count || 0;
+        const farms = game.upgrades.farm.count || 0;
+        return (autoClickers * 1 + grandmas * 5 + farms * 10) >= 500;
+      },
+      'rare',
+      'special',
+      '🏭'
+    ));
+    
+    this.registerAchievement(new Achievement(
+      'balanced_force',
+      'Balanced Force',
+      'Have exactly the same number of Auto Clickers, Grandmas, and Farms (at least 10 each).',
+      (game) => {
+        const autoClickers = game.upgrades.autoClicker.count || 0;
+        const grandmas = game.upgrades.grandma.count || 0;
+        const farms = game.upgrades.farm.count || 0;
+        return autoClickers >= 10 && autoClickers === grandmas && grandmas === farms;
+      },
+      'legendary',
+      'special',
+      '⚖️'
+    ));
+    
+    this.registerAchievement(new Achievement(
+      'lucky_streak',
+      'Fortune Favors the Bold',
+      'Purchase the Lucky Click upgrade 7 times in a row without buying any other upgrade.',
+      (game) => game.state.luckyStreak >= 7,
+      'epic',
+      'special',
+      '🍀'
+    ));
+  }
+
+  registerAchievement(achievement) {
+    this.achievements.push(achievement);
+  }
+
   checkAchievements() {
-    const achievementsToCheck = [
-      { condition: this.state.cookies >= 100, text: "100 Cookies!" },
-      { condition: this.state.cookies >= 1000, text: "1000 Cookies!" },
-      {
-        condition: (this.upgrades.autoClicker.count || 0) >= 5,
-        text: "5 Auto Clickers!",
-      },
-      {
-        condition: (this.upgrades.grandma.count || 0) >= 3,
-        text: "3 Grandma's Bakeries!",
-      },
-    ];
-    achievementsToCheck.forEach(({ condition, text }) => {
-      if (condition && !this.achievements.includes(text)) {
-        this.achievements.push(text);
-        this.updateAchievements();
+    let newAchievements = false;
+    
+    this.achievements.forEach(achievement => {
+      if (!achievement.earned && achievement.condition(this)) {
+        achievement.earned = true;
+        newAchievements = true;
+        this.showToast(`🏆 Achievement Unlocked: ${achievement.name}!`);
       }
     });
+    
+    if (newAchievements) {
+      this.updateAchievements();
+    }
+    
+    // Special tracking for lucky streak achievement
+    if (this.lastUpgradePurchased === 'luckyClick') {
+      this.state.luckyStreak = (this.state.luckyStreak || 0) + 1;
+    } else if (this.lastUpgradePurchased && this.lastUpgradePurchased !== 'luckyClick') {
+      this.state.luckyStreak = 0;
+    }
   }
 
   updateAchievements() {
     // Use the cached achievementsList element from init.
     if (this.achievementsList) {
-      this.achievementsList.innerHTML = this.achievements
-        .map((ach) => `<li>${ach}</li>`)
-        .join("");
+      // Group achievements by category
+      const earnedAchievements = this.achievements.filter(a => a.earned);
+      
+      if (earnedAchievements.length === 0) {
+        this.achievementsList.innerHTML = `
+          <div class="no-achievements">
+            <p>No achievements yet!</p>
+            <p>Keep baking cookies to unlock achievements.</p>
+          </div>
+        `;
+        return;
+      }
+      
+      // Sort by rarity (legendary first)
+      const rarityOrder = {
+        'legendary': 0,
+        'epic': 1,
+        'rare': 2,
+        'uncommon': 3,
+        'common': 4
+      };
+      
+      earnedAchievements.sort((a, b) => 
+        rarityOrder[a.rarity] - rarityOrder[b.rarity]
+      );
+      
+      const achievementItems = earnedAchievements.map((ach) => {
+        return `<li class="achievement-item ${ach.rarity}" data-category="${ach.category}">
+          <div class="achievement-icon">${ach.icon}</div>
+          <div class="achievement-content">
+            <h3>${ach.name}</h3>
+            <p>${ach.description}</p>
+            <span class="achievement-rarity ${ach.rarity}">${ach.rarity}</span>
+          </div>
+        </li>`;
+      }).join("");
+      
+      this.achievementsList.innerHTML = achievementItems;
     } else {
       this.log("ERROR: achievementsList element is not cached!");
     }
+  }
+
+  showFloatingNumber(amount, isBonus = false) {
+    const floatingNumber = document.createElement("div");
+    floatingNumber.className = "floating-number";
+    floatingNumber.textContent = `+${amount}`;
+    floatingNumber.style.color = isBonus ? "blue" : "red";
+    const { left, top, width } = this.cookie.getBoundingClientRect();
+    floatingNumber.style.left = `${left + width / 2 - 15}px`;
+    floatingNumber.style.top = `${top - 10}px`;
+    document.body.appendChild(floatingNumber);
+    setTimeout(() => floatingNumber.remove(), 1000);
   }
 
   doSaveGame() {
@@ -741,12 +1052,38 @@ class Game {
         });
       }
 
-      this.achievements = savedGame.achievements || [];
+      // Reset and recreate achievements then restore earned status
+      // This ensures achievement conditions are properly restored
+      this.achievements = [];
+      this.setupAchievements();
+      
+      if (Array.isArray(savedGame.achievements)) {
+        // For old format (simple array of strings)
+        if (typeof savedGame.achievements[0] === 'string') {
+          savedGame.achievements.forEach(name => {
+            const achievement = this.achievements.find(a => a.name === name);
+            if (achievement) {
+              achievement.earned = true;
+            }
+          });
+        } 
+        // For new format (array of Achievement objects)
+        else {
+          savedGame.achievements.forEach(savedAch => {
+            const achievement = this.achievements.find(a => a.id === savedAch.id);
+            if (achievement) {
+              achievement.earned = savedAch.earned;
+            }
+          });
+        }
+      }
+
       this.soundOn = savedGame.soundOn !== undefined ? savedGame.soundOn : true;
 
       this.updateDisplay();
       this.updateAchievements();
       this.updateGrandmasVisual();
+      this.checkAchievements(); // Check achievements right after loading
       this.log("Load complete.");
       this.showToast("Game loaded successfully!");
     } catch (e) {
@@ -770,6 +1107,7 @@ class Game {
       timeAcceleratorActive: false,
       timeAcceleratorMultiplier: 1,
       timeAcceleratorEndTime: 0,
+      luckyStreak: 0
     };
     this.upgrades = {
       clickUpgrade: new ClickMultiplierUpgrade(10, 3, "Upgrade Click Power"),
@@ -781,11 +1119,14 @@ class Game {
     this.shopUpgrades = {
       timeAccelerator: new ShopUpgrade(300, 2, "Time Accelerator", "timeAccelerator", 300),
     };
+    // Properly reset achievements
     this.achievements = [];
-    this.soundOn = true;
+    this.setupAchievements();
+    
     this.updateDisplay();
     this.updateAchievements();
     this.updateGrandmasVisual();
+    
     this.log("Game reset.");
     alert("Game has been reset.");
   }

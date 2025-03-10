@@ -81,22 +81,269 @@ body {
   text-align: center;
 }
 
-/* ACHIEVEMENTS Container */
+/* ACHIEVEMENTS Container - Redesigned Trophy Case Look */
 #achievementsContainer {
   display: none;
   position: fixed;
   top: 20px;
-  right: 70px; /* Positioned to the right of the icon */
-  width: 220px;
-  background: rgba(255, 255, 255, 0.95);
-  padding: 15px;
-  border-radius: 12px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  right: 70px; 
+  width: 280px; /* Slightly wider */
+  background: linear-gradient(to bottom, #fffaf0, #f8f8ff); /* Warm to cool gradient */
+  padding: 0; /* Remove padding - we'll add it in the inner content */
+  border-radius: 15px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2), 
+              inset 0 1px 3px rgba(255, 255, 255, 0.8);
   z-index: 210;
+  overflow: hidden; /* For the header styling */
+  border: 1px solid rgba(210, 210, 210, 0.8);
 }
-/* .show{
+
+#achievementsContainer .achievements-header {
+  background: linear-gradient(145deg, #2980b9, #3498db); /* Match other UI elements */
+  color: white;
+  padding: 12px 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+}
+
+#achievementsContainer .achievements-header h2 {
+  margin: 0;
+  font-size: 20px;
+  flex-grow: 1;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+#achievementsContainer .achievements-header .trophy-icon {
+  font-size: 24px;
+  color: gold;
+  text-shadow: 0 0 5px rgba(255,215,0,0.7);
+}
+
+#achievementsContainer .achievements-content {
+  padding: 15px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+#achievementsList {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+#achievementsList li {
+  margin-bottom: 12px;
+  padding: 10px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  transition: transform 0.2s ease;
+  position: relative;
+  overflow: hidden;
+  border-left: 4px solid #ffd700; /* Gold accent */
+}
+
+#achievementsList li:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+#achievementsList li::before {
+  content: "🏆";
+  margin-right: 8px;
+  font-size: 20px;
+}
+
+#achievementsList li:nth-child(2n)::before {
+  content: "🥇"; /* Alternate medal icon */
+}
+
+#achievementsList li:nth-child(3n)::before {
+  content: "🍪"; /* Cookie icon for some variety */
+}
+
+#achievementsList li:last-child {
+  margin-bottom: 0;
+}
+
+#achievementsContainer:empty::after {
+  content: "No achievements yet. Keep playing!";
   display: block;
-} */
+  padding: 20px;
+  text-align: center;
+  color: #666;
+  font-style: italic;
+}
+
+/* Subtle shine effect */
+#achievementsList li::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -60%;
+  width: 20%;
+  height: 200%;
+  opacity: 0;
+  transform: rotate(30deg);
+  background: rgba(255, 255, 255, 0.13);
+  background: linear-gradient(
+    to right, 
+    rgba(255, 255, 255, 0.13) 0%,
+    rgba(255, 255, 255, 0.13) 77%,
+    rgba(255, 255, 255, 0.5) 92%,
+    rgba(255, 255, 255, 0.0) 100%
+  );
+}
+
+#achievementsList li:hover::after {
+  opacity: 1;
+  left: 130%;
+  transition: all 0.7s ease;
+}
+
+/* Enhanced achievement styling */
+#achievementsList {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+#achievementsList .no-achievements {
+  text-align: center;
+  padding: 20px 10px;
+  color: #888;
+  font-style: italic;
+}
+
+.achievement-item {
+  margin-bottom: 12px;
+  padding: 12px;
+  background: #fff;
+  border-radius: 8px;
+  display: flex;
+  align-items: flex-start;
+  transition: transform 0.2s ease;
+  position: relative;
+  overflow: hidden;
+  border-left: 4px solid;
+}
+
+.achievement-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.achievement-item.common {
+  border-left-color: #AAAAAA;
+}
+
+.achievement-item.uncommon {
+  border-left-color: #1ED760;
+}
+
+.achievement-item.rare {
+  border-left-color: #4169E1;
+}
+
+.achievement-item.epic {
+  border-left-color: #9B30FF;
+}
+
+.achievement-item.legendary {
+  border-left-color: #FFD700;
+  animation: legendary-glow 2s infinite alternate;
+}
+
+@keyframes legendary-glow {
+  from { box-shadow: 0 0 5px rgba(255, 215, 0, 0.3); }
+  to { box-shadow: 0 0 15px rgba(255, 215, 0, 0.8); }
+}
+
+.achievement-icon {
+  font-size: 24px;
+  margin-right: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.achievement-content {
+  flex: 1;
+}
+
+.achievement-content h3 {
+  margin: 0 0 5px 0;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.achievement-content p {
+  margin: 0;
+  font-size: 12px;
+  color: #666;
+}
+
+.achievement-rarity {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-size: 10px;
+  text-transform: uppercase;
+  margin-top: 5px;
+  color: white;
+}
+
+.achievement-rarity.common {
+  background-color: #AAAAAA;
+}
+
+.achievement-rarity.uncommon {
+  background-color: #1ED760;
+}
+
+.achievement-rarity.rare {
+  background-color: #4169E1;
+}
+
+.achievement-rarity.epic {
+  background-color: #9B30FF;
+}
+
+.achievement-rarity.legendary {
+  background-color: #FFD700;
+  color: #000;
+}
+
+/* Shine effect for all achievements */
+.achievement-item::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -60%;
+  width: 20%;
+  height: 200%;
+  opacity: 0;
+  transform: rotate(30deg);
+  background: rgba(255, 255, 255, 0.13);
+  background: linear-gradient(
+    to right, 
+    rgba(255, 255, 255, 0.13) 0%,
+    rgba(255, 255, 255, 0.13) 77%,
+    rgba(255, 255, 255, 0.5) 92%,
+    rgba(255, 255, 255, 0.0) 100%
+  );
+}
+
+.achievement-item:hover::after {
+  opacity: 1;
+  left: 130%;
+  transition: all 0.7s ease;
+}
+
 /* Achievements Icon Wrapper */
 #achievementsWrapper {
   position: fixed;
@@ -461,15 +708,25 @@ section .set div:nth-child(25) {
   align-items: center;
   justify-content: center;
   gap: 6px;
-  background-color: rgb(129, 110, 216);
+  background: linear-gradient(145deg, #2980b9, #3498db); /* Match upgrade buttons */
   border-radius: 10px;
   cursor: pointer;
   border: none;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Match upgrade buttons shadow */
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.setting-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+}
+.setting-btn:active {
+  transform: scale(0.98);
+  box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.25);
 }
 .bar {
   width: 50%;
   height: 2px;
-  background-color: rgb(229, 229, 229);
+  background-color: #fff; /* White color to match upgrade button text */
   position: relative;
   border-radius: 2px;
 }
@@ -477,24 +734,12 @@ section .set div:nth-child(25) {
   content: "";
   width: 2px;
   height: 2px;
-  background-color: rgb(126, 117, 255);
+  background-color: #e0efff; /* Match upgrade button's --button_color */
   position: absolute;
   border-radius: 50%;
   border: 2px solid white;
   transition: all 0.3s;
   box-shadow: 0px 0px 5px white;
-}
-.bar1::before {
-  transform: translateX(-4px);
-}
-.bar2::before {
-  transform: translateX(4px);
-}
-.setting-btn:hover .bar1::before {
-  transform: translateX(4px);
-}
-.setting-btn:hover .bar2::before {
-  transform: translateX(-4px);
 }
 #settingsMenu {
   display: none;
@@ -508,7 +753,7 @@ section .set div:nth-child(25) {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 #settingsMenu button {
-  background: rgb(129, 110, 216);
+  background: linear-gradient(145deg, #2980b9, #3498db); /* Match upgrade buttons */
   color: white;
   font-size: 14px;
   font-weight: 500;
@@ -518,17 +763,19 @@ section .set div:nth-child(25) {
   border: none;
   border-radius: 6px;
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Match upgrade buttons shadow */
 }
+
 #settingsMenu button:hover {
-  background: rgb(129, 110, 216);
-  transform: scale(1.02);
-  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(145deg, #2980b9, #3498db); /* Keep gradient on hover */
+  transform: scale(1.05);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
 }
+
 #settingsMenu button:active {
   transform: scale(0.95);
-  box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.3);
+  box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.25);
 }
 
 /* Confetti Particle Styles */
