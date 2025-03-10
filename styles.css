@@ -1,4 +1,7 @@
 /* Global Styles */
+html {
+  scroll-behavior: smooth;
+}
 body {
   font-family: "Roboto", sans-serif;
   background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
@@ -18,7 +21,7 @@ body {
   width: 220px;
   background: rgba(255, 255, 255, 0.95);
   padding: 20px;
-  margin-top: 50px;
+  margin-top: 90px;
   border-radius: 12px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
   overflow-y: auto;
@@ -36,7 +39,7 @@ body {
 }
 
 .left button:disabled {
-  background: #ccc !important;  /* changed grey background */
+  background: #ccc !important; /* changed grey background */
   color: #fff !important;
   box-shadow: none !important;
   transform: none !important;
@@ -47,9 +50,9 @@ body {
 .left button {
   background: linear-gradient(145deg, #2980b9, #3498db);
   color: #fff;
-  font-size: 18px;     /* reduced font size */
-  padding: 10px;        /* reduced padding */
-  width: auto;         /* removed full width */
+  font-size: 18px; /* reduced font size */
+  padding: 10px; /* reduced padding */
+  width: auto; /* removed full width */
   border: none;
   border-radius: 12px;
   cursor: pointer;
@@ -125,8 +128,8 @@ body {
 }
 .background .set {
   position: absolute;
-  width: 40%;
-  height: 80vh;
+  width: 50%;
+  height: 100%;
   top: 0;
   left: 30%;
   pointer-events: none;
@@ -139,8 +142,8 @@ body {
   display: block;
 }
 .background .set div img {
-  width: 20px;
-  height: 30px;
+  width: 40px;
+  height: 50px;
   will-change: transform;
 }
 .background .set div:nth-child(1) {
@@ -215,9 +218,9 @@ section .set div:nth-child(12) {
 section .set div:nth-child(13) {
   left: 75%;
 
-  animation: animate 10s linear infinite;
+  animation: animate 5s linear infinite;
 
-  animation-delay: 0s;
+  animation-delay: 2s;
 }
 
 section .set div:nth-child(14) {
@@ -608,8 +611,13 @@ section .set div:nth-child(25) {
   transform: translateZ(0);
 }
 @keyframes bounce {
-  0%, 100% { transform: translateY(0) translateZ(0); }
-  50% { transform: translateY(-5px) translateZ(0); }
+  0%,
+  100% {
+    transform: translateY(0) translateZ(0);
+  }
+  50% {
+    transform: translateY(-5px) translateZ(0);
+  }
 }
 .upgrade-counter span {
   font-size: 18px;
@@ -647,7 +655,6 @@ section .set div:nth-child(25) {
   }
 }
 
-
 /* responsive */
 
 @media (max-width: 932px) {
@@ -656,10 +663,9 @@ section .set div:nth-child(25) {
   }
   .right {
     width: 150px;
-  
   }
   #cookie {
-   padding-top: 130px;
+    padding-top: 50%;
   }
   #shop {
     height: 100px;
@@ -669,11 +675,31 @@ section .set div:nth-child(25) {
     font-style: italic;
   }
   .left {
-    width: 170px;
+    /* width: 170px; */
     height: 150px;
-    margin-top: 50px;
+    margin-top:8%;
   }
+  
+  .button_top {
+    display: none; 
+    font-size: 15px; 
+  }
+  button.upgrade .button_image {
+    display: block; 
+    width: 10px;
+    height: 20px;
+  }
+  .upgrade {
+    width: 80px; 
+    height: 80px;
+  }
+
 }
+/* التنسيق عند التمرير فوق الأزرار */
+.upgrade:hover {
+  background-color: #3498db;
+}
+
 
 /* Uiverse.io Button styling for upgrade buttons - Even Further Reduced Size */
 .upgrade {
@@ -707,13 +733,25 @@ section .set div:nth-child(25) {
   color: var(--button_outline_color);
   transform: translateY(-0.2em);
   transition: transform 0.2s cubic-bezier(0.23, 1, 0.32, 1);
+  font-size: medium;
 }
 
 /* Ensure consistent box-sizing for upgrade buttons and their inner span */
-button.upgrade, button.upgrade .button_top {
+button.upgrade,
+button.upgrade .button_top {
   box-sizing: border-box;
 }
-
+/* Raghda */
+button.upgrade .button_image {
+  display: none; 
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+/* .button_image{
+  display: none;
+  width: 25px;
+} */
 /* Override upgrade button styling when disabled */
 button.upgrade:disabled {
   background: #ccc !important;
@@ -747,7 +785,8 @@ button.upgrade:disabled .button_top {
 }
 
 /* Ensure all upgrade buttons use consistent box-sizing */
-.upgrade, .upgrade .button_top {
+.upgrade,
+.upgrade .button_top {
   box-sizing: border-box;
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -800,7 +839,7 @@ button.upgrade:disabled {
 
 button.upgrade:disabled .button_top {
   /* Only change colors, keep the same border width */
-  border-color: #ccc !important; 
+  border-color: #ccc !important;
   background: #eee !important;
   color: #999 !important;
 }
