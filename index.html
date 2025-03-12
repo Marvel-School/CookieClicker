@@ -5,7 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title id="count">Cookie Clicker</title>
     <link rel="icon" type="image/png" href="image/cookie.png" />
+    <!-- Put tooltip.css AFTER styles.css for higher precedence -->
     <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="tooltip.css" />
     <link rel="preload" href="image/cookie.png" as="image" />
     <link rel="preload" href="sounds/click.mp3" as="audio" />
   </head>
@@ -53,21 +55,33 @@
       </section>
     </div>
 
-    <!-- SHOP Section: Special Items (Top Left) -->
-    <section id="shop">
-      <h2>Shop</h2>
-      <!-- Time Accelerator Shop Item -->
-      <div class="shop-item" data-upgrade="timeAccelerator">
-        <img src="image/timeaccelerator.png" alt="Time Accelerator" class="shop-item-image" />
-        <span class="item-cost">Cost: <span>300</span></span>
-        <!-- Tooltip Speech Bubble for item description -->
-        <span class="item-desc">
-          Temporarily boosts cookie production x2 for 2-5 minutes based on cost.
-        </span>
-        <!-- Countdown timer when active -->
-        <span class="time-accelerator-timer"></span>
-      </div>
-    </section>
+    <!-- SHOP Section: Toggled via the Shop Icon -->
+    <div id="shopWrapper">
+      <img id="shopIcon" src="image/shop.png" alt="Shop Icon" aria-label="Show Shop" />
+      <section id="shopContainer">
+        <div class="shop-header">
+          <span class="shop-icon">🛒</span>
+          <h2>Shop</h2>
+        </div>
+        <div class="shop-content">
+          <!-- Time Accelerator Shop Item -->
+          <div class="shop-item" data-upgrade="timeAccelerator">
+            <img src="image/timeaccelerator.png" alt="Time Accelerator" class="shop-item-image" />
+            <span class="item-cost">Cost: <span>1000</span></span>
+            <!-- Updated tooltip to reflect new effects -->
+            <span class="item-desc">
+              <span class="text-highlight">4x Cookie Production Boost!</span><br>
+              <span class="text-highlight">Short but powerful 30-60s</span><br>
+              <span class="text-highlight">effect based on purchase</span><br>
+              <span class="text-highlight">price. Cost increases</span><br>
+              <span class="text-highlight">with each use.</span>
+            </span>
+            <!-- Countdown timer when active -->
+            <span class="time-accelerator-timer"></span>
+          </div>
+        </div>
+      </section>
+    </div>
 
     <!-- CENTER Section: Background, Stats, and Cookie -->
     <section class="background">
