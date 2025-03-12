@@ -144,7 +144,7 @@ class Game {
     };
 
     this.shopUpgrades = {
-      timeAccelerator: new ShopUpgrade(300, 2, "Time Accelerator", "timeAccelerator", 300),
+      timeAccelerator: new ShopUpgrade(1000, 2.5, "Time Accelerator", "timeAccelerator", 1000),
     };
 
     // Replace simple achievements array with a more structured system
@@ -199,6 +199,10 @@ class Game {
 
     // Shop Section
     this.shopElement = document.getElementById("shop");
+
+    // Shop Section - Updated for collapsible shop
+    this.shopIcon = document.getElementById("shopIcon");
+    this.shopContainer = document.getElementById("shopContainer");
 
     // Settings Panel Elements
     this.saveGameButton = document.getElementById("saveGame");
@@ -256,7 +260,7 @@ class Game {
     );
 
     // Shop Items: Purchase by clicking the item image
-    this.shopElement.querySelectorAll(".shop-item img").forEach((itemImage) => {
+    document.querySelectorAll(".shop-item img").forEach((itemImage) => {
       itemImage.addEventListener("click", () => {
         const upgradeKey = itemImage
           .closest(".shop-item")
@@ -264,6 +268,29 @@ class Game {
         this.purchaseShopUpgrade(upgradeKey);
       });
     });
+
+    // New shop icon click handler
+    if (this.shopIcon && this.shopContainer) {
+      this.shopIcon.addEventListener("click", (e) => {
+        e.stopPropagation(); // Prevent closing when clicking the icon
+        const isVisible = this.shopContainer.style.display === "block";
+        this.shopContainer.style.display = isVisible ? "none" : "block";
+      });
+      
+      // Prevent clicks inside the shop container from closing it
+      this.shopContainer.addEventListener("click", (e) => {
+        e.stopPropagation();
+      });
+      
+      // Close shop panel when clicking elsewhere
+      document.addEventListener("click", () => {
+        if (this.shopContainer.style.display === "block") {
+          this.shopContainer.style.display = "none";
+        }
+      });
+    } else {
+      this.log("ERROR: shopIcon or shopContainer not found!");
+    }
 
     // Settings Panel: Toggle display on settings icon click with improved handling
     this.settingsIcon.addEventListener("click", (e) => {
@@ -336,6 +363,60 @@ class Game {
 
     // Cookie click handler
     this.cookie.addEventListener("click", (e) => this.handleCookieClick(e));
+
+    // SINGLE TOOLTIP IMPLEMENTATION - Modified for continuous background
+    document.querySelectorAll('.shop-item').forEach(item => {
+      // Remove existing event handlers by cloning and replacing
+      const clone = item.cloneNode(true);
+      item.parentNode.replaceChild(clone, item);
+      
+      // Keep purchase functionality
+      const itemImage = clone.querySelector('img.shop-item-image');
+      if (itemImage) {
+        itemImage.addEventListener('click', () => {
+          const upgradeKey = clone.getAttribute("data-upgrade");
+          if (upgradeKey) this.purchaseShopUpgrade(upgradeKey);
+        });
+      }
+      
+      // Enhanced tooltip handling with single background
+      const tooltip = clone.querySelector('.item-desc');
+      if (tooltip) {
+        // Store and transform tooltip content
+        const originalContent = tooltip.innerHTML;
+        
+        // Create mouseenter event to show tooltip
+        clone.addEventListener('mouseenter', () => {
+          // Remove any existing tooltips
+          document.querySelectorAll('body > .item-desc').forEach(t => t.remove());
+          
+          // Create fresh tooltip
+          const newTooltip = document.createElement('div');
+          newTooltip.className = 'item-desc';
+          
+          // Wrap text highlights in a single container
+          newTooltip.innerHTML = `<div class="text-container">${originalContent}</div>`;
+          document.body.appendChild(newTooltip);
+          
+          // Position tooltip
+          const rect = clone.getBoundingClientRect();
+          
+          // Position above the item
+          const tooltipHeight = newTooltip.offsetHeight || 120;
+          newTooltip.style.top = (rect.top - tooltipHeight - 15) + 'px';
+          
+          // Center horizontally
+          const tooltipWidth = newTooltip.offsetWidth || 220;
+          newTooltip.style.left = (rect.left + rect.width/2 - tooltipWidth/2) + 'px';
+        });
+        
+        // Remove tooltip on mouseleave
+        clone.addEventListener('mouseleave', () => {
+          document.querySelectorAll('body > .item-desc').forEach(t => t.remove());
+        });
+      }
+    });
+
   }
 
   handleCookieClick(e) {
@@ -366,31 +447,63 @@ class Game {
   }
 
   activateTimeAccelerator(item) {
-    const baseCost = item.baseCost || 300;
-    const minDuration = 120; // 2 minutes
-    const maxDuration = 300; // 5 minutes
-    let duration = minDuration + (item.cost - baseCost) * 0.2;
+    const baseCost = item.baseCost || 1000;
+    const minDuration = 30; // 30 seconds - shorter base duration
+    const maxDuration = 60; // 1 minute max
+    let duration = minDuration + (item.cost - baseCost) * 0.05;
     duration = Math.min(duration, maxDuration);
 
     this.state.timeAcceleratorActive = true;
-    this.state.timeAcceleratorMultiplier = item.multiplier;
+    this.state.timeAcceleratorMultiplier = 4; // Increased from 2 to 4x
     this.state.timeAcceleratorEndTime = Date.now() + duration * 1000;
 
+    // Add visual effects when activated
+    this.applyTimeAcceleratorVisuals(true);
+    
     this.log(
       "Time Accelerator activated for",
       duration,
       "seconds, multiplier:",
-      item.multiplier
+      this.state.timeAcceleratorMultiplier
     );
-    this.showToast("Time Accelerator activated!");
+    this.showToast(`Time Accelerator activated! 4x production for ${Math.floor(duration)} seconds!`);
 
     setTimeout(() => {
       this.state.timeAcceleratorActive = false;
       this.state.timeAcceleratorMultiplier = 1;
       this.state.timeAcceleratorEndTime = 0;
+      
+      // Remove visual effects when deactivated
+      this.applyTimeAcceleratorVisuals(false);
+      
       this.log("Time Accelerator expired");
       this.showToast("Time Accelerator expired");
     }, duration * 1000);
+  }
+  
+  // New method to handle visual effects
+  applyTimeAcceleratorVisuals(active) {
+    // Apply effects to cookie
+    if (this.cookie) {
+      if (active) {
+        this.cookie.classList.add('accelerated');
+        this.cookie.style.filter = "brightness(1.5) drop-shadow(0 0 10px gold)";
+      } else {
+        this.cookie.classList.remove('accelerated');
+        this.cookie.style.filter = "";
+      }
+    }
+    
+    // Apply effects to CPS display
+    if (this.cpsDisplay) {
+      if (active) {
+        this.cpsDisplay.style.color = "#ff4500";
+        this.cpsDisplay.style.fontWeight = "bold";
+      } else {
+        this.cpsDisplay.style.color = "";
+        this.cpsDisplay.style.fontWeight = "";
+      }
+    }
   }
 
   startGameLoop() {
@@ -508,7 +621,7 @@ class Game {
         (this.state.timeAcceleratorEndTime - Date.now()) / 1000
       );
       if (secondsLeft > 0 && timerSpan) {
-        timerSpan.textContent = `Active: ${secondsLeft}s left`;
+        timerSpan.textContent = `⚡ 4x ACTIVE: ${secondsLeft}s ⚡`;
       } else if (timerSpan) {
         timerSpan.textContent = "";
       }
