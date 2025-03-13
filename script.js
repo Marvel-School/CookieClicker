@@ -1358,17 +1358,5 @@ document.addEventListener("DOMContentLoaded", function () {
 // This file redirects to use the modular version
 console.log("Loading Cookie Clicker through module system...");
 
-// Dynamically import the module-based version instead of the legacy version
-import('./js/main.js')
-  .then(() => {
-    console.log("Module system loaded successfully");
-  })
-  .catch(error => {
-    console.error("Failed to load module system:", error);
-    
-    // As a fallback, you could initialize the legacy game here
-    // But that's probably not what we want
-  });
-
-// Prevent legacy code from running
-// If there used to be any game initialization code here, it's disabled
+// We're now using the module system initialized in main.js
+// No need for initialization code here
