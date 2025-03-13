@@ -247,10 +247,10 @@ export function updateGameDisplay(game) {
   
   const cookies = Math.floor(game.state.cookies);
   
-  // Update text displays
-  game.cookieCount.textContent = cookies;
-  game.clickPowerDisplay.textContent = game.state.clickPower;
-  game.count.textContent = cookies + " cookies";
+  // Update text displays using formatted numbers for better readability
+  game.cookieCount.textContent = formatNumber(cookies);
+  game.clickPowerDisplay.textContent = formatNumber(game.state.clickPower);
+  game.count.textContent = formatNumber(cookies) + " cookies";
 
   // Update button states
   updateButtonStates(game, cookies);
@@ -264,14 +264,23 @@ export function updateGameDisplay(game) {
   // Show multiplier in stats if above 1
   if (game.state.cookieMultiplier > 1) {
     if (!document.getElementById('multiplierDisplay')) {
-      const multiplierEl = document.createElement('p');
+      const multiplierEl = document.createElement('div');
       multiplierEl.id = 'multiplierDisplay';
-      game.cpsDisplay.parentNode.insertBefore(multiplierEl, game.cpsDisplay.nextSibling);
+      const statsDiv = document.querySelector('.stats');
+      statsDiv.appendChild(multiplierEl);
     }
     const multiplierDisplay = document.getElementById('multiplierDisplay');
     multiplierDisplay.textContent = `Multiplier: ${Number(game.state.cookieMultiplier).toFixed(1)}x`;
     multiplierDisplay.style.color = game.state.cookieMultiplier >= 2 ? '#ffbb00' : '';
   }
+}
+
+// Helper function to format large numbers
+function formatNumber(num) {
+  if (num < 1000) return num;
+  if (num < 1000000) return (num / 1000).toFixed(1) + 'K';
+  if (num < 1000000000) return (num / 1000000).toFixed(1) + 'M';
+  return (num / 1000000000).toFixed(1) + 'B';
 }
 
 function updateButtonStates(game, cookies) {

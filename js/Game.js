@@ -206,6 +206,16 @@ export default class Game {
     showFloatingNumber(this.cookie, this.state.clickPower);
     this.lastConfettiTime = createConfetti(e.clientX, e.clientY, this.lastConfettiTime);
     
+    // Add animation to the cookie count
+    if (this.cookieCount) {
+      this.cookieCount.classList.add('updating');
+      this.cookieCount.classList.add('cookie-gain');
+      setTimeout(() => {
+        this.cookieCount.classList.remove('updating');
+        this.cookieCount.classList.remove('cookie-gain');
+      }, 300);
+    }
+    
     this.checkAchievements();
     updateGameDisplay(this);
   }
@@ -1101,6 +1111,12 @@ export default class Game {
       if (indicator) {
         indicator.innerHTML = `⚡ Production Boost: ${timeLeft}s ⚡`;
       }
+      // Add 'boosted' class to CPS display
+      if (this.cpsDisplay) {
+        this.cpsDisplay.classList.add('boosted');
+      }
+    } else if (this.cpsDisplay) {
+      this.cpsDisplay.classList.remove('boosted');
     }
     
     // Check if activeGoldenCookieBonuses and its properties exist before accessing
@@ -1111,6 +1127,12 @@ export default class Game {
       if (indicator) {
         indicator.innerHTML = `👆 Click Power Boost: ${timeLeft}s 👆`;
       }
+      // Add 'boosted' class to click power display
+      if (this.clickPowerDisplay) {
+        this.clickPowerDisplay.classList.add('boosted');
+      }
+    } else if (this.clickPowerDisplay) {
+      this.clickPowerDisplay.classList.remove('boosted');
     }
   }
 }
