@@ -364,13 +364,13 @@ class Game {
     // Cookie click handler
     this.cookie.addEventListener("click", (e) => this.handleCookieClick(e));
 
-    // SINGLE TOOLTIP IMPLEMENTATION - Modified for continuous background
+    // CLEANUP: REMOVE ALL DUPLICATE TOOLTIP IMPLEMENTATIONS AND REPLACE WITH THIS SINGLE IMPLEMENTATION
     document.querySelectorAll('.shop-item').forEach(item => {
-      // Remove existing event handlers by cloning and replacing
+      // First, let's completely clone the item to remove any existing event handlers
       const clone = item.cloneNode(true);
       item.parentNode.replaceChild(clone, item);
       
-      // Keep purchase functionality
+      // Add purchase functionality
       const itemImage = clone.querySelector('img.shop-item-image');
       if (itemImage) {
         itemImage.addEventListener('click', () => {
@@ -379,40 +379,129 @@ class Game {
         });
       }
       
-      // Enhanced tooltip handling with single background
+      // Single tooltip implementation with viewport boundary checking
       const tooltip = clone.querySelector('.item-desc');
       if (tooltip) {
-        // Store and transform tooltip content
+        // Store tooltip content
         const originalContent = tooltip.innerHTML;
         
-        // Create mouseenter event to show tooltip
+        // Add mouse events
         clone.addEventListener('mouseenter', () => {
-          // Remove any existing tooltips
+          // Remove any existing tooltips to avoid duplicates
           document.querySelectorAll('body > .item-desc').forEach(t => t.remove());
           
-          // Create fresh tooltip
+          // Create fresh tooltip element
           const newTooltip = document.createElement('div');
           newTooltip.className = 'item-desc';
-          
-          // Wrap text highlights in a single container
           newTooltip.innerHTML = `<div class="text-container">${originalContent}</div>`;
           document.body.appendChild(newTooltip);
           
-          // Position tooltip
+          // Get positioning information
           const rect = clone.getBoundingClientRect();
-          
-          // Position above the item
           const tooltipHeight = newTooltip.offsetHeight || 120;
-          newTooltip.style.top = (rect.top - tooltipHeight - 15) + 'px';
-          
-          // Center horizontally
           const tooltipWidth = newTooltip.offsetWidth || 220;
-          newTooltip.style.left = (rect.left + rect.width/2 - tooltipWidth/2) + 'px';
+          const minPadding = 10;
+          
+          // Check if tooltip would be cut off at top
+          const positionAbove = rect.top - tooltipHeight - 15;
+          if (positionAbove < minPadding) {
+            // Position below instead
+            newTooltip.style.top = (rect.bottom + 15) + 'px';
+            newTooltip.classList.add('position-below');
+          } else {
+            // Position above (standard)
+            newTooltip.style.top = positionAbove + 'px';
+          }
+          
+          // Handle horizontal positioning
+          let leftPos = rect.left + (rect.width / 2) - (tooltipWidth / 2);
+          if (leftPos < minPadding) {
+            leftPos = minPadding;
+          } else if (leftPos + tooltipWidth > window.innerWidth - minPadding) {
+            leftPos = window.innerWidth - tooltipWidth - minPadding;
+          }
+          newTooltip.style.left = leftPos + 'px';
+          
+          // Ensure visibility
+          newTooltip.style.zIndex = '100000000';
         });
         
-        // Remove tooltip on mouseleave
         clone.addEventListener('mouseleave', () => {
+          // Clean up any tooltips when mouse leaves
           document.querySelectorAll('body > .item-desc').forEach(t => t.remove());
+        });
+      }
+    });
+
+    // IMPROVED TOOLTIP IMPLEMENTATION - Fixes multiple tooltips
+    document.querySelectorAll('.shop-item').forEach(item => {
+      // First, let's completely clone the item to remove any existing event handlers
+      const clone = item.cloneNode(true);
+      item.parentNode.replaceChild(clone, item);
+      
+      // Add purchase functionality
+      const itemImage = clone.querySelector('img.shop-item-image');
+      if (itemImage) {
+        itemImage.addEventListener('click', (e) => {
+          e.stopPropagation(); // Prevent bubbling
+          const upgradeKey = clone.getAttribute("data-upgrade");
+          if (upgradeKey) this.purchaseShopUpgrade(upgradeKey);
+        });
+      }
+      
+      // Single tooltip implementation with better cleanup
+      const tooltip = clone.querySelector('.item-desc');
+      if (tooltip) {
+        // Store tooltip content
+        const originalContent = tooltip.innerHTML;
+        
+        // Add mouse events
+        clone.addEventListener('mouseenter', (e) => {
+          e.stopPropagation(); // Prevent event bubbling
+          
+          // Remove ANY tooltip elements from anywhere in the DOM
+          document.querySelectorAll('.item-desc-tooltip').forEach(t => t.remove());
+          
+          // Create fresh tooltip element with special class for identification
+          const newTooltip = document.createElement('div');
+          newTooltip.className = 'item-desc item-desc-tooltip'; // Add specific class
+          newTooltip.innerHTML = `<div class="text-container">${originalContent}</div>`;
+          document.body.appendChild(newTooltip);
+          
+          // Get positioning information
+          const rect = clone.getBoundingClientRect();
+          const tooltipHeight = newTooltip.offsetHeight || 120;
+          const tooltipWidth = newTooltip.offsetWidth || 220;
+          const minPadding = 10;
+          
+          // Check if tooltip would be cut off at top
+          const positionAbove = rect.top - tooltipHeight - 15;
+          if (positionAbove < minPadding) {
+            // Position below instead
+            newTooltip.style.top = (rect.bottom + 15) + 'px';
+            newTooltip.classList.add('position-below');
+          } else {
+            // Position above (standard)
+            newTooltip.style.top = positionAbove + 'px';
+          }
+          
+          // Handle horizontal positioning
+          let leftPos = rect.left + (rect.width / 2) - (tooltipWidth / 2);
+          if (leftPos < minPadding) {
+            leftPos = minPadding;
+          } else if (leftPos + tooltipWidth > window.innerWidth - minPadding) {
+            leftPos = window.innerWidth - tooltipWidth - minPadding;
+          }
+          newTooltip.style.left = leftPos + 'px';
+          
+          // Ensure visibility
+          newTooltip.style.zIndex = '100000000';
+        });
+        
+        clone.addEventListener('mouseleave', (e) => {
+          e.stopPropagation(); // Prevent event bubbling
+          // Clean up any tooltips when mouse leaves using the specific class
+          document.querySelectorAll('.item-desc-tooltip').forEach(t => t.remove());
         });
       }
     });
@@ -1265,3 +1354,21 @@ document.addEventListener("DOMContentLoaded", function () {
     dropdownContent.style.display = "none";
   });
 });
+
+// This file redirects to use the modular version
+console.log("Loading Cookie Clicker through module system...");
+
+// Dynamically import the module-based version instead of the legacy version
+import('./js/main.js')
+  .then(() => {
+    console.log("Module system loaded successfully");
+  })
+  .catch(error => {
+    console.error("Failed to load module system:", error);
+    
+    // As a fallback, you could initialize the legacy game here
+    // But that's probably not what we want
+  });
+
+// Prevent legacy code from running
+// If there used to be any game initialization code here, it's disabled

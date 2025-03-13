@@ -2,6 +2,18 @@
 
 /* Simplified tooltip styles - no hover behavior */
 
+/* Apply these styles to both original tooltips and detached tooltips */
+.shop-item .item-desc,
+body > .item-desc {
+  display: none !important; /* Always hidden by default */
+}
+
+/* Make sure only detached tooltips are visible */
+body > .item-desc.item-desc-tooltip {
+  display: block !important; 
+  visibility: visible !important;
+}
+
 /* Base tooltip in shop - always hidden */
 .shop-item .item-desc {
   display: none !important; /* Always hidden by default */
@@ -59,7 +71,7 @@ body > .item-desc .text-highlight {
   border-radius: 0 !important;
 }
 
-/* Arrow pointer */
+/* Arrow pointer for tooltip above item (default) */
 body > .item-desc::after {
   content: "" !important;
   position: absolute !important;
@@ -68,6 +80,14 @@ body > .item-desc::after {
   transform: translateX(-50%) !important;
   border: 8px solid transparent !important;
   border-top-color: #2980b9 !important;
+}
+
+/* Arrow pointer for tooltip below item (when near top of viewport) */
+body > .item-desc.position-below::after {
+  bottom: auto !important;
+  top: -15px !important;
+  border-width: 0 8px 8px 8px !important;
+  border-color: transparent transparent #2980b9 transparent !important;
 }
 
 /* Line breaks inside the white background container */
