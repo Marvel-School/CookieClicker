@@ -25,7 +25,15 @@ export default class Game {
       cookieMultiplier: 1,
       goldenCookieChance: 0.1,
       goldenCookieActive: false,
-      lastGoldenCookieTime: 0
+      lastGoldenCookieTime: 0,
+      // Personalization settings (will be populated by personalization.js)
+      personalization: {
+        theme: 'classic',
+        cookieSkin: 'classic',
+        cursorSkin: 'classic',
+        animations: 'standard',
+        particleIntensity: 1.0
+      }
     };
 
     // Initialize upgrades
@@ -479,6 +487,8 @@ export default class Game {
       shopUpgrades: this.shopUpgrades,
       achievements: this.achievements,
       soundOn: this.soundOn,
+      // Make sure to save personalization settings
+      personalization: this.state.personalization
     };
     
     localStorage.setItem("cookieGameSave", JSON.stringify(gameState));
@@ -574,6 +584,12 @@ export default class Game {
 
       this.soundOn = savedGame.soundOn !== undefined ? savedGame.soundOn : true;
 
+      // Ensure personalization settings are preserved
+      if (this.personalizer && this.state.personalization) {
+        this.personalizer.settings = {...this.personalizer.settings, ...this.state.personalization};
+        this.personalizer.applyAllSettings();
+      }
+
       this.updateDisplay();
       this.updateAchievements();
       this.updateGrandmasVisual();
@@ -603,7 +619,15 @@ export default class Game {
       cookieMultiplier: 1,
       goldenCookieChance: 0.1,
       goldenCookieActive: false,
-      lastGoldenCookieTime: 0
+      lastGoldenCookieTime: 0,
+      // Personalization settings (will be populated by personalization.js)
+      personalization: {
+        theme: 'classic',
+        cookieSkin: 'classic',
+        cursorSkin: 'classic',
+        animations: 'standard',
+        particleIntensity: 1.0
+      }
     };
     
     this.upgrades = {

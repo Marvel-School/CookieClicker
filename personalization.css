@@ -1,0 +1,370 @@
+/* Personalization System Styles */
+
+:root {
+  /* Default theme variables - will be overridden by JS */
+  --background: radial-gradient(#333, #000);
+  --text-color: #333;
+  --primary-color: #2980b9;
+  --secondary-color: #3498db;
+  --accent-color: #ff8c42;
+  --panel-color: rgba(255, 255, 255, 0.95);
+  --particle-intensity: 1;
+}
+
+/* Personalization Container */
+#personalizationContainer {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 700px;
+  max-width: 90vw;
+  max-height: 90vh;
+  background: linear-gradient(to bottom, #fffaf0, #f8f8ff);
+  border-radius: 15px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3),
+              inset 0 1px 3px rgba(255, 255, 255, 0.8);
+  z-index: 1000;
+  overflow: hidden;
+  border: 1px solid rgba(210, 210, 210, 0.8);
+}
+
+/* Header */
+.personalization-header {
+  background: linear-gradient(145deg, var(--primary-color), var(--secondary-color));
+  color: white;
+  padding: 12px 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+}
+
+.personalization-header h2 {
+  margin: 0;
+  font-size: 22px;
+  flex-grow: 1;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.personalization-icon {
+  font-size: 24px;
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.7);
+}
+
+/* Content Area with Tabs */
+.personalization-content {
+  display: flex;
+  flex-direction: column;
+  height: 500px;
+  overflow-y: auto;
+}
+
+/* Tab Navigation */
+.personalization-tabs {
+  display: flex;
+  background-color: #f0f0f0;
+  border-bottom: 1px solid #ddd;
+  padding: 0;
+  margin: 0;
+  overflow-x: auto;
+}
+
+.tab-button {
+  padding: 12px 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  transition: background-color 0.3s;
+  flex: 1;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.tab-button:hover {
+  background-color: #e0e0e0;
+}
+
+.tab-button.active {
+  background-color: white;
+  border-bottom: 3px solid var(--primary-color);
+  color: var(--primary-color);
+}
+
+/* Tab Content */
+.tab-content {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.tab-pane {
+  display: none;
+  animation: fadeIn 0.3s;
+}
+
+.tab-pane.active {
+  display: block;
+}
+
+.tab-pane h3 {
+  margin-top: 0;
+  color: #333;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+}
+
+/* Personalization Options */
+.theme-grid, .skin-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.personalization-option {
+  background: white;
+  border: 2px solid #eee;
+  border-radius: 8px;
+  padding: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  height: 200px;
+}
+
+.personalization-option:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.personalization-option.selected {
+  border-color: var(--primary-color);
+  background: linear-gradient(to bottom right, rgba(41, 128, 185, 0.1), white);
+  box-shadow: 0 5px 15px rgba(41, 128, 185, 0.2);
+}
+
+/* Theme Preview */
+.theme-preview {
+  height: 100px;
+  border-radius: 5px;
+  overflow: hidden;
+  position: relative;
+  margin-bottom: 10px;
+}
+
+.preview-panel {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80%;
+  height: 50px;
+  border-radius: 5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 10px;
+}
+
+.preview-button {
+  width: 40px;
+  height: 20px;
+  border-radius: 5px;
+}
+
+.preview-text {
+  width: 60px;
+  height: 10px;
+  border-radius: 5px;
+}
+
+/* Skin Preview */
+.skin-preview {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100px;
+  margin-bottom: 10px;
+}
+
+.skin-preview img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+/* Option Info */
+.option-info {
+  text-align: center;
+}
+
+.option-info h4 {
+  margin: 0 0 5px 0;
+  font-size: 16px;
+  color: #333;
+}
+
+.option-info p {
+  margin: 0;
+  font-size: 12px;
+  color: #777;
+}
+
+/* Animation Options */
+.animation-sets {
+  margin-bottom: 30px;
+}
+
+.animation-set-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 15px;
+}
+
+.animation-option {
+  height: auto;
+  text-align: center;
+  padding: 15px;
+}
+
+.animation-option h4 {
+  margin: 0 0 5px 0;
+}
+
+.animation-option p {
+  margin: 0;
+  font-size: 12px;
+  color: #777;
+}
+
+/* Slider for Particle Intensity */
+.intensity-container {
+  margin-bottom: 20px;
+}
+
+.slider-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.slider-container input[type="range"] {
+  flex: 1;
+}
+
+/* Preview Button */
+.preview-button {
+  background: linear-gradient(145deg, var(--primary-color), var(--secondary-color));
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  margin-top: 20px;
+  display: block;
+  width: 50%;
+  margin: 20px auto;
+}
+
+.preview-button:hover {
+  transform: scale(1.05);
+}
+
+/* Footer with Close Button */
+.personalization-footer {
+  background-color: #f5f5f5;
+  padding: 15px;
+  text-align: right;
+  border-top: 1px solid #ddd;
+}
+
+.close-button {
+  background: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 8px 15px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s;
+}
+
+.close-button:hover {
+  background: #c0392b;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Theme specific styles */
+[data-theme="dark"] {
+  --panel-color: rgba(40, 40, 40, 0.95);
+  --text-color: #eee;
+}
+
+[data-theme="neon"] {
+  --primary-color: #ff00ff;
+  --secondary-color: #00ffff;
+  --accent-color: #ffff00;
+}
+
+[data-theme="pastel"] {
+  --primary-color: #ffb6c1;
+  --secondary-color: #c9a0dc;
+  --accent-color: #fdfd96;
+}
+
+[data-theme="coffee"] {
+  --primary-color: #6f4e37;
+  --secondary-color: #8b5a2b;
+  --accent-color: #c0a080;
+}
+
+/* Animation intensity modifiers */
+[data-animations="intense"] {
+  --particle-intensity: 2;
+}
+
+[data-animations="minimal"] {
+  --particle-intensity: 0.5;
+}
+
+/* Personalization Button in Settings Menu */
+#personalizationButton {
+  background: linear-gradient(145deg, #9b59b6, #8e44ad);
+  position: relative;
+  overflow: hidden;
+}
+
+#personalizationButton::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 300%;
+  height: 100%;
+  background: linear-gradient(
+    90deg, 
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  animation: shimmerEffect 2s infinite;
+}
+
+@keyframes shimmerEffect {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
