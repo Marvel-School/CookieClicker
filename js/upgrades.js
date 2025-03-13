@@ -48,7 +48,8 @@ export class ClickMultiplierUpgrade extends Upgrade {
   }
   
   executePurchase(game) {
-    game.state.clickPower *= 2;
+    // Change from 2x to 1.5x for better balance
+    game.state.clickPower *= 1.5;
   }
 }
 
@@ -69,7 +70,20 @@ export class LuckyUpgrade extends Upgrade {
   }
   
   executePurchase(game) {
-    const bonus = Math.floor(Math.random() * 10) + 1;
+    // Improved Lucky Click - scales with current CPS but has limits
+    const autoClickers = game.upgrades.autoClicker.count || 0;
+    const grandmas = game.upgrades.grandma.count || 0;
+    const farms = game.upgrades.farm.count || 0;
+    
+    // Base on 5 seconds of production with minimum and maximum
+    const cps = autoClickers * 1 + grandmas * 3 + farms * 6;
+    const baseBonus = Math.max(5, cps * 5);
+    const cappedBonus = Math.min(baseBonus, 500); // Cap at 500 cookies
+    
+    // Add randomness between 80%-120% of the calculated value
+    const randomFactor = 0.8 + (Math.random() * 0.4); // Between 0.8 and 1.2
+    const bonus = Math.floor(cappedBonus * randomFactor);
+    
     game.state.cookies += bonus;
     game.showFloatingNumber(bonus, true);
   }
@@ -118,6 +132,11 @@ export class ShopUpgrade extends Upgrade {
       try {
         game[this.extra](this);
         console.log(`Successfully executed ${this.extra} method`);
+        
+        // If this is the timeAccelerator method, rebalance it
+        if (this.extra === 'timeAccelerator') {
+          // Rebalance within the method instead of in the method definition
+        }
         
         // If this is the goldenCookieChance upgrade, log the new chance
         if (this.extra === 'increaseGoldenCookieChance') {

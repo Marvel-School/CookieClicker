@@ -649,7 +649,7 @@ section .set div:nth-child(25) {
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2),
               inset 0 1px 3px rgba(255, 255, 255, 0.8);
   z-index: 210;
-  overflow: hidden;
+  overflow: hidden; /* For the header styling */
   border: 1px solid rgba(210, 210, 210, 0.8);
 }
 
@@ -1712,6 +1712,85 @@ button.upgrade:disabled .button_top {
   100% {
     transform: scale(1.1);
     opacity: 1;
+  }
+}
+
+/* ...existing code... */
+
+/* Golden cookie animation when clicked */
+.golden-cookie-clicked {
+  animation: zoom-out 0.5s forwards;
+  filter: brightness(1.5);
+}
+
+@keyframes zoom-out {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+/* Pulse animation for bonus indicators */
+@keyframes pulse {
+  0% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Click power boosted cookie animation */
+#cookie.click-boosted {
+  animation: click-pulse 0.8s infinite alternate;
+  filter: brightness(1.2) drop-shadow(0 0 10px orange);
+}
+
+@keyframes click-pulse {
+  0% {
+    transform: scale(1.02);
+  }
+  100% {
+    transform: scale(1.08);
+    filter: brightness(1.4) drop-shadow(0 0 15px orange);
+  }
+}
+
+/* New Frenzy animation for clicking frenzy */
+#cookie.frenzy-boosted {
+  animation: frenzy-pulse 0.4s infinite alternate;
+  filter: brightness(1.5) drop-shadow(0 0 15px crimson);
+}
+
+@keyframes frenzy-pulse {
+  0% {
+    transform: scale(1.1) rotate(-2deg);
+  }
+  100% {
+    transform: scale(1.2) rotate(2deg);
+    filter: brightness(1.8) saturate(1.5) drop-shadow(0 0 20px crimson);
+  }
+}
+
+/* ...existing code... */
+
+/* Click power boosted cookie animation */
+#cookie.click-boosted {
+  animation: click-pulse 0.8s infinite alternate;
+  filter: brightness(1.2) drop-shadow(0 0 10px orange);
+}
+
+@keyframes click-pulse {
+  0% {
+    transform: scale(1.02);
+  }
+  100% {
+    transform: scale(1.08);
+    filter: brightness(1.4) drop-shadow(0 0 15px orange);
   }
 }
 
