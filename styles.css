@@ -1921,3 +1921,77 @@ button.upgrade:disabled .button_top {
 }
 
 /* ...existing code... */
+
+/* Active Bonuses Section */
+.active-bonuses {
+  margin-top: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 5px;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.bonus-indicator {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.75em;
+  font-weight: bold;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  animation: pulse-glow 1.5s infinite alternate;
+  white-space: nowrap;
+}
+
+.bonus-indicator .bonus-icon {
+  font-size: 1.2em;
+}
+
+.bonus-indicator .bonus-timer {
+  margin-left: 2px;
+  font-size: 0.9em;
+}
+
+.bonus-indicator.time-accelerator {
+  background: linear-gradient(135deg, #ff4500, #ff8c00);
+}
+
+.bonus-indicator.production-boost {
+  background: linear-gradient(135deg, #ffaa00, #ffcc00);
+}
+
+.bonus-indicator.click-boost {
+  background: linear-gradient(135deg, #ff6600, #ff9966);
+}
+
+.bonus-indicator.frenzy {
+  background: linear-gradient(135deg, #cc0000, #ff0000);
+}
+
+.bonus-indicator.cookie-multiplier {
+  background: linear-gradient(135deg, #9932cc, #ba55d3);
+}
+
+@keyframes pulse-glow {
+  0% {
+    box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+    transform: scale(1);
+  }
+  100% {
+    box-shadow: 0 0 12px rgba(255, 255, 255, 0.8);
+    transform: scale(1.05);
+  }
+}
+
+/* Remove old boost indicators - they're replaced with the new system */
+#production-boost-indicator,
+#click-boost-indicator,
+#frenzy-indicator {
+  display: none;
+}
+
+/* ...existing code... */
