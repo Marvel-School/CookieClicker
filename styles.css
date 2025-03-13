@@ -1995,3 +1995,21 @@ button.upgrade:disabled .button_top {
 }
 
 /* ...existing code... */
+
+/* Fix duplicate tooltips by hiding the original static tooltips */
+.shop-item > .item-desc {
+  display: none !important; /* Hide the original tooltips that are direct children of shop-item */
+  visibility: hidden !important;
+  opacity: 0 !important;
+}
+
+/* Ensure only dynamically created tooltips are visible */
+body > .item-desc.item-desc-tooltip {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  z-index: 9999999;
+  position: absolute;
+}
+
+/* ...existing code... */
