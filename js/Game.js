@@ -150,6 +150,7 @@ export default class Game {
 
     // Start golden cookie spawning logic
     this.startGoldenCookieTimer();
+    this.log("Golden cookie timer initialized with chance:", this.state.goldenCookieChance);
   }
 
   handleCookieClick(e) {
@@ -215,63 +216,112 @@ export default class Game {
     
     showToast(`Golden Cookie chance increased to ${Math.round(this.state.goldenCookieChance * 100)}%!`);
     this.log(`Golden cookie chance increased to ${this.state.goldenCookieChance}`);
+    
+    // Force spawn a golden cookie soon after purchase for immediate feedback
+    setTimeout(() => {
+        if (!this.state.goldenCookieActive) {
+            this.spawnGoldenCookie();
+        }
+    }, 3000);
   }
 
   // Start golden cookie spawn timer
   startGoldenCookieTimer() {
     const checkGoldenCookie = () => {
-      if (!this.state.goldenCookieActive) {
-        const now = Date.now();
-        // Make sure at least 30 seconds passed since last golden cookie
-        if (now - this.state.lastGoldenCookieTime > 30000) {
-          // Random chance based on goldenCookieChance
-          if (Math.random() < this.state.goldenCookieChance) {
-            this.spawnGoldenCookie();
-          }
+        if (!this.state.goldenCookieActive) {
+            const now = Date.now();
+            // Make sure at least 30 seconds passed since last golden cookie
+            if (now - this.state.lastGoldenCookieTime > 30000) {
+                // Random chance based on goldenCookieChance
+                const roll = Math.random();
+                this.log(`Golden cookie check: rolled ${roll.toFixed(3)} vs chance ${this.state.goldenCookieChance.toFixed(3)}`);
+                if (roll < this.state.goldenCookieChance) {
+                    this.spawnGoldenCookie();
+                }
+            }
         }
-      }
-      
-      // Check again after a delay
-      setTimeout(checkGoldenCookie, 5000);
+        
+        // Check again after a delay - use a shorter delay for more frequent checks
+        setTimeout(checkGoldenCookie, 3000); // Check every 3 seconds instead of 5
     };
     
-    // Start the timer
-    setTimeout(checkGoldenCookie, 10000);
+    // Start the timer with a shorter initial delay
+    setTimeout(checkGoldenCookie, 5000); // First check after 5 seconds instead of 10
   }
 
   // Spawn a golden cookie
   spawnGoldenCookie() {
-    if (this.state.goldenCookieActive) return;
+    // Force reset golden cookie active state for manual spawning
+    if (this.state.goldenCookieActive) {
+      console.log("Golden cookie was already active. Removing existing one...");
+      const existingCookies = document.querySelectorAll('.golden-cookie');
+      existingCookies.forEach(cookie => {
+        if (cookie.parentNode) {
+          cookie.parentNode.removeChild(cookie);
+        }
+      });
+    }
     
     this.state.goldenCookieActive = true;
+    console.log('Spawning golden cookie!');
     
     // Create the golden cookie element
     const goldenCookie = document.createElement('div');
     goldenCookie.className = 'golden-cookie';
     
-    // Random position on screen
-    const maxX = window.innerWidth - 80;
-    const maxY = window.innerHeight - 80;
-    const posX = Math.floor(Math.random() * maxX) + 40;
-    const posY = Math.floor(Math.random() * maxY) + 40;
+    // Random position on screen - keep away from edges
+    const padding = 100;
+    const maxX = window.innerWidth - padding*2;
+    const maxY = window.innerHeight - padding*2;
+    const posX = Math.floor(Math.random() * maxX) + padding;
+    const posY = Math.floor(Math.random() * maxY) + padding;
     
     goldenCookie.style.left = `${posX}px`;
     goldenCookie.style.top = `${posY}px`;
     
+    // Debug information directly on element
+    const debugInfo = document.createElement('div');
+    debugInfo.style.position = 'absolute';
+    debugInfo.style.bottom = '-20px';
+    debugInfo.style.left = '0';
+    debugInfo.style.right = '0';
+    debugInfo.style.textAlign = 'center';
+    debugInfo.style.color = 'white';
+    debugInfo.style.textShadow = '0 0 3px black';
+    debugInfo.style.fontSize = '12px';
+    debugInfo.textContent = 'Click me!';
+    goldenCookie.appendChild(debugInfo);
+    
     // Add click handler
-    goldenCookie.addEventListener('click', () => this.handleGoldenCookieClick(goldenCookie));
+    goldenCookie.addEventListener('click', () => {
+      console.log('Golden cookie clicked!');
+      this.handleGoldenCookieClick(goldenCookie);
+    });
+    
+    // Log the golden cookie container status
+    if (!this.goldenCookieContainer) {
+      console.error('Golden cookie container is missing! Creating it now...');
+      this.goldenCookieContainer = document.createElement('div');
+      this.goldenCookieContainer.id = 'goldenCookieContainer';
+      document.body.appendChild(this.goldenCookieContainer);
+    }
     
     // Add to container
     this.goldenCookieContainer.appendChild(goldenCookie);
     
     // Auto-disappear after 15 seconds
     setTimeout(() => {
-      if (this.state.goldenCookieActive) {
+      if (this.state.goldenCookieActive && goldenCookie.parentNode) {
+        console.log('Golden cookie expired without being clicked');
         this.removeGoldenCookie(goldenCookie);
       }
     }, 15000);
     
-    this.log('Golden cookie spawned');
+    console.log('Golden cookie spawned at position:', posX, posY);
+    console.log('Golden cookie element:', goldenCookie);
+    console.log('Image path being used:', window.getComputedStyle(goldenCookie).backgroundImage);
+    
+    return goldenCookie;
   }
 
   // Handle golden cookie click

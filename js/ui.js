@@ -208,6 +208,16 @@ function setupSettingsPanel(game) {
     alert(`Sound is now ${game.soundOn ? "ON" : "OFF"}.`);
     game.log("Sound toggled:", game.soundOn);
   });
+  
+  // Add golden cookie spawn button event listener
+  const spawnGoldenCookieButton = document.getElementById("spawnGoldenCookie");
+  if (spawnGoldenCookieButton) {
+    spawnGoldenCookieButton.addEventListener("click", () => {
+      console.log("Manual golden cookie spawn requested");
+      game.spawnGoldenCookie();
+    });
+    spawnGoldenCookieButton.addEventListener("mouseover", () => game.playHoverSound());
+  }
 }
 
 function setupAchievementsPanel(game) {

@@ -1672,3 +1672,47 @@ button.upgrade:disabled .button_top {
 }
 
 /* ...existing code... */
+
+/* Golden Cookie styling - enhanced visibility */
+#goldenCookieContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 10000; /* Very high z-index to be above everything */
+}
+
+.golden-cookie {
+  position: absolute;
+  width: 80px; /* Larger size for better visibility */
+  height: 80px;
+  background-image: url('image/goldencookie.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  cursor: pointer;
+  pointer-events: auto; /* Make it clickable */
+  z-index: 10001;
+  animation: goldenCookiePulse 1.5s infinite alternate;
+  filter: drop-shadow(0 0 15px gold);
+  
+  /* Debugging outline and background */
+  outline: 2px solid gold;
+  background-color: rgba(255, 215, 0, 0.2);
+  border-radius: 50%;
+}
+
+@keyframes goldenCookiePulse {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+}
+
+/* ...existing code... */

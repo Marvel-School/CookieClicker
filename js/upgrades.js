@@ -118,6 +118,11 @@ export class ShopUpgrade extends Upgrade {
       try {
         game[this.extra](this);
         console.log(`Successfully executed ${this.extra} method`);
+        
+        // If this is the goldenCookieChance upgrade, log the new chance
+        if (this.extra === 'increaseGoldenCookieChance') {
+          console.log(`New golden cookie chance: ${game.state.goldenCookieChance}`);
+        }
       } catch (e) {
         console.error(`Error executing method ${this.extra}:`, e);
       }
