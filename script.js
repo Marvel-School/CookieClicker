@@ -13,9 +13,18 @@ class Upgrade {
     this.extra = extra;
   }
   // New: returns text for button display.
+  // getDisplayText() {
+  //   return `${this.displayPrefix} (Cost: ${this.cost})`;
+
+  // }
   getDisplayText() {
-    return `${this.displayPrefix} (Cost: ${this.cost})`;
-  }
+    if (window.innerWidth > 932) {
+        return ` ${this.displayPrefix} (Cost: ${this.cost})`; // النص العادي
+    } else {
+        return `(Cost: ${this.cost})`; 
+    }
+}
+
   canPurchase(game) {
     return game.state.cookies >= this.cost;
   }
@@ -1152,3 +1161,49 @@ document.addEventListener("DOMContentLoaded", function () {
     dropdownContent.style.display = "none";
   });
 });
+
+
+
+  document.addEventListener("DOMContentLoaded", function () {
+    const settingsIcon = document.getElementById("settingsIcon");
+    const settingsMenu = document.getElementById("settingsMenu");
+
+    const body = document.body;
+    // const backGround = document.getElementById("backgroundBlur");
+  
+    settingsIcon.addEventListener("click", function () {
+      settingsMenu.classList.toggle("show"); 
+      body.classList.toggle("blur");
+    console.log("werk");
+    });
+  
+    // Close settings menu when clicking outside
+    document.addEventListener("click", function (event) {
+      if (!settingsMenu.contains(event.target) && !settingsIcon.contains(event.target)) {
+        settingsMenu.classList.remove("show");
+        body.classList.remove("blur");
+        console.log("eerst");
+      }
+    });
+  });
+
+  document.addEventListener("DOMContentLoaded", function () {
+  const achievementsIcon = document.getElementById("achievementsIcon");
+  const achievementsContainer = document.getElementById("achievementsContainer");
+  
+  achievementsIcon.addEventListener("click", function () {
+    achievementsContainer.classList.toggle("show"); 
+    body.classList.toggle("blur");
+  console.log("werk");
+  });
+
+  // Close settings menu when clicking outside
+  document.addEventListener("click", function (event) {
+    if (!achievementsContainer.contains(event.target) && !achievementsIcon.contains(event.target)) {
+      achievementsContainer.classList.remove("show");
+      body.classList.remove("blur");
+      console.log("eerst");
+    }
+  });
+});
+
