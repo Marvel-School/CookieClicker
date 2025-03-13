@@ -1,12 +1,34 @@
 // Utility functions
 
+// Create a container for all toast notifications
+let toastContainer = null;
+let activeToasts = [];
+
 export function showToast(message) {
+  // Create toast container if it doesn't exist
+  if (!toastContainer) {
+    toastContainer = document.createElement("div");
+    toastContainer.className = "toast-container";
+    document.body.appendChild(toastContainer);
+  }
+
+  // Create the notification
   const notification = document.createElement("div");
   notification.className = "auto-save-notification";
   notification.textContent = message;
-  document.body.appendChild(notification);
+  
+  // Add to container (at the beginning for proper stacking)
+  toastContainer.appendChild(notification);
+  
+  // Track this toast
+  activeToasts.push(notification);
+  
+  // Remove after 3 seconds
   setTimeout(() => {
-    notification.remove();
+    if (notification.parentNode === toastContainer) {
+      toastContainer.removeChild(notification);
+      activeToasts = activeToasts.filter(toast => toast !== notification);
+    }
   }, 3000);
 }
 

@@ -20,7 +20,12 @@ export default class Game {
       timeAcceleratorActive: false,
       timeAcceleratorMultiplier: 1,
       timeAcceleratorEndTime: 0,
-      luckyStreak: 0
+      luckyStreak: 0,
+      // New state properties for shop items
+      cookieMultiplier: 1,
+      goldenCookieChance: 0.1,
+      goldenCookieActive: false,
+      lastGoldenCookieTime: 0
     };
 
     // Initialize upgrades
@@ -35,6 +40,9 @@ export default class Game {
     // Shop upgrades
     this.shopUpgrades = {
       timeAccelerator: new ShopUpgrade(1000, 2.5, "Time Accelerator", "timeAccelerator", 1000),
+      // Fix the references to match the method names
+      cookieMultiplier: new ShopUpgrade(2000, 2, "Cookie Multiplier", "applyCookieMultiplier", 2000),
+      goldenCookieChance: new ShopUpgrade(3000, 1.8, "Golden Cookie Charm", "increaseGoldenCookieChance", 3000)
     };
 
     // Achievements system
@@ -114,6 +122,11 @@ export default class Game {
     this.farmsProgressBar = document.getElementById("farmsProgressBar");
     this.farmsCountVisual = document.getElementById("farmsCountVisual");
 
+    // Create container for golden cookies
+    this.goldenCookieContainer = document.createElement('div');
+    this.goldenCookieContainer.id = 'goldenCookieContainer';
+    document.body.appendChild(this.goldenCookieContainer);
+
     // Set up event listeners
     setupEventListeners(this);
     
@@ -126,6 +139,9 @@ export default class Game {
 
     // Auto-save every minute
     setInterval(() => this.autoSave(), AUTO_SAVE_INTERVAL);
+
+    // Start golden cookie spawning logic
+    this.startGoldenCookieTimer();
   }
 
   handleCookieClick(e) {
@@ -154,47 +170,171 @@ export default class Game {
   }
 
   purchaseShopUpgrade(upgradeKey) {
-    const shopUpgrade = this.shopUpgrades[upgradeKey];
-    if (!shopUpgrade) return;
+    console.log(`Attempting to purchase shop upgrade: ${upgradeKey}`);
+    console.log("Available shop upgrades:", Object.keys(this.shopUpgrades));
     
-    shopUpgrade.purchase(this);
+    const shopUpgrade = this.shopUpgrades[upgradeKey];
+    if (!shopUpgrade) {
+      this.log(`Shop upgrade not found: ${upgradeKey}`);
+      console.error(`Failed to find shop upgrade with key: ${upgradeKey}`);
+      return;
+    }
+    
+    this.log(`Purchasing shop upgrade: ${upgradeKey} (${shopUpgrade.displayPrefix})`);
+    console.log(`Purchase details: cost=${shopUpgrade.cost}, cookies=${this.state.cookies}`);
+    
+    try {
+      shopUpgrade.purchase(this);
+      console.log(`Successfully purchased ${upgradeKey}`);
+    } catch (error) {
+      console.error(`Error during purchase of ${upgradeKey}:`, error);
+    }
   }
 
-  activateTimeAccelerator(item) {
-    const baseCost = item.baseCost || 1000;
-    const minDuration = 30; // 30 seconds - shorter base duration
-    const maxDuration = 60; // 1 minute max
+  // New method for cookie multiplier
+  applyCookieMultiplier(item) {
+    // Increase multiplier by 0.5 (50%)
+    this.state.cookieMultiplier += 0.5;
     
-    let duration = minDuration + (item.cost - baseCost) * 0.05;
-    duration = Math.min(duration, maxDuration);
+    showToast(`Cookie production multiplier increased to ${this.state.cookieMultiplier}x!`);
+    this.log(`Cookie multiplier upgraded to ${this.state.cookieMultiplier}x`);
+  }
 
-    this.state.timeAcceleratorActive = true;
-    this.state.timeAcceleratorMultiplier = 4; // Increased from 2 to 4x
-    this.state.timeAcceleratorEndTime = Date.now() + duration * 1000;
-
-    // Add visual effects when activated
-    applyTimeAcceleratorVisuals(this.cookie, this.cpsDisplay, true);
+  // New method for golden cookie chance
+  increaseGoldenCookieChance(item) {
+    // Increase golden cookie chance by 0.05 (5%)
+    this.state.goldenCookieChance = Math.min(this.state.goldenCookieChance + 0.05, 0.5);
     
-    this.log(
-      "Time Accelerator activated for",
-      duration,
-      "seconds, multiplier:",
-      this.state.timeAcceleratorMultiplier
-    );
-    
-    showToast(`Time Accelerator activated! 4x production for ${Math.floor(duration)} seconds!`);
+    showToast(`Golden Cookie chance increased to ${Math.round(this.state.goldenCookieChance * 100)}%!`);
+    this.log(`Golden cookie chance increased to ${this.state.goldenCookieChance}`);
+  }
 
+  // Start golden cookie spawn timer
+  startGoldenCookieTimer() {
+    const checkGoldenCookie = () => {
+      if (!this.state.goldenCookieActive) {
+        const now = Date.now();
+        // Make sure at least 30 seconds passed since last golden cookie
+        if (now - this.state.lastGoldenCookieTime > 30000) {
+          // Random chance based on goldenCookieChance
+          if (Math.random() < this.state.goldenCookieChance) {
+            this.spawnGoldenCookie();
+          }
+        }
+      }
+      
+      // Check again after a delay
+      setTimeout(checkGoldenCookie, 5000);
+    };
+    
+    // Start the timer
+    setTimeout(checkGoldenCookie, 10000);
+  }
+
+  // Spawn a golden cookie
+  spawnGoldenCookie() {
+    if (this.state.goldenCookieActive) return;
+    
+    this.state.goldenCookieActive = true;
+    
+    // Create the golden cookie element
+    const goldenCookie = document.createElement('div');
+    goldenCookie.className = 'golden-cookie';
+    
+    // Random position on screen
+    const maxX = window.innerWidth - 80;
+    const maxY = window.innerHeight - 80;
+    const posX = Math.floor(Math.random() * maxX) + 40;
+    const posY = Math.floor(Math.random() * maxY) + 40;
+    
+    goldenCookie.style.left = `${posX}px`;
+    goldenCookie.style.top = `${posY}px`;
+    
+    // Add click handler
+    goldenCookie.addEventListener('click', () => this.handleGoldenCookieClick(goldenCookie));
+    
+    // Add to container
+    this.goldenCookieContainer.appendChild(goldenCookie);
+    
+    // Auto-disappear after 15 seconds
     setTimeout(() => {
-      this.state.timeAcceleratorActive = false;
-      this.state.timeAcceleratorMultiplier = 1;
-      this.state.timeAcceleratorEndTime = 0;
-      
-      // Remove visual effects when deactivated
-      applyTimeAcceleratorVisuals(this.cookie, this.cpsDisplay, false);
-      
-      this.log("Time Accelerator expired");
-      showToast("Time Accelerator expired");
-    }, duration * 1000);
+      if (this.state.goldenCookieActive) {
+        this.removeGoldenCookie(goldenCookie);
+      }
+    }, 15000);
+    
+    this.log('Golden cookie spawned');
+  }
+
+  // Handle golden cookie click
+  handleGoldenCookieClick(goldenCookie) {
+    if (!this.state.goldenCookieActive) return;
+    
+    // Different possible rewards
+    const rewards = [
+      {
+        type: 'cookies',
+        value: () => Math.floor(this.state.cookies * 0.1), // 10% of current cookies
+        message: (amt) => `Golden cookie grants you ${amt} cookies!`
+      },
+      {
+        type: 'multiply',
+        value: () => 2, // 2x production for 30 seconds
+        message: () => `Golden cookie doubles production for 30 seconds!`
+      },
+      {
+        type: 'clickPower',
+        value: () => Math.ceil(this.state.clickPower * 0.5), // +50% click power
+        message: (amt) => `Golden cookie increases click power by ${amt}!`
+      }
+    ];
+    
+    // Select random reward
+    const reward = rewards[Math.floor(Math.random() * rewards.length)];
+    
+    // Apply the reward
+    switch (reward.type) {
+      case 'cookies':
+        const cookieBonus = reward.value();
+        this.state.cookies += cookieBonus;
+        showToast(reward.message(cookieBonus));
+        break;
+      case 'multiply':
+        const multiplier = reward.value();
+        // Temporary production boost
+        const oldMultiplier = this.state.cookieMultiplier;
+        this.state.cookieMultiplier *= multiplier;
+        showToast(reward.message());
+        
+        // Reset after 30 seconds
+        setTimeout(() => {
+          this.state.cookieMultiplier = oldMultiplier;
+          showToast('Golden cookie production boost has ended.');
+        }, 30000);
+        break;
+      case 'clickPower':
+        const powerBonus = reward.value();
+        this.state.clickPower += powerBonus;
+        showToast(reward.message(powerBonus));
+        break;
+    }
+    
+    // Remove the golden cookie
+    this.removeGoldenCookie(goldenCookie);
+    
+    // Update display
+    this.updateDisplay();
+    this.checkAchievements();
+  }
+
+  // Remove golden cookie from screen
+  removeGoldenCookie(goldenCookie) {
+    if (goldenCookie && goldenCookie.parentNode) {
+      goldenCookie.parentNode.removeChild(goldenCookie);
+    }
+    
+    this.state.goldenCookieActive = false;
+    this.state.lastGoldenCookieTime = Date.now();
   }
 
   startGameLoop() {
@@ -214,7 +354,11 @@ export default class Game {
       const autoClickers = this.upgrades.autoClicker.count || 0;
       const grandmas = this.upgrades.grandma.count || 0;
       const farms = this.upgrades.farm.count || 0;
-      const cps = autoClickers * 1 + grandmas * 5 + farms * 10;
+      let cps = autoClickers * 1 + grandmas * 5 + farms * 10;
+      
+      // Apply cookie multiplier
+      cps *= this.state.cookieMultiplier;
+      
       const timeAccelMult = this.state.timeAcceleratorActive
         ? this.state.timeAcceleratorMultiplier
         : 1;
@@ -391,10 +535,13 @@ export default class Game {
       if (typeof savedGame.shopUpgrades === "object") {
         this.shopUpgrades = {
           timeAccelerator: new ShopUpgrade(1000, 2.5, "Time Accelerator", "timeAccelerator", 1000),
+          // Make sure to include the new shop items here too
+          cookieMultiplier: new ShopUpgrade(2000, 2, "Cookie Multiplier", "applyCookieMultiplier", 2000),
+          goldenCookieChance: new ShopUpgrade(3000, 1.8, "Golden Cookie Charm", "increaseGoldenCookieChance", 3000)
         };
         
         Object.keys(savedGame.shopUpgrades).forEach((key) => {
-          if (savedGame.shopUpgrades[key].cost !== undefined) {
+          if (savedGame.shopUpgrades[key].cost !== undefined && this.shopUpgrades[key]) {
             this.shopUpgrades[key].cost = savedGame.shopUpgrades[key].cost;
           }
         });
@@ -451,7 +598,12 @@ export default class Game {
       timeAcceleratorActive: false,
       timeAcceleratorMultiplier: 1,
       timeAcceleratorEndTime: 0,
-      luckyStreak: 0
+      luckyStreak: 0,
+      // New state properties for shop items
+      cookieMultiplier: 1,
+      goldenCookieChance: 0.1,
+      goldenCookieActive: false,
+      lastGoldenCookieTime: 0
     };
     
     this.upgrades = {
@@ -464,6 +616,9 @@ export default class Game {
     
     this.shopUpgrades = {
       timeAccelerator: new ShopUpgrade(1000, 2.5, "Time Accelerator", "timeAccelerator", 1000),
+      // Add new shop items
+      cookieMultiplier: new ShopUpgrade(2000, 2, "Cookie Multiplier", "applyCookieMultiplier", 2000),
+      goldenCookieChance: new ShopUpgrade(3000, 1.8, "Golden Cookie Charm", "increaseGoldenCookieChance", 3000)
     };
     
     // Properly reset achievements
@@ -476,5 +631,35 @@ export default class Game {
     
     this.log("Game reset.");
     alert("Game has been reset.");
+  }
+
+  // Fix the broken showToast method
+  showToast(message) {
+    try {
+      showToast(message); // Call the imported showToast function
+    } catch (e) {
+      console.error("Error showing toast:", e);
+      // Fallback implementation uses the same container pattern
+      const toastContainer = document.querySelector('.toast-container') || 
+        (() => {
+          const container = document.createElement("div");
+          container.className = "toast-container";
+          document.body.appendChild(container);
+          return container;
+        })();
+      
+      const notification = document.createElement("div");
+      notification.className = "auto-save-notification";
+      notification.textContent = message;
+      toastContainer.appendChild(notification);
+      
+      setTimeout(() => {
+        notification.remove();
+      }, 3000);
+    }
+  }
+
+  updateDisplay() {
+    updateGameDisplay(this);
   }
 }

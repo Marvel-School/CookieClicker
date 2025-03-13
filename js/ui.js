@@ -57,19 +57,58 @@ export function setupEventListeners(game) {
 }
 
 function setupTooltips(game) {
-  document.querySelectorAll('.shop-item').forEach(item => {
+  console.log("Setting up shop item tooltips and click handlers");
+  
+  // Get all shop items first to see if they exist
+  const shopItems = document.querySelectorAll('.shop-item');
+  console.log(`Found ${shopItems.length} shop items to set up`);
+  
+  shopItems.forEach((item, index) => {
+    // Log the original data-upgrade attribute to verify it exists
+    const upgradeKey = item.getAttribute("data-upgrade");
+    console.log(`Shop item ${index + 1} has data-upgrade="${upgradeKey}"`);
+    
     // First, clone the item to remove existing event handlers
     const clone = item.cloneNode(true);
     item.parentNode.replaceChild(clone, item);
     
-    // Add purchase functionality
+    // Add click handler to the ENTIRE shop item (not just the image)
+    clone.addEventListener('click', (e) => {
+      e.stopPropagation(); // Prevent bubbling
+      const upgradeKey = clone.getAttribute("data-upgrade");
+      console.log(`Shop item clicked with key: ${upgradeKey}`);
+      
+      if (upgradeKey && game.shopUpgrades[upgradeKey]) {
+        console.log(`Found matching upgrade for ${upgradeKey}, attempting purchase`);
+        try {
+          game.purchaseShopUpgrade(upgradeKey);
+        } catch (error) {
+          console.error(`Error purchasing ${upgradeKey}:`, error);
+        }
+      } else {
+        console.error(`Shop upgrade not found in game.shopUpgrades: ${upgradeKey}`);
+        console.log("Available upgrades:", Object.keys(game.shopUpgrades));
+      }
+    });
+    
+    // Also keep the image click handler as a backup
     const itemImage = clone.querySelector('img.shop-item-image');
     if (itemImage) {
       itemImage.addEventListener('click', (e) => {
         e.stopPropagation(); // Prevent bubbling
         const upgradeKey = clone.getAttribute("data-upgrade");
-        if (upgradeKey) game.purchaseShopUpgrade(upgradeKey);
+        console.log(`Shop item IMAGE clicked with key: ${upgradeKey}`);
+        
+        if (upgradeKey && game.shopUpgrades[upgradeKey]) {
+          console.log(`Found matching upgrade for ${upgradeKey}, attempting purchase`);
+          game.purchaseShopUpgrade(upgradeKey);
+        } else {
+          console.error(`Shop upgrade not found in game.shopUpgrades: ${upgradeKey}`);
+          console.log("Available upgrades:", Object.keys(game.shopUpgrades));
+        }
       });
+    } else {
+      console.warn(`No image found for shop item with upgrade ${upgradeKey}`);
     }
     
     // Single tooltip implementation with better cleanup
@@ -198,6 +237,12 @@ function setupAchievementsPanel(game) {
 }
 
 export function updateGameDisplay(game) {
+  // Protect against NaN in cookie count
+  if (isNaN(game.state.cookies)) {
+    console.error("Cookie count is NaN, fixing...");
+    game.state.cookies = 0;
+  }
+  
   const cookies = Math.floor(game.state.cookies);
   
   // Update text displays
@@ -213,6 +258,18 @@ export function updateGameDisplay(game) {
   
   // Update progression visuals
   updateProgressionVisuals(game);
+  
+  // Show multiplier in stats if above 1
+  if (game.state.cookieMultiplier > 1) {
+    if (!document.getElementById('multiplierDisplay')) {
+      const multiplierEl = document.createElement('p');
+      multiplierEl.id = 'multiplierDisplay';
+      game.cpsDisplay.parentNode.insertBefore(multiplierEl, game.cpsDisplay.nextSibling);
+    }
+    const multiplierDisplay = document.getElementById('multiplierDisplay');
+    multiplierDisplay.textContent = `Multiplier: ${Number(game.state.cookieMultiplier).toFixed(1)}x`;
+    multiplierDisplay.style.color = game.state.cookieMultiplier >= 2 ? '#ffbb00' : '';
+  }
 }
 
 function updateButtonStates(game, cookies) {
@@ -244,13 +301,13 @@ function updateButtonStates(game, cookies) {
     });
   });
   
-  // Update shop item costs
-  const timeAccelEl = document.querySelector(
-    `[data-upgrade="timeAccelerator"] .item-cost span`
-  );
-  if (timeAccelEl && game.shopUpgrades.timeAccelerator) {
-    timeAccelEl.textContent = game.shopUpgrades.timeAccelerator.cost;
-  }
+  // Update all shop item costs
+  Object.keys(game.shopUpgrades).forEach((key) => {
+    const costElement = document.querySelector(`[data-upgrade="${key}"] .item-cost span`);
+    if (costElement && game.shopUpgrades[key]) {
+      costElement.textContent = game.shopUpgrades[key].cost;
+    }
+  });
   
   // Update individual button states
   game.clickUpgradeButton.disabled = cookies < game.upgrades.clickUpgrade.cost;
@@ -284,7 +341,16 @@ function updateProgressionVisuals(game) {
   const autoClickers = game.upgrades.autoClicker.count || 0;
   const grandmas = game.upgrades.grandma.count || 0;
   const farms = game.upgrades.farm.count || 0;
-  const cps = autoClickers * 1 + grandmas * 5 + farms * 10;
+  let cps = autoClickers * 1 + grandmas * 5 + farms * 10;
+  
+  // Apply cookie multiplier (protect against NaN)
+  if (typeof game.state.cookieMultiplier === 'number' && !isNaN(game.state.cookieMultiplier)) {
+    cps *= game.state.cookieMultiplier;
+  } else {
+    console.error("Cookie multiplier is not a valid number:", game.state.cookieMultiplier);
+    game.state.cookieMultiplier = 1; // Reset to default if invalid
+  }
+  
   game.cpsDisplay.textContent = Math.floor(cps);
   
   // Update visual indicators for game resources
