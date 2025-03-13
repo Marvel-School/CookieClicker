@@ -67,18 +67,144 @@ body {
   box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.25);
 }
 
-/* TOP Section: Stats */
+/* TOP Section: Stats - REDESIGNED */
 .stats {
   position: fixed;
   top: 20px;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(255, 255, 255, 0.9);
-  padding: 15px 20px;
+  background: rgba(255, 255, 255, 0.92);
   border-radius: 12px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   z-index: 200;
   text-align: center;
+  padding: 12px 15px;
+  width: auto;
+  min-width: 220px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+}
+
+/* New cookie count styling */
+.stats h1 {
+  font-size: 1.6em;
+  margin: 0 0 8px 0;
+  color: #333;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.stats h1 .cookie-icon {
+  font-size: 0.9em;
+  animation: cookieSpin 3s infinite linear;
+  display: inline-block;
+}
+
+.stats h1 #cookieCount {
+  color: #8b4513; /* Cookie brown */
+  font-weight: 700;
+  transition: text-shadow 0.3s, color 0.3s;
+}
+
+.stats h1 #cookieCount.updating {
+  text-shadow: 0 0 8px rgba(139, 69, 19, 0.7);
+}
+
+/* Stats metrics section */
+.stats-metrics {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  font-size: 0.9em;
+  margin-top: 3px;
+  padding-top: 6px;
+  border-top: 1px dashed rgba(0, 0, 0, 0.1);
+}
+
+.stats-metric {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stats-metric .label {
+  font-size: 0.75em;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #777;
+  margin-bottom: 2px;
+}
+
+.stats-metric .value {
+  font-weight: 600;
+  color: #333;
+  font-size: 1.1em;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.stats-metric .icon {
+  opacity: 0.7;
+  font-size: 0.9em;
+}
+
+.stats-metric #clickPower, 
+.stats-metric #cps {
+  transition: color 0.3s, text-shadow 0.3s;
+}
+
+.stats-metric #cps.boosted {
+  color: #ffaa00;
+  text-shadow: 0 0 5px rgba(255, 170, 0, 0.3);
+}
+
+.stats-metric #clickPower.boosted {
+  color: #ff6600;
+  text-shadow: 0 0 5px rgba(255, 102, 0, 0.3);
+}
+
+@keyframes cookieSpin {
+  0% { transform: rotate(0deg); }
+  25% { transform: rotate(0deg); }
+  35% { transform: rotate(10deg); }
+  45% { transform: rotate(-10deg); }
+  55% { transform: rotate(5deg); }
+  65% { transform: rotate(-5deg); }
+  75% { transform: rotate(0deg); }
+  100% { transform: rotate(0deg); }
+}
+
+/* Cookie gain animation */
+@keyframes cookieGain {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+
+.cookie-gain {
+  animation: cookieGain 0.4s ease-in-out;
+}
+
+/* New Position for Boost Indicators */
+#production-boost-indicator,
+#click-boost-indicator,
+#frenzy-indicator {
+  margin-top: 5px;
+  font-size: 0.8em;
+  padding: 3px 6px;
+  border-radius: 10px;
+  display: inline-block;
+}
+
+#multiplierDisplay {
+  margin: 0;
+  font-size: 0.85em;
+  color: #777;
 }
 
 /* ACHIEVEMENTS Container - Redesigned Trophy Case Look */
@@ -649,7 +775,7 @@ section .set div:nth-child(25) {
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2),
               inset 0 1px 3px rgba(255, 255, 255, 0.8);
   z-index: 210;
-  overflow: hidden;
+  overflow: hidden; /* For the header styling */
   border: 1px solid rgba(210, 210, 210, 0.8);
 }
 
@@ -1668,6 +1794,129 @@ button.upgrade:disabled .button_top {
   100% {
     opacity: 0;
     transform: translateY(-20px);
+  }
+}
+
+/* ...existing code... */
+
+/* Golden Cookie styling - enhanced visibility */
+#goldenCookieContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 10000; /* Very high z-index to be above everything */
+}
+
+.golden-cookie {
+  position: absolute;
+  width: 80px; /* Larger size for better visibility */
+  height: 80px;
+  background-image: url('image/goldencookie.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  cursor: pointer;
+  pointer-events: auto; /* Make it clickable */
+  z-index: 10001;
+  animation: goldenCookiePulse 1.5s infinite alternate;
+  filter: drop-shadow(0 0 15px gold);
+  
+  /* Debugging outline and background */
+  outline: 2px solid gold;
+  background-color: rgba(255, 215, 0, 0.2);
+  border-radius: 50%;
+}
+
+@keyframes goldenCookiePulse {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+}
+
+/* ...existing code... */
+
+/* Golden cookie animation when clicked */
+.golden-cookie-clicked {
+  animation: zoom-out 0.5s forwards;
+  filter: brightness(1.5);
+}
+
+@keyframes zoom-out {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+/* Pulse animation for bonus indicators */
+@keyframes pulse {
+  0% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Click power boosted cookie animation */
+#cookie.click-boosted {
+  animation: click-pulse 0.8s infinite alternate;
+  filter: brightness(1.2) drop-shadow(0 0 10px orange);
+}
+
+@keyframes click-pulse {
+  0% {
+    transform: scale(1.02);
+  }
+  100% {
+    transform: scale(1.08);
+    filter: brightness(1.4) drop-shadow(0 0 15px orange);
+  }
+}
+
+/* New Frenzy animation for clicking frenzy */
+#cookie.frenzy-boosted {
+  animation: frenzy-pulse 0.4s infinite alternate;
+  filter: brightness(1.5) drop-shadow(0 0 15px crimson);
+}
+
+@keyframes frenzy-pulse {
+  0% {
+    transform: scale(1.1) rotate(-2deg);
+  }
+  100% {
+    transform: scale(1.2) rotate(2deg);
+    filter: brightness(1.8) saturate(1.5) drop-shadow(0 0 20px crimson);
+  }
+}
+
+/* ...existing code... */
+
+/* Click power boosted cookie animation */
+#cookie.click-boosted {
+  animation: click-pulse 0.8s infinite alternate;
+  filter: brightness(1.2) drop-shadow(0 0 10px orange);
+}
+
+@keyframes click-pulse {
+  0% {
+    transform: scale(1.02);
+  }
+  100% {
+    transform: scale(1.08);
+    filter: brightness(1.4) drop-shadow(0 0 15px orange);
   }
 }
 

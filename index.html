@@ -132,9 +132,18 @@
       <!-- CENTER Section: Background, Stats, and Cookie -->
       <div class="center">
         <div class="stats">
-          <h1>Cookies: <span id="cookieCount">0</span></h1>
-          <p>Per Click: <span id="clickPower">1</span></p>
-          <p>Cookies Per Second: <span id="cps">0</span></p>
+          <h1><span class="cookie-icon">🍪</span>Cookies: <span id="cookieCount">0</span></h1>
+          <div class="stats-metrics">
+            <div class="stats-metric">
+              <span class="label">Per Click</span>
+              <span class="value"><span class="icon">👆</span><span id="clickPower">1</span></span>
+            </div>
+            <div class="stats-metric">
+              <span class="label">Per Second</span>
+              <span class="value"><span class="icon">⏱️</span><span id="cps">0</span></span>
+            </div>
+          </div>
+          <!-- Boost indicators will be inserted here by JavaScript -->
         </div>
         <img id="cookie" src="image/cookie.png" alt="Cookie" />
       </div>
@@ -193,6 +202,7 @@
           <button id="loadGame">Load Game</button>
           <button id="resetGame">Reset Game</button>
           <button id="toggleSound">Toggle Sound</button>
+          <!-- Removing temporary debug button -->
         </div>
       </div>
     </section>
