@@ -48,8 +48,12 @@ export function createConfetti(x, y, lastConfettiTime) {
     confettiCtx = confettiCanvas.getContext('2d');
   }
 
-  // Create particles
-  const numParticles = 10;
+  // Get particle intensity from CSS variable (set by personalization)
+  const intensity = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--particle-intensity') || 1);
+  
+  // Create particles - scale count by intensity
+  const baseParticles = 10;
+  const numParticles = Math.max(1, Math.round(baseParticles * intensity));
   const particles = [];
   
   // Create particle objects (not DOM elements)
@@ -57,10 +61,10 @@ export function createConfetti(x, y, lastConfettiTime) {
     particles.push({
       x: x,
       y: y,
-      size: PARTICLE_SIZE,
+      size: PARTICLE_SIZE * (0.8 + (Math.random() * 0.4 * intensity)),
       color: ['#ff6b6b', '#48dbfb', '#feca57', '#1dd1a1', '#ff9ff3'][Math.floor(Math.random() * 5)],
-      speedX: Math.random() * 6 - 3,
-      speedY: Math.random() * -3 - 2,
+      speedX: (Math.random() * 6 - 3) * intensity,
+      speedY: (Math.random() * -3 - 2) * intensity,
       rotation: 0,
       rotationSpeed: Math.random() * 0.2 - 0.1,
       opacity: 1,
