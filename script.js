@@ -153,7 +153,7 @@ class Game {
     };
 
     this.shopUpgrades = {
-      timeAccelerator: new ShopUpgrade(300, 2, "Time Accelerator", "timeAccelerator", 300),
+      timeAccelerator: new ShopUpgrade(1000, 2.5, "Time Accelerator", "timeAccelerator", 1000),
     };
 
     // Replace simple achievements array with a more structured system
@@ -208,6 +208,10 @@ class Game {
 
     // Shop Section
     this.shopElement = document.getElementById("shop");
+
+    // Shop Section - Updated for collapsible shop
+    this.shopIcon = document.getElementById("shopIcon");
+    this.shopContainer = document.getElementById("shopContainer");
 
     // Settings Panel Elements
     this.saveGameButton = document.getElementById("saveGame");
@@ -265,7 +269,7 @@ class Game {
     );
 
     // Shop Items: Purchase by clicking the item image
-    this.shopElement.querySelectorAll(".shop-item img").forEach((itemImage) => {
+    document.querySelectorAll(".shop-item img").forEach((itemImage) => {
       itemImage.addEventListener("click", () => {
         const upgradeKey = itemImage
           .closest(".shop-item")
@@ -273,6 +277,29 @@ class Game {
         this.purchaseShopUpgrade(upgradeKey);
       });
     });
+
+    // New shop icon click handler
+    if (this.shopIcon && this.shopContainer) {
+      this.shopIcon.addEventListener("click", (e) => {
+        e.stopPropagation(); // Prevent closing when clicking the icon
+        const isVisible = this.shopContainer.style.display === "block";
+        this.shopContainer.style.display = isVisible ? "none" : "block";
+      });
+      
+      // Prevent clicks inside the shop container from closing it
+      this.shopContainer.addEventListener("click", (e) => {
+        e.stopPropagation();
+      });
+      
+      // Close shop panel when clicking elsewhere
+      document.addEventListener("click", () => {
+        if (this.shopContainer.style.display === "block") {
+          this.shopContainer.style.display = "none";
+        }
+      });
+    } else {
+      this.log("ERROR: shopIcon or shopContainer not found!");
+    }
 
     // Settings Panel: Toggle display on settings icon click with improved handling
     this.settingsIcon.addEventListener("click", (e) => {
@@ -345,6 +372,149 @@ class Game {
 
     // Cookie click handler
     this.cookie.addEventListener("click", (e) => this.handleCookieClick(e));
+
+    // CLEANUP: REMOVE ALL DUPLICATE TOOLTIP IMPLEMENTATIONS AND REPLACE WITH THIS SINGLE IMPLEMENTATION
+    document.querySelectorAll('.shop-item').forEach(item => {
+      // First, let's completely clone the item to remove any existing event handlers
+      const clone = item.cloneNode(true);
+      item.parentNode.replaceChild(clone, item);
+      
+      // Add purchase functionality
+      const itemImage = clone.querySelector('img.shop-item-image');
+      if (itemImage) {
+        itemImage.addEventListener('click', () => {
+          const upgradeKey = clone.getAttribute("data-upgrade");
+          if (upgradeKey) this.purchaseShopUpgrade(upgradeKey);
+        });
+      }
+      
+      // Single tooltip implementation with viewport boundary checking
+      const tooltip = clone.querySelector('.item-desc');
+      if (tooltip) {
+        // Store tooltip content
+        const originalContent = tooltip.innerHTML;
+        
+        // Add mouse events
+        clone.addEventListener('mouseenter', () => {
+          // Remove any existing tooltips to avoid duplicates
+          document.querySelectorAll('body > .item-desc').forEach(t => t.remove());
+          
+          // Create fresh tooltip element
+          const newTooltip = document.createElement('div');
+          newTooltip.className = 'item-desc';
+          newTooltip.innerHTML = `<div class="text-container">${originalContent}</div>`;
+          document.body.appendChild(newTooltip);
+          
+          // Get positioning information
+          const rect = clone.getBoundingClientRect();
+          const tooltipHeight = newTooltip.offsetHeight || 120;
+          const tooltipWidth = newTooltip.offsetWidth || 220;
+          const minPadding = 10;
+          
+          // Check if tooltip would be cut off at top
+          const positionAbove = rect.top - tooltipHeight - 15;
+          if (positionAbove < minPadding) {
+            // Position below instead
+            newTooltip.style.top = (rect.bottom + 15) + 'px';
+            newTooltip.classList.add('position-below');
+          } else {
+            // Position above (standard)
+            newTooltip.style.top = positionAbove + 'px';
+          }
+          
+          // Handle horizontal positioning
+          let leftPos = rect.left + (rect.width / 2) - (tooltipWidth / 2);
+          if (leftPos < minPadding) {
+            leftPos = minPadding;
+          } else if (leftPos + tooltipWidth > window.innerWidth - minPadding) {
+            leftPos = window.innerWidth - tooltipWidth - minPadding;
+          }
+          newTooltip.style.left = leftPos + 'px';
+          
+          // Ensure visibility
+          newTooltip.style.zIndex = '100000000';
+        });
+        
+        clone.addEventListener('mouseleave', () => {
+          // Clean up any tooltips when mouse leaves
+          document.querySelectorAll('body > .item-desc').forEach(t => t.remove());
+        });
+      }
+    });
+
+    // IMPROVED TOOLTIP IMPLEMENTATION - Fixes multiple tooltips
+    document.querySelectorAll('.shop-item').forEach(item => {
+      // First, let's completely clone the item to remove any existing event handlers
+      const clone = item.cloneNode(true);
+      item.parentNode.replaceChild(clone, item);
+      
+      // Add purchase functionality
+      const itemImage = clone.querySelector('img.shop-item-image');
+      if (itemImage) {
+        itemImage.addEventListener('click', (e) => {
+          e.stopPropagation(); // Prevent bubbling
+          const upgradeKey = clone.getAttribute("data-upgrade");
+          if (upgradeKey) this.purchaseShopUpgrade(upgradeKey);
+        });
+      }
+      
+      // Single tooltip implementation with better cleanup
+      const tooltip = clone.querySelector('.item-desc');
+      if (tooltip) {
+        // Store tooltip content
+        const originalContent = tooltip.innerHTML;
+        
+        // Add mouse events
+        clone.addEventListener('mouseenter', (e) => {
+          e.stopPropagation(); // Prevent event bubbling
+          
+          // Remove ANY tooltip elements from anywhere in the DOM
+          document.querySelectorAll('.item-desc-tooltip').forEach(t => t.remove());
+          
+          // Create fresh tooltip element with special class for identification
+          const newTooltip = document.createElement('div');
+          newTooltip.className = 'item-desc item-desc-tooltip'; // Add specific class
+          newTooltip.innerHTML = `<div class="text-container">${originalContent}</div>`;
+          document.body.appendChild(newTooltip);
+          
+          // Get positioning information
+          const rect = clone.getBoundingClientRect();
+          const tooltipHeight = newTooltip.offsetHeight || 120;
+          const tooltipWidth = newTooltip.offsetWidth || 220;
+          const minPadding = 10;
+          
+          // Check if tooltip would be cut off at top
+          const positionAbove = rect.top - tooltipHeight - 15;
+          if (positionAbove < minPadding) {
+            // Position below instead
+            newTooltip.style.top = (rect.bottom + 15) + 'px';
+            newTooltip.classList.add('position-below');
+          } else {
+            // Position above (standard)
+            newTooltip.style.top = positionAbove + 'px';
+          }
+          
+          // Handle horizontal positioning
+          let leftPos = rect.left + (rect.width / 2) - (tooltipWidth / 2);
+          if (leftPos < minPadding) {
+            leftPos = minPadding;
+          } else if (leftPos + tooltipWidth > window.innerWidth - minPadding) {
+            leftPos = window.innerWidth - tooltipWidth - minPadding;
+          }
+          newTooltip.style.left = leftPos + 'px';
+          
+          // Ensure visibility
+          newTooltip.style.zIndex = '100000000';
+        });
+        
+        clone.addEventListener('mouseleave', (e) => {
+          e.stopPropagation(); // Prevent event bubbling
+          // Clean up any tooltips when mouse leaves using the specific class
+          document.querySelectorAll('.item-desc-tooltip').forEach(t => t.remove());
+        });
+      }
+    });
+
   }
 
   handleCookieClick(e) {
@@ -375,31 +545,63 @@ class Game {
   }
 
   activateTimeAccelerator(item) {
-    const baseCost = item.baseCost || 300;
-    const minDuration = 120; // 2 minutes
-    const maxDuration = 300; // 5 minutes
-    let duration = minDuration + (item.cost - baseCost) * 0.2;
+    const baseCost = item.baseCost || 1000;
+    const minDuration = 30; // 30 seconds - shorter base duration
+    const maxDuration = 60; // 1 minute max
+    let duration = minDuration + (item.cost - baseCost) * 0.05;
     duration = Math.min(duration, maxDuration);
 
     this.state.timeAcceleratorActive = true;
-    this.state.timeAcceleratorMultiplier = item.multiplier;
+    this.state.timeAcceleratorMultiplier = 4; // Increased from 2 to 4x
     this.state.timeAcceleratorEndTime = Date.now() + duration * 1000;
 
+    // Add visual effects when activated
+    this.applyTimeAcceleratorVisuals(true);
+    
     this.log(
       "Time Accelerator activated for",
       duration,
       "seconds, multiplier:",
-      item.multiplier
+      this.state.timeAcceleratorMultiplier
     );
-    this.showToast("Time Accelerator activated!");
+    this.showToast(`Time Accelerator activated! 4x production for ${Math.floor(duration)} seconds!`);
 
     setTimeout(() => {
       this.state.timeAcceleratorActive = false;
       this.state.timeAcceleratorMultiplier = 1;
       this.state.timeAcceleratorEndTime = 0;
+      
+      // Remove visual effects when deactivated
+      this.applyTimeAcceleratorVisuals(false);
+      
       this.log("Time Accelerator expired");
       this.showToast("Time Accelerator expired");
     }, duration * 1000);
+  }
+  
+  // New method to handle visual effects
+  applyTimeAcceleratorVisuals(active) {
+    // Apply effects to cookie
+    if (this.cookie) {
+      if (active) {
+        this.cookie.classList.add('accelerated');
+        this.cookie.style.filter = "brightness(1.5) drop-shadow(0 0 10px gold)";
+      } else {
+        this.cookie.classList.remove('accelerated');
+        this.cookie.style.filter = "";
+      }
+    }
+    
+    // Apply effects to CPS display
+    if (this.cpsDisplay) {
+      if (active) {
+        this.cpsDisplay.style.color = "#ff4500";
+        this.cpsDisplay.style.fontWeight = "bold";
+      } else {
+        this.cpsDisplay.style.color = "";
+        this.cpsDisplay.style.fontWeight = "";
+      }
+    }
   }
 
   startGameLoop() {
@@ -517,7 +719,7 @@ class Game {
         (this.state.timeAcceleratorEndTime - Date.now()) / 1000
       );
       if (secondsLeft > 0 && timerSpan) {
-        timerSpan.textContent = `Active: ${secondsLeft}s left`;
+        timerSpan.textContent = `⚡ 4x ACTIVE: ${secondsLeft}s ⚡`;
       } else if (timerSpan) {
         timerSpan.textContent = "";
       }
@@ -1162,73 +1364,8 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
+// This file redirects to use the modular version
+console.log("Loading Cookie Clicker through module system...");
 
-
-  document.addEventListener("DOMContentLoaded", function () {
-    const settingsIcon = document.getElementById("settingsIcon");
-    const settingsMenu = document.getElementById("settingsMenu");
-
-    const body = document.body;
-    
-    settingsIcon.addEventListener("click", function () {
-      settingsMenu.classList.toggle("show"); 
-      body.classList.toggle("blur");
-      console.log("werk");
-    });
-  
-    // Close settings menu when clicking outside
-    document.addEventListener("click", function (event) {
-      if (!settingsMenu.contains(event.target) && !settingsIcon.contains(event.target)) {
-        settingsMenu.classList.remove("show");
-        body.classList.remove("blur");
-        console.log("eerst");
-      }
-    });
-  });
-
-  document.addEventListener("DOMContentLoaded", function () {
-  const achievementsIcon = document.getElementById("achievementsIcon");
-  const achievementsContainer = document.getElementById("achievementsContainer");
-  
-  achievementsIcon.addEventListener("click", function () {
-    achievementsContainer.classList.add("show"); 
-    body.classList.add("blur");
-  console.log("werk");
-  });
-
-  // Close settings menu when clicking outside
-  document.addEventListener("click", function (event) {
-    if (!achievementsContainer.contains(event.target) && !achievementsIcon.contains(event.target)) {
-      achievementsContainer.classList.remove("show");
-      body.classList.remove("blur");
-      console.log("eerst");
-    }
-  });
-});
-
-document.addEventListener("DOMContentLoaded", function () {
-  let cookie = document.getElementById("cookie");
-  let images = document.querySelectorAll(".set img");
-
-  cookie.addEventListener("click", function () {
-      if (images.length === 0) return; 
-
-      let randomIndex = Math.floor(Math.random() * images.length); 
-      let selectedImage = images[randomIndex];
-
-      let newImg = document.createElement("img");
-      newImg.src = selectedImage.src;
-      newImg.classList.add("falling");
-
-      newImg.style.left = Math.random() * window.innerWidth + "px";
-
-      document.body.appendChild(newImg); 
-
-      
-      setTimeout(() => {
-          newImg.remove();
-      }, 2000);
-  });
-});
-
-
+// We're now using the module system initialized in main.js
+// No need for initialization code here
