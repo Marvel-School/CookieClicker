@@ -1169,12 +1169,11 @@ document.addEventListener("DOMContentLoaded", function () {
     const settingsMenu = document.getElementById("settingsMenu");
 
     const body = document.body;
-    // const backGround = document.getElementById("backgroundBlur");
-  
+    
     settingsIcon.addEventListener("click", function () {
       settingsMenu.classList.toggle("show"); 
       body.classList.toggle("blur");
-    console.log("werk");
+      console.log("werk");
     });
   
     // Close settings menu when clicking outside
@@ -1192,8 +1191,8 @@ document.addEventListener("DOMContentLoaded", function () {
   const achievementsContainer = document.getElementById("achievementsContainer");
   
   achievementsIcon.addEventListener("click", function () {
-    achievementsContainer.classList.toggle("show"); 
-    body.classList.toggle("blur");
+    achievementsContainer.classList.add("show"); 
+    body.classList.add("blur");
   console.log("werk");
   });
 
@@ -1206,4 +1205,30 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+  let cookie = document.getElementById("cookie");
+  let images = document.querySelectorAll(".set img");
+
+  cookie.addEventListener("click", function () {
+      if (images.length === 0) return; 
+
+      let randomIndex = Math.floor(Math.random() * images.length); 
+      let selectedImage = images[randomIndex];
+
+      let newImg = document.createElement("img");
+      newImg.src = selectedImage.src;
+      newImg.classList.add("falling");
+
+      newImg.style.left = Math.random() * window.innerWidth + "px";
+
+      document.body.appendChild(newImg); 
+
+      
+      setTimeout(() => {
+          newImg.remove();
+      }, 2000);
+  });
+});
+
 
