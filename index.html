@@ -154,37 +154,30 @@
 
       <!-- RIGHT Section: Upgrade Visualizations Only -->
       <section class="right">
-        <div id="autoClickersBox" class="upgrade-box">
+        <div id="autoClickersBox" class="upgrade-box" data-title="Auto Clickers">
           <div class="upgrade-progress">
-            <div
-              id="autoClickersProgressBar"
-              class="upgrade-progress-bar"
-            ></div>
+            <div id="autoClickersProgressBar" class="upgrade-progress-bar"></div>
           </div>
           <div class="upgrade-counter">
-            <img
-              src="image/hand.png"
-              alt="Auto Clicker"
-              class="upgrade-image"
-            />
+            <img src="image/hand.png" alt="Auto Clicker" class="upgrade-image">
             <span id="autoClickersCountVisual">0</span>
           </div>
         </div>
-        <div id="farmsBox" class="upgrade-box">
+        <div id="farmsBox" class="upgrade-box" data-title="Farms">
           <div class="upgrade-progress">
             <div id="farmsProgressBar" class="upgrade-progress-bar"></div>
           </div>
           <div class="upgrade-counter">
-            <img src="image/farm.png" alt="Cookie Farm" class="upgrade-image" />
+            <img src="image/farm.png" alt="Farm" class="upgrade-image">
             <span id="farmsCountVisual">0</span>
           </div>
         </div>
-        <div id="grandmasBox" class="upgrade-box">
+        <div id="grandmasBox" class="upgrade-box" data-title="Grandmas">
           <div class="upgrade-progress">
             <div id="grandmaProgressBar" class="upgrade-progress-bar"></div>
           </div>
           <div class="upgrade-counter">
-            <img src="image/grandma.png" alt="Grandma" class="upgrade-image" />
+            <img src="image/grandma.png" alt="Grandma" class="upgrade-image">
             <span id="grandmaCount">0</span>
           </div>
         </div>
@@ -206,7 +199,34 @@
           <button id="loadGame">Load Game</button>
           <button id="resetGame">Reset Game</button>
           <button id="toggleSound">Toggle Sound</button>
-          <!-- Removing temporary debug button -->
+          <button id="personalizationBtn">Personalization</button>
+        </div>
+      </div>
+
+      <!-- Add Personalization Panel -->
+      <div id="personalizationContainer" class="panel-container" style="display: none">
+        <div class="panel-header">
+          <span class="panel-icon">🎨</span>
+          <h2>Personalization</h2>
+          <span class="close-btn" id="closePersonalization">×</span>
+        </div>
+        <div class="panel-content">
+          <div class="section">
+            <h3>Theme</h3>
+            <div class="theme-options">
+              <button id="theme-classic" class="theme-button">Classic</button>
+              <button id="theme-dark" class="theme-button">Dark</button>
+              <button id="theme-neon" class="theme-button">Neon</button>
+            </div>
+          </div>
+          <div class="section">
+            <h3>Animations</h3>
+            <div class="animation-options">
+              <button id="animations-standard" class="animation-button">Standard</button>
+              <button id="animations-reduced" class="animation-button">Reduced</button>
+              <button id="animations-minimal" class="animation-button">Minimal</button>
+            </div>
+          </div>
         </div>
       </div>
     </section>

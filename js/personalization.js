@@ -446,34 +446,156 @@ export function createPersonalizationUI(game, personalizer) {
 
 // Helper to initialize the personalization system
 export function initPersonalizationSystem(game) {
-  // Create personalization manager
-  const personalizer = new PersonalizationManager(game);
-  game.personalizer = personalizer;
-  
-  // Load settings from game state
-  personalizer.loadFromGameState();
-  
-  // Create UI
-  const ui = createPersonalizationUI(game, personalizer);
-  document.body.appendChild(ui);
-  
-  // Add personalization button to settings
-  const settingsMenu = document.getElementById('settingsMenu');
-  if (settingsMenu) {
-    const personalizationButton = document.createElement('button');
-    personalizationButton.id = 'personalizationButton';
-    personalizationButton.textContent = 'Personalization';
-    
-    personalizationButton.addEventListener('click', () => {
-      // Hide settings menu
-      settingsMenu.style.display = 'none';
-      
-      // Show personalization menu
-      ui.style.display = 'block';
-    });
-    
-    settingsMenu.appendChild(personalizationButton);
+  // Set default values if not present
+  if (!game.state.personalization) {
+    game.state.personalization = {
+      theme: 'classic',
+      cookieSkin: 'classic',
+      cursorSkin: 'classic',
+      animations: 'standard',
+      particleIntensity: 1.0
+    };
   }
   
-  return personalizer;
+  // Apply current personalization settings
+  applyPersonalizationSettings(game.state.personalization);
+  
+  console.log("Personalization system initialized with settings:", game.state.personalization);
+}
+
+/**
+ * Applies the personalization settings to the game
+ */
+function applyPersonalizationSettings(settings) {
+  const root = document.documentElement;
+  const body = document.body;
+  
+  // Set CSS variables for theming
+  root.style.setProperty('--particle-intensity', settings.particleIntensity || 1.0);
+  
+  // Apply theme-specific styling by adding theme class to body
+  const theme = settings.theme || 'classic';
+  
+  // Remove existing theme classes
+  body.classList.remove('theme-classic', 'theme-dark', 'theme-neon');
+  
+  // Add selected theme class
+  body.classList.add(`theme-${theme}`);
+  
+  // Apply cookie skin
+  applyCookieSkin(settings.cookieSkin || 'classic');
+  
+  // Set animation level
+  setAnimationLevel(settings.animations || 'standard');
+  
+  // Update background if it exists
+  const background = document.querySelector('.background');
+  if (background) {
+    switch (theme) {
+      case 'dark':
+        background.style.background = 'radial-gradient(#111, #000)';
+        break;
+      case 'neon':
+        background.style.background = 'radial-gradient(#111, #000)';
+        break;
+      case 'classic':
+      default:
+        background.style.background = 'radial-gradient(#333, #000)';
+        break;
+    }
+  }
+  
+  console.log(`Applied theme: ${theme}, animations: ${settings.animations}`);
+}
+
+/**
+ * Applies a theme to the game
+ */
+function applyTheme(theme) {
+  const themeStylesheet = document.getElementById('theme-stylesheet');
+  
+  if (!themeStylesheet) {
+    // Create theme stylesheet if it doesn't exist
+    const newThemeStylesheet = document.createElement('link');
+    newThemeStylesheet.id = 'theme-stylesheet';
+    newThemeStylesheet.rel = 'stylesheet';
+    newThemeStylesheet.href = `css/themes/${theme}.css`;
+    document.head.appendChild(newThemeStylesheet);
+  } else {
+    // Update existing theme stylesheet
+    themeStylesheet.href = `css/themes/${theme}.css`;
+  }
+  
+  // Store theme preference
+  localStorage.setItem('cookie-clicker-theme', theme);
+}
+
+/**
+ * Applies a cookie skin to the game
+ */
+function applyCookieSkin(skin) {
+  const cookieElement = document.getElementById('cookie');
+  
+  if (cookieElement) {
+    // Fix path to use existing cookie image instead of looking in non-existent directory
+    if (skin === 'classic' || !skin) {
+      cookieElement.src = `image/cookie.png`; // Use the default cookie image
+    } else {
+      // For future skins, use this pattern
+      cookieElement.src = `image/cookie-${skin}.png`;
+    }
+  }
+  
+  // Store skin preference
+  localStorage.setItem('cookie-clicker-skin', skin);
+}
+
+/**
+ * Sets the animation level for the game
+ */
+function setAnimationLevel(level) {
+  const root = document.documentElement;
+  
+  // Define animation settings based on level
+  switch (level) {
+    case 'reduced':
+      root.style.setProperty('--particle-intensity', '0.5');
+      root.classList.add('reduced-animations');
+      break;
+    case 'minimal':
+      root.style.setProperty('--particle-intensity', '0.1');
+      root.classList.add('minimal-animations');
+      break;
+    case 'none':
+      root.style.setProperty('--particle-intensity', '0');
+      root.classList.add('no-animations');
+      break;
+    case 'standard':
+    default:
+      root.style.setProperty('--particle-intensity', '1.0');
+      root.classList.remove('reduced-animations', 'minimal-animations', 'no-animations');
+      break;
+  }
+  
+  // Store animation preference
+  localStorage.setItem('cookie-clicker-animations', level);
+}
+
+/**
+ * Updates a specific personalization setting
+ */
+export function updatePersonalizationSetting(game, setting, value) {
+  if (!game.state.personalization) {
+    game.state.personalization = {};
+  }
+  
+  game.state.personalization[setting] = value;
+  
+  // Apply the updated settings
+  applyPersonalizationSettings(game.state.personalization);
+  
+  // Save settings to localStorage
+  game.saveGame();
+  
+  return game.state.personalization;
 }

@@ -56,23 +56,30 @@ export function createConfetti(x, y, lastConfettiTime) {
   const numParticles = Math.max(1, Math.round(baseParticles * intensity));
   const particles = [];
   
-  // Create particle objects (not DOM elements)
+  // Create particle objects with more dramatic size variance based on intensity
   for (let i = 0; i < numParticles; i++) {
+    // Make particles bigger when intensity is higher
+    const sizeMultiplier = 0.6 + (intensity * 0.8);
+    const baseSize = PARTICLE_SIZE * sizeMultiplier;
+    
+    // More pronounced speed difference based on intensity
+    const speedMultiplier = Math.min(2.5, intensity * 1.5);
+    
     particles.push({
       x: x,
       y: y,
-      size: PARTICLE_SIZE * (0.8 + (Math.random() * 0.4 * intensity)),
+      size: baseSize * (0.7 + (Math.random() * 0.6)),
       color: ['#ff6b6b', '#48dbfb', '#feca57', '#1dd1a1', '#ff9ff3'][Math.floor(Math.random() * 5)],
-      speedX: (Math.random() * 6 - 3) * intensity,
-      speedY: (Math.random() * -3 - 2) * intensity,
+      speedX: (Math.random() * 6 - 3) * speedMultiplier,
+      speedY: (Math.random() * -4 - 2) * speedMultiplier,
       rotation: 0,
-      rotationSpeed: Math.random() * 0.2 - 0.1,
+      rotationSpeed: Math.random() * 0.4 - 0.2,
       opacity: 1,
       createdAt: now
     });
   }
 
-  // Animation function for canvas rendering
+  // Animation function with more dramatic effects based on intensity
   const animate = () => {
     // Clear only the needed part of canvas
     confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
@@ -94,6 +101,11 @@ export function createConfetti(x, y, lastConfettiTime) {
       particle.speedY += 0.1; // gravity
       particle.rotation += particle.rotationSpeed;
       particle.opacity = lifetime / PARTICLE_LIFETIME;
+      
+      // Add a pulsing effect for high intensity
+      if (intensity > 1.5) {
+        particle.size += Math.sin(now / 100) * 0.5;
+      }
       
       // Draw particle
       confettiCtx.save();

@@ -364,10 +364,23 @@ function updateProgressionVisuals(game) {
   
   game.cpsDisplay.textContent = Math.floor(cps);
   
-  // Update visual indicators for game resources
-  updateResourceBar(game.autoClickersProgressBar, game.autoClickersCountVisual, autoClickers, 100);
-  updateResourceBar(game.farmsProgressBar, game.farmsCountVisual, farms, 100);
-  updateResourceBar(game.grandmaProgressBar, game.grandmaCountDisplay, grandmas, 100);
+  // Check if elements exist before trying to update them
+  if (game.autoClickersProgressBar && game.autoClickersCountVisual) {
+    updateResourceBar(game.autoClickersProgressBar, game.autoClickersCountVisual, autoClickers, 100);
+  }
+  
+  if (game.farmsProgressBar && game.farmsCountVisual) {
+    updateResourceBar(game.farmsProgressBar, game.farmsCountVisual, farms, 100);
+  }
+  
+  if (game.grandmaProgressBar && game.grandmaCountDisplay) {
+    updateResourceBar(game.grandmaProgressBar, game.grandmaCountDisplay, grandmas, 100);
+    console.log("Updated grandma visual:", grandmas);
+  } else {
+    console.error("Grandma visual elements not found:", 
+                  {progressBar: !!game.grandmaProgressBar, 
+                   countDisplay: !!game.grandmaCountDisplay});
+  }
 }
 
 function updateResourceBar(progressBar, countDisplay, count, max) {
