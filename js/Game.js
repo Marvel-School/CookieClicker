@@ -174,6 +174,9 @@ export default class Game {
     this.goldenCookieContainer.id = 'goldenCookieContainer';
     document.body.appendChild(this.goldenCookieContainer);
 
+    // Initialize the active bonuses container
+    this.activeBonusesContainer = document.getElementById('activeBonuses');
+
     // Set up event listeners
     setupEventListeners(this);
     
@@ -190,6 +193,68 @@ export default class Game {
     // Start golden cookie spawning logic
     this.startGoldenCookieTimer();
     this.log("Golden cookie timer initialized with chance:", this.state.goldenCookieChance);
+  }
+
+  // Add a new method to create and manage bonus indicators
+  addBonusIndicator(id, type, icon, text, duration = null) {
+    // Remove any existing indicator with the same ID
+    this.removeBonusIndicator(id);
+    
+    if (!this.activeBonusesContainer) {
+      this.activeBonusesContainer = document.getElementById('activeBonuses');
+      if (!this.activeBonusesContainer) {
+        console.error("Active bonuses container not found");
+        return;
+      }
+    }
+    
+    // Create the indicator element
+    const indicator = document.createElement('div');
+    indicator.id = id;
+    indicator.className = `bonus-indicator ${type}`;
+    
+    // Add icon and text
+    indicator.innerHTML = `
+      <span class="bonus-icon">${icon}</span>
+      <span class="bonus-text">${text}</span>
+      ${duration ? `<span class="bonus-timer">${duration}s</span>` : ''}
+    `;
+    
+    // Add to container
+    this.activeBonusesContainer.appendChild(indicator);
+    
+    return indicator;
+  }
+
+  // Remove a bonus indicator by ID
+  removeBonusIndicator(id) {
+    const indicator = document.getElementById(id);
+    if (indicator && indicator.parentNode) {
+      indicator.parentNode.removeChild(indicator);
+    }
+  }
+
+  // Update an existing bonus indicator
+  updateBonusIndicator(id, newText = null, newDuration = null) {
+    const indicator = document.getElementById(id);
+    if (!indicator) return;
+    
+    if (newText) {
+      const textElement = indicator.querySelector('.bonus-text');
+      if (textElement) textElement.textContent = newText;
+    }
+    
+    if (newDuration !== null) {
+      let timerElement = indicator.querySelector('.bonus-timer');
+      if (!timerElement && newDuration) {
+        timerElement = document.createElement('span');
+        timerElement.className = 'bonus-timer';
+        indicator.appendChild(timerElement);
+      }
+      if (timerElement) {
+        timerElement.textContent = `${newDuration}s`;
+      }
+    }
   }
 
   handleCookieClick(e) {
@@ -253,9 +318,10 @@ export default class Game {
 
   // New method for cookie multiplier
   applyCookieMultiplier(item) {
-    // Apply a temporary 2x multiplier for 2 minutes instead of a permanent +0.5
+    // Apply a temporary 2x multiplier for 2 minutes
     const boostDuration = 120000; // 2 minutes in ms
     const boostMultiplier = 2;
+    const durationSec = boostDuration / 1000;
     
     // Store the original multiplier
     const originalMultiplier = this.state.cookieMultiplier;
@@ -263,18 +329,40 @@ export default class Game {
     // Apply the multiplier
     this.state.cookieMultiplier *= boostMultiplier;
     
-    // Create visual indicator
+    // Add visual indicator
+    this.addBonusIndicator(
+      'cookie-multiplier-boost',
+      'cookie-multiplier',
+      '🍪',
+      `${boostMultiplier}x Cookies`,
+      durationSec
+    );
+    
+    // Apply production boost visuals
     this.applyProductionBoostVisuals(true);
     
     showToast(`Cookie production multiplied by ${boostMultiplier}x for 2 minutes!`);
     this.log(`Cookie multiplier boosted to ${this.state.cookieMultiplier}x for 2 minutes`);
     
+    // Start a timer to update the countdown
+    let timeLeft = durationSec;
+    const countdownInterval = setInterval(() => {
+      timeLeft--;
+      if (timeLeft <= 0) {
+        clearInterval(countdownInterval);
+      } else {
+        this.updateBonusIndicator('cookie-multiplier-boost', null, timeLeft);
+      }
+    }, 1000);
+    
     // Reset after duration
     setTimeout(() => {
       this.state.cookieMultiplier = originalMultiplier;
       this.applyProductionBoostVisuals(false);
+      this.removeBonusIndicator('cookie-multiplier-boost');
       showToast('Cookie multiplier boost has ended.');
       this.updateDisplay();
+      clearInterval(countdownInterval);
     }, boostDuration);
   }
 
@@ -453,23 +541,44 @@ export default class Game {
       case 'production':
         // Production boost is temporary
         const multiplier = reward.value();
+        const duration = 30; // 30 seconds
         
         // Store original multiplier before applying boost
         this.state.activeGoldenCookieBonuses.production = {
           active: true,
           originalValue: this.state.cookieMultiplier,
           bonusValue: this.state.cookieMultiplier * (multiplier - 1),
-          endTime: Date.now() + 30000 // 30 seconds
+          endTime: Date.now() + duration * 1000
         };
         
         // Apply the boost
         this.state.cookieMultiplier *= multiplier;
         showToast(reward.message());
         
-        // Update UI to show active boost
+        // Add visual indicator
+        this.addBonusIndicator(
+          'golden-cookie-production-boost',
+          'production-boost',
+          '✨',
+          `${multiplier}x Production`,
+          duration
+        );
+        
+        // Apply visual effects
         this.applyProductionBoostVisuals(true);
         
-        // Reset after 30 seconds
+        // Start a timer to update the countdown
+        let timeLeft = duration;
+        const countdownInterval = setInterval(() => {
+          timeLeft--;
+          if (timeLeft <= 0) {
+            clearInterval(countdownInterval);
+          } else {
+            this.updateBonusIndicator('golden-cookie-production-boost', null, timeLeft);
+          }
+        }, 1000);
+        
+        // Reset after duration
         setTimeout(() => {
           if (this.state.activeGoldenCookieBonuses.production.active) {
             this.state.cookieMultiplier = this.state.activeGoldenCookieBonuses.production.originalValue;
@@ -477,33 +586,56 @@ export default class Game {
             
             // Remove visual effects
             this.applyProductionBoostVisuals(false);
+            this.removeBonusIndicator('golden-cookie-production-boost');
             
             showToast('Production boost has ended.');
             this.updateDisplay();
           }
-        }, 30000);
+          clearInterval(countdownInterval);
+        }, duration * 1000);
         break;
         
       case 'clickPower':
         // Click power boost is temporary
         const powerBonus = reward.value();
+        const clickDuration = 30; // 30 seconds
         
         // Store original click power before applying boost
         this.state.activeGoldenCookieBonuses.clickPower = {
           active: true,
           originalValue: this.state.clickPower,
           bonusValue: powerBonus,
-          endTime: Date.now() + 30000 // 30 seconds
+          endTime: Date.now() + clickDuration * 1000
         };
         
         // Apply the temporary boost
         this.state.clickPower += powerBonus;
         showToast(reward.message(powerBonus));
         
+        // Add visual indicator
+        this.addBonusIndicator(
+          'golden-cookie-click-boost',
+          'click-boost',
+          '👆',
+          `+${powerBonus} Click`,
+          clickDuration
+        );
+        
         // Apply visual effect for click power boost
         this.applyClickPowerBoostVisuals(true);
         
-        // Reset after 30 seconds
+        // Start a timer to update the countdown
+        let clickTimeLeft = clickDuration;
+        const clickCountdownInterval = setInterval(() => {
+          clickTimeLeft--;
+          if (clickTimeLeft <= 0) {
+            clearInterval(clickCountdownInterval);
+          } else {
+            this.updateBonusIndicator('golden-cookie-click-boost', null, clickTimeLeft);
+          }
+        }, 1000);
+        
+        // Reset after duration
         setTimeout(() => {
           if (this.state.activeGoldenCookieBonuses.clickPower.active) {
             this.state.clickPower = this.state.activeGoldenCookieBonuses.clickPower.originalValue;
@@ -511,33 +643,56 @@ export default class Game {
             
             // Remove visual effects
             this.applyClickPowerBoostVisuals(false);
+            this.removeBonusIndicator('golden-cookie-click-boost');
             
             showToast('Click power boost has ended.');
             this.updateDisplay();
           }
-        }, 30000);
+          clearInterval(clickCountdownInterval);
+        }, clickDuration * 1000);
         break;
         
       case 'frenzy':
         // Clicking frenzy - massive but short-lived click power boost
         const frenzyMultiplier = reward.value();
+        const frenzyDuration = 15; // 15 seconds
         
         // Store original click power before applying boost
         this.state.activeGoldenCookieBonuses.clickPower = {
           active: true,
           originalValue: this.state.clickPower,
           bonusValue: this.state.clickPower * (frenzyMultiplier - 1),
-          endTime: Date.now() + 15000 // Only 15 seconds
+          endTime: Date.now() + frenzyDuration * 1000
         };
         
         // Apply the temporary boost
         this.state.clickPower *= frenzyMultiplier;
         showToast(reward.message());
         
+        // Add visual indicator
+        this.addBonusIndicator(
+          'golden-cookie-frenzy',
+          'frenzy',
+          '🔥',
+          `${frenzyMultiplier}x Click Power`,
+          frenzyDuration
+        );
+        
         // Apply stronger visual effect for clicking frenzy
         this.applyClickingFrenzyVisuals(true);
         
-        // Reset after 15 seconds
+        // Start a timer to update the countdown
+        let frenzyTimeLeft = frenzyDuration;
+        const frenzyCountdownInterval = setInterval(() => {
+          frenzyTimeLeft--;
+          if (frenzyTimeLeft <= 0) {
+            clearInterval(frenzyCountdownInterval);
+          } else {
+            this.updateBonusIndicator('golden-cookie-frenzy', null, frenzyTimeLeft);
+          }
+        }, 1000);
+        
+        // Reset after duration
         setTimeout(() => {
           if (this.state.activeGoldenCookieBonuses.clickPower.active) {
             this.state.clickPower = this.state.activeGoldenCookieBonuses.clickPower.originalValue;
@@ -545,11 +700,13 @@ export default class Game {
             
             // Remove visual effects
             this.applyClickingFrenzyVisuals(false);
+            this.removeBonusIndicator('golden-cookie-frenzy');
             
             showToast('Clicking frenzy has ended.');
             this.updateDisplay();
           }
-        }, 15000);
+          clearInterval(frenzyCountdownInterval);
+        }, frenzyDuration * 1000);
         break;
     }
     
@@ -1103,14 +1260,42 @@ export default class Game {
   updateActiveBoostTimers() {
     const now = Date.now();
     
+    // Check time accelerator status and update the indicator if needed
+    if (this.state.timeAcceleratorActive && this.state.timeAcceleratorEndTime > now) {
+      const timeLeft = Math.max(0, Math.floor((this.state.timeAcceleratorEndTime - now) / 1000));
+      this.updateBonusIndicator('time-accelerator-bonus', null, timeLeft);
+    } else if (this.state.timeAcceleratorActive && this.state.timeAcceleratorEndTime <= now) {
+      // Time accelerator has expired but wasn't properly deactivated
+      this.state.timeAcceleratorActive = false;
+      this.state.timeAcceleratorMultiplier = 1;
+      this.removeBonusIndicator('time-accelerator-bonus');
+      
+      // Remove cookie animation
+      if (this.cookie) {
+        this.cookie.classList.remove('accelerated');
+      }
+      
+      // Remove CPS display effect
+      if (this.cpsDisplay) {
+        this.cpsDisplay.classList.remove('boosted');
+      }
+    }
+    
     // Check if activeGoldenCookieBonuses and its properties exist before accessing
     if (this.state.activeGoldenCookieBonuses && this.state.activeGoldenCookieBonuses.production && 
         this.state.activeGoldenCookieBonuses.production.active) {
       const timeLeft = Math.max(0, Math.floor((this.state.activeGoldenCookieBonuses.production.endTime - now) / 1000));
-      const indicator = document.getElementById('production-boost-indicator');
-      if (indicator) {
-        indicator.innerHTML = `⚡ Production Boost: ${timeLeft}s ⚡`;
+      
+      if (timeLeft > 0) {
+        this.updateBonusIndicator('golden-cookie-production-boost', null, timeLeft);
+      } else {
+        // Boost has expired
+        this.state.cookieMultiplier = this.state.activeGoldenCookieBonuses.production.originalValue;
+        this.state.activeGoldenCookieBonuses.production.active = false;
+        this.applyProductionBoostVisuals(false);
+        this.removeBonusIndicator('golden-cookie-production-boost');
       }
+      
       // Add 'boosted' class to CPS display
       if (this.cpsDisplay) {
         this.cpsDisplay.classList.add('boosted');
@@ -1123,10 +1308,32 @@ export default class Game {
     if (this.state.activeGoldenCookieBonuses && this.state.activeGoldenCookieBonuses.clickPower && 
         this.state.activeGoldenCookieBonuses.clickPower.active) {
       const timeLeft = Math.max(0, Math.floor((this.state.activeGoldenCookieBonuses.clickPower.endTime - now) / 1000));
-      const indicator = document.getElementById('click-boost-indicator');
-      if (indicator) {
-        indicator.innerHTML = `👆 Click Power Boost: ${timeLeft}s 👆`;
+      
+      // Check which boost it is - frenzy or regular click boost - and update the correct indicator
+      if (this.state.activeGoldenCookieBonuses.clickPower.bonusValue >= this.state.activeGoldenCookieBonuses.clickPower.originalValue) {
+        // This is a frenzy (multiplier effect)
+        if (timeLeft > 0) {
+          this.updateBonusIndicator('golden-cookie-frenzy', null, timeLeft);
+        } else {
+          // Boost has expired
+          this.state.clickPower = this.state.activeGoldenCookieBonuses.clickPower.originalValue;
+          this.state.activeGoldenCookieBonuses.clickPower.active = false;
+          this.applyClickingFrenzyVisuals(false);
+          this.removeBonusIndicator('golden-cookie-frenzy');
+        }
+      } else {
+        // This is a regular click boost (additive effect)
+        if (timeLeft > 0) {
+          this.updateBonusIndicator('golden-cookie-click-boost', null, timeLeft);
+        } else {
+          // Boost has expired
+          this.state.clickPower = this.state.activeGoldenCookieBonuses.clickPower.originalValue;
+          this.state.activeGoldenCookieBonuses.clickPower.active = false;
+          this.applyClickPowerBoostVisuals(false);
+          this.removeBonusIndicator('golden-cookie-click-boost');
+        }
       }
+      
       // Add 'boosted' class to click power display
       if (this.clickPowerDisplay) {
         this.clickPowerDisplay.classList.add('boosted');
@@ -1134,5 +1341,79 @@ export default class Game {
     } else if (this.clickPowerDisplay) {
       this.clickPowerDisplay.classList.remove('boosted');
     }
+  }
+
+  // Modified timeAccelerator method to use the new indicator system
+  timeAccelerator(item) {
+    const baseCost = item.baseCost || 1000;
+    const minDuration = 30; // 30 seconds - shorter base duration
+    const maxDuration = 60; // 1 minute max
+    let duration = minDuration + (item.cost - baseCost) * 0.05;
+    duration = Math.min(duration, maxDuration);
+
+    this.state.timeAcceleratorActive = true;
+    this.state.timeAcceleratorMultiplier = 4; // 4x multiplier
+    this.state.timeAcceleratorEndTime = Date.now() + duration * 1000;
+
+    // Add visual indicator
+    this.addBonusIndicator(
+      'time-accelerator-bonus',
+      'time-accelerator',
+      '⚡',
+      '4x Production',
+      Math.floor(duration)
+    );
+    
+    // Apply cookie animation effect
+    if (this.cookie) {
+      this.cookie.classList.add('accelerated');
+    }
+    
+    // Apply CPS display effect
+    if (this.cpsDisplay) {
+      this.cpsDisplay.classList.add('boosted');
+    }
+    
+    this.log(
+      "Time Accelerator activated for",
+      duration,
+      "seconds, multiplier:",
+      this.state.timeAcceleratorMultiplier
+    );
+    this.showToast(`Time Accelerator activated! 4x production for ${Math.floor(duration)} seconds!`);
+
+    // Start a timer to update the countdown
+    let timeLeft = Math.floor(duration);
+    const countdownInterval = setInterval(() => {
+      timeLeft--;
+      if (timeLeft <= 0) {
+        clearInterval(countdownInterval);
+      } else {
+        this.updateBonusIndicator('time-accelerator-bonus', null, timeLeft);
+      }
+    }, 1000);
+
+    setTimeout(() => {
+      this.state.timeAcceleratorActive = false;
+      this.state.timeAcceleratorMultiplier = 1;
+      this.state.timeAcceleratorEndTime = 0;
+      
+      // Remove visual indicator
+      this.removeBonusIndicator('time-accelerator-bonus');
+      
+      // Remove cookie animation
+      if (this.cookie) {
+        this.cookie.classList.remove('accelerated');
+      }
+      
+      // Remove CPS display effect
+      if (this.cpsDisplay) {
+        this.cpsDisplay.classList.remove('boosted');
+      }
+      
+      this.log("Time Accelerator expired");
+      this.showToast("Time Accelerator expired");
+      clearInterval(countdownInterval);
+    }, duration * 1000);
   }
 }

@@ -16,11 +16,13 @@ body {
   gap: 20px;
   transform: translateY(-60%);
   width: 220px;
-  background: rgba(255, 255, 255, 0.95);
+  /* Remove the white background */
+  background: transparent;
   padding: 20px;
   margin-top: 50px;
   border-radius: 12px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  /* Remove box-shadow completely */
+  box-shadow: none;
   overflow-y: auto;
   max-height: 90%;
   display: flex;
@@ -710,10 +712,12 @@ section .set div:nth-child(25) {
   right: 20px;
   transform: translateY(-60%);
   width: 220px;
-  background: rgba(255, 255, 255, 0.95);
+  /* Remove the white background */
+  background: transparent;
   padding: 20px;
   border-radius: 12px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  /* Remove box-shadow completely */
+  box-shadow: none;
   overflow-y: auto;
   overflow-x: hidden;
   max-height: 90%;
@@ -1918,6 +1922,98 @@ button.upgrade:disabled .button_top {
     transform: scale(1.08);
     filter: brightness(1.4) drop-shadow(0 0 15px orange);
   }
+}
+
+/* ...existing code... */
+
+/* Active Bonuses Section */
+.active-bonuses {
+  margin-top: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 5px;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.bonus-indicator {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.75em;
+  font-weight: bold;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  animation: pulse-glow 1.5s infinite alternate;
+  white-space: nowrap;
+}
+
+.bonus-indicator .bonus-icon {
+  font-size: 1.2em;
+}
+
+.bonus-indicator .bonus-timer {
+  margin-left: 2px;
+  font-size: 0.9em;
+}
+
+.bonus-indicator.time-accelerator {
+  background: linear-gradient(135deg, #ff4500, #ff8c00);
+}
+
+.bonus-indicator.production-boost {
+  background: linear-gradient(135deg, #ffaa00, #ffcc00);
+}
+
+.bonus-indicator.click-boost {
+  background: linear-gradient(135deg, #ff6600, #ff9966);
+}
+
+.bonus-indicator.frenzy {
+  background: linear-gradient(135deg, #cc0000, #ff0000);
+}
+
+.bonus-indicator.cookie-multiplier {
+  background: linear-gradient(135deg, #9932cc, #ba55d3);
+}
+
+@keyframes pulse-glow {
+  0% {
+    box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+    transform: scale(1);
+  }
+  100% {
+    box-shadow: 0 0 12px rgba(255, 255, 255, 0.8);
+    transform: scale(1.05);
+  }
+}
+
+/* Remove old boost indicators - they're replaced with the new system */
+#production-boost-indicator,
+#click-boost-indicator,
+#frenzy-indicator {
+  display: none;
+}
+
+/* ...existing code... */
+
+/* Fix duplicate tooltips by hiding the original static tooltips */
+.shop-item > .item-desc {
+  display: none !important; /* Hide the original tooltips that are direct children of shop-item */
+  visibility: hidden !important;
+  opacity: 0 !important;
+}
+
+/* Ensure only dynamically created tooltips are visible */
+body > .item-desc.item-desc-tooltip {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  z-index: 9999999;
+  position: absolute;
 }
 
 /* ...existing code... */
