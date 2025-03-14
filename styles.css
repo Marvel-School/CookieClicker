@@ -16,11 +16,13 @@ body {
   gap: 20px;
   transform: translateY(-60%);
   width: 220px;
-  background: rgba(255, 255, 255, 0.95);
+  /* Remove the white background */
+  background: transparent;
   padding: 20px;
   margin-top: 50px;
   border-radius: 12px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  /* Remove box-shadow completely */
+  box-shadow: none;
   overflow-y: auto;
   max-height: 90%;
   display: flex;
@@ -710,10 +712,12 @@ section .set div:nth-child(25) {
   right: 20px;
   transform: translateY(-60%);
   width: 220px;
-  background: rgba(255, 255, 255, 0.95);
+  /* Remove the white background */
+  background: transparent;
   padding: 20px;
   border-radius: 12px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  /* Remove box-shadow completely */
+  box-shadow: none;
   overflow-y: auto;
   overflow-x: hidden;
   max-height: 90%;
