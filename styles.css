@@ -19,13 +19,11 @@ body {
   gap: 20px;
   transform: translateY(-60%);
   width: 220px;
-  /* Remove the white background */
-  background: transparent;
+  background: rgba(255, 255, 255, 0.95);
   padding: 20px;
   margin-top: 90px;
   border-radius: 12px;
-  /* Remove box-shadow completely */
-  box-shadow: none;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
   overflow-y: auto;
   max-height: 90%;
   display: flex;
@@ -72,144 +70,18 @@ body {
   box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.25);
 }
 
-/* TOP Section: Stats - REDESIGNED */
+/* TOP Section: Stats */
 .stats {
   position: fixed;
   top: 20px;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(255, 255, 255, 0.92);
+  background: rgba(255, 255, 255, 0.9);
+  padding: 15px 20px;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
   z-index: 200;
   text-align: center;
-  padding: 12px 15px;
-  width: auto;
-  min-width: 220px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  backdrop-filter: blur(5px);
-  -webkit-backdrop-filter: blur(5px);
-}
-
-/* New cookie count styling */
-.stats h1 {
-  font-size: 1.6em;
-  margin: 0 0 8px 0;
-  color: #333;
-  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.8);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-
-.stats h1 .cookie-icon {
-  font-size: 0.9em;
-  animation: cookieSpin 3s infinite linear;
-  display: inline-block;
-}
-
-.stats h1 #cookieCount {
-  color: #8b4513; /* Cookie brown */
-  font-weight: 700;
-  transition: text-shadow 0.3s, color 0.3s;
-}
-
-.stats h1 #cookieCount.updating {
-  text-shadow: 0 0 8px rgba(139, 69, 19, 0.7);
-}
-
-/* Stats metrics section */
-.stats-metrics {
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-  font-size: 0.9em;
-  margin-top: 3px;
-  padding-top: 6px;
-  border-top: 1px dashed rgba(0, 0, 0, 0.1);
-}
-
-.stats-metric {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.stats-metric .label {
-  font-size: 0.75em;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: #777;
-  margin-bottom: 2px;
-}
-
-.stats-metric .value {
-  font-weight: 600;
-  color: #333;
-  font-size: 1.1em;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.stats-metric .icon {
-  opacity: 0.7;
-  font-size: 0.9em;
-}
-
-.stats-metric #clickPower, 
-.stats-metric #cps {
-  transition: color 0.3s, text-shadow 0.3s;
-}
-
-.stats-metric #cps.boosted {
-  color: #ffaa00;
-  text-shadow: 0 0 5px rgba(255, 170, 0, 0.3);
-}
-
-.stats-metric #clickPower.boosted {
-  color: #ff6600;
-  text-shadow: 0 0 5px rgba(255, 102, 0, 0.3);
-}
-
-@keyframes cookieSpin {
-  0% { transform: rotate(0deg); }
-  25% { transform: rotate(0deg); }
-  35% { transform: rotate(10deg); }
-  45% { transform: rotate(-10deg); }
-  55% { transform: rotate(5deg); }
-  65% { transform: rotate(-5deg); }
-  75% { transform: rotate(0deg); }
-  100% { transform: rotate(0deg); }
-}
-
-/* Cookie gain animation */
-@keyframes cookieGain {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.15); }
-  100% { transform: scale(1); }
-}
-
-.cookie-gain {
-  animation: cookieGain 0.4s ease-in-out;
-}
-
-/* New Position for Boost Indicators */
-#production-boost-indicator,
-#click-boost-indicator,
-#frenzy-indicator {
-  margin-top: 5px;
-  font-size: 0.8em;
-  padding: 3px 6px;
-  border-radius: 10px;
-  display: inline-block;
-}
-
-#multiplierDisplay {
-  margin: 0;
-  font-size: 0.85em;
-  color: #777;
 }
 
 /* ACHIEVEMENTS Container - Redesigned Trophy Case Look */
@@ -567,12 +439,10 @@ body {
   right: 20px;
   transform: translateY(-60%);
   width: 220px;
-  /* Remove the white background */
-  background: transparent;
+  background: rgba(255, 255, 255, 0.95);
   padding: 20px;
   border-radius: 12px;
-  /* Remove box-shadow completely */
-  box-shadow: none;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
   overflow-y: auto;
   overflow-x: hidden;
   max-height: 90%;
@@ -617,43 +487,47 @@ body {
   display: block;
   margin-bottom: 4px;
 }
-
-/* REMOVE ALL TOOLTIP STYLES FROM HERE - Tooltips now controlled by tooltip.css */
-/* Tooltip Speech Bubble, Reset tooltip styles, etc. sections should be removed */
-
-/* SHOP Container - Fixed header overflow issue */
-#shopContainer {
-  display: none;
-  position: fixed;
-  top: 20px;
-  left: 95px; /* Increased from 70px to prevent overlap with icon */
-  width: 280px;
-  background: linear-gradient(to bottom, #fffaf0, #f8f8ff);
-  padding: 0;
-  border-radius: 15px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2),
-              inset 0 1px 3px rgba(255, 255, 255, 0.8);
-  z-index: 210;
-  overflow: hidden; /* For the header styling */
-  border: 1px solid rgba(210, 210, 210, 0.8);
+/* Tooltip Speech Bubble for item description */
+.shop-item .item-desc {
+  position: absolute;
+  bottom: 110%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #fff;
+  color: #333;
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  max-width: 250px;
+  white-space: normal;
+  font-size: 14px;
+  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  z-index: 101;
 }
-
+.shop-item .item-desc::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 5px;
+  border-style: solid;
+  border-color: #fff transparent transparent transparent;
+}
+.shop-item:hover .item-desc {
+  opacity: 1;
+  visibility: visible;
+}
 /* Time Accelerator Countdown */
 .time-accelerator-timer {
   display: block;
   margin-top: 4px;
   font-weight: bold;
-  color: #ff4500; /* Bright orange-red */
-  font-size: 14px;
-  text-shadow: 0 0 3px rgba(255, 255, 255, 0.8);
-  animation: pulse 1s infinite alternate;
+  color: #c33;
 }
-
-@keyframes pulse {
-  from { opacity: 0.8; }
-  to { opacity: 1; }
-}
-
 /* Shop Item Image: Reduced size */
 .shop-item img.shop-item-image {
   display: block;
@@ -665,24 +539,12 @@ body {
   will-change: transform;
   transform: translateZ(0);
 }
-
 .shop-item img.shop-item-image:hover {
   transform: scale(1.05);
 }
-
 /* Highlight active shop item */
 .shop-item.active {
   border: 2px solid #ff4444;
-}
-
-.shop-item.active img {
-  animation: glow 1s infinite alternate;
-  filter: drop-shadow(0 0 5px gold);
-}
-
-@keyframes glow {
-  from { filter: drop-shadow(0 0 3px gold); }
-  to { filter: drop-shadow(0 0 10px gold); }
 }
 
 /* SETTINGS Container */
@@ -864,65 +726,36 @@ body {
 
 /* Toast Notification */
 .auto-save-notification {
-  position: relative; /* Changed from fixed to relative */
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
   background: rgba(0, 0, 0, 0.7);
   color: white;
   padding: 10px 20px;
   border-radius: 5px;
   font-size: 14px;
+  z-index: 10000;
   opacity: 0;
   animation: fadeInOut 3s forwards;
-  white-space: nowrap;
-  pointer-events: none;
-  margin-bottom: 5px; /* Add margin between toasts */
-  width: 100%;
-  text-align: center;
 }
-
 @keyframes fadeInOut {
   0% {
     opacity: 0;
-    transform: translateY(20px);
   }
   10% {
     opacity: 1;
-    transform: translateY(0);
   }
   90% {
     opacity: 1;
-    transform: translateY(0);
   }
   100% {
     opacity: 0;
-    transform: translateY(-20px);
   }
 }
 
-/* responsive */
-
-@media (max-width: 932px) {
-  .upgrade-box {
-    width: 120px;
-  }
-  .right {
-    width: 150px;
-  
-  }
-  #cookie {
-   padding-top: 130px;
-  }
-  #shop {
-    height: 100px;
-  }
-  #shop h2 {
-    font-size: 20px;
-    font-style: italic;
-  }
-  .left {
-    width: 170px;
-    height: 150px;
-    margin-top: 50px;
-  }
+.upgrade:hover {
+  background-color: #3498db;
 }
 
 
@@ -1066,823 +899,106 @@ button.upgrade:disabled .button_top {
 
 /* Remove all other duplicate disabled styling rules */
 
-/* SHOP Container - Fixed header overflow issue */
-#shopContainer {
-  display: none;
-  position: fixed;
-  top: 20px;
-  left: 95px; /* Increased from 70px to prevent overlap with icon */
-  width: 280px;
-  background: linear-gradient(to bottom, #fffaf0, #f8f8ff);
-  padding: 0;
-  border-radius: 15px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2),
-              inset 0 1px 3px rgba(255, 255, 255, 0.8);
-  z-index: 210;
-  overflow: visible; /* Allow tooltips to be visible outside container */
-  border: 1px solid rgba(210, 210, 210, 0.8);
-}
-
-#shopContainer .shop-header {
-  background: linear-gradient(145deg, #2980b9, #3498db);
-  color: white;
-  padding: 12px 15px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  border-bottom: 2px solid rgba(0, 0, 0, 0.1);
-  width: 100%; /* Ensure header width fits container */
-  box-sizing: border-box; /* Include padding in width calculation */
-}
-
-#shopContainer .shop-content {
-  padding: 15px;
-  max-height: 300px;
-  overflow-y: auto; /* Only the content scrolls */
-  overflow-x: visible; /* Allow tooltips to show */
-  position: relative; /* Create positioning context for tooltip */
-}
-
-/* Shop Icon Wrapper */
-#shopWrapper {
-  position: fixed;
-  top: 20px;
-  left: 20px;
-  z-index: 9999;
-  cursor: pointer;
-  width: 64px; /* Define width to match icon size */
-  height: 64px; /* Define height to match icon size */
-  display: flex; /* For better icon centering */
-  justify-content: center;
-  align-items: center;
-}
-
-#shopIcon {
-  width: 64px; /* Increased from 40px */
-  height: 64px; /* Increased from 40px */
-  position: relative;
-  z-index: 9999;
-  transition: transform 0.3s ease, filter 0.3s ease; /* Added transition for hover effect */
-}
-
-#shopIcon:hover {
-  transform: scale(1.1); /* Slight scale up on hover */
-  filter: drop-shadow(0 0 5px rgba(41, 128, 185, 0.6)); /* Blue glow to match the color scheme */
-}
-
-#shopIcon:active {
-  transform: scale(0.95); /* Slight press effect */
-}
-
-/* Remove the old fixed shop styling */
-#shop {
-  display: none; /* Hide the old shop section */
-}
-
-/* Update shop items to fit in the new container */
-.shop-item {
-  position: relative; /* Enable tooltip positioning */
-  margin-bottom: 15px;
-  padding-bottom: 15px;
-  border-bottom: 1px solid #ddd;
-}
-
-.shop-item:last-child {
-  border-bottom: none;
-  margin-bottom: 0;
-  padding-bottom: 0;
-}
-
-/* Make sure shop container allows overflow */
-#shopContainer {
-  /* ...existing properties... */
-  overflow: visible; /* Allow tooltips to be visible outside container */
-}
-
-/* Reset tooltip styles for better visibility */
-.shop-item .item-desc {
-  position: absolute;
-  bottom: 100%; /* Position above the item */
-  left: 50%;
-  transform: translateX(-50%);
-  background: #fff;
-  color: #333;
-  padding: 12px 15px;
-  border: 2px solid #2980b9; /* More visible border */
-  border-radius: 5px;
-  min-width: 180px;
-  max-width: 250px;
-  white-space: normal;
-  font-size: 14px;
-  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.35);
-  margin-bottom: 10px; /* Space between tooltip and item */
-  z-index: 999999;
-  pointer-events: none; /* Prevent interfering with clicks */
-  
-  /* Direct visibility properties - no transitions that could break it */
-  visibility: hidden;
-  opacity: 0;
-}
-
-/* Tooltip arrow pointing to the item */
-.shop-item .item-desc::after {
-  content: "";
-  position: absolute;
-  bottom: -10px; /* Position at bottom of tooltip */
-  left: 50%;
-  transform: translateX(-50%);
-  border-width: 10px 8px 0 8px;
-  border-style: solid;
-  border-color: #2980b9 transparent transparent transparent; /* Match border color */
-}
-
-/* Simple direct display for tooltip on hover */
-.shop-item:hover .item-desc {
-  visibility: visible;
-  opacity: 1;
-}
-
-/* Fix shop content overflow settings */
-#shopContainer .shop-content {
-  padding: 15px;
-  max-height: 300px;
-  overflow-y: auto;
-  overflow-x: visible;
-}
-
 /* ...existing code... */
 
-/* Reset tooltip styles for maximum visibility above ALL elements */
-.shop-item .item-desc {
-  position: fixed; /* Changed from absolute to fixed to escape stacking contexts */
-  z-index: 9999999; /* Ultra-high z-index to appear above everything */
-  background: #fff;
-  color: #333;
-  padding: 12px 15px;
-  border: 2px solid #2980b9;
-  border-radius: 5px;
-  min-width: 180px;
-  max-width: 250px;
-  white-space: normal;
-  font-size: 14px;
-  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.35);
-  pointer-events: none;
-  
-  /* Setup for position calculation in JS */
-  opacity: 0;
-  visibility: hidden;
+/* responsive */
+@media (max-width: 932px) {
+ 
+  #aNewBodyElement .blur{
+  backdrop-filter: blur(10px);
+ 
+ 
+}
+  .upgrade-box {
+    width: 120px;
+  }
+  .right {
+    width: 150px;
+  }
+  #cookie {
+    padding-top: 50%;
+  }
+  #shop {
+    height: 100px;
+  }
+  #shop h2 {
+    font-size: 20px;
+    font-style: italic;
+  }
+  .left {
+    /* width: 170px; */
+    height: 150px;
+    margin-top:8%;
+  }
+  button.upgrade .button_image {
+    display: block; 
+    width: 30px;
+    height: 30px; 
+    border-radius: 5px; 
+    z-index: 528;
+  }
+  .button{
+    width: 70%;
+  }
+  .upgrade {
+    display: flex;
+    flex-direction: column; 
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    border: none;
+    gap: 8px;
+   
 }
 
-/* Tooltip arrow pointing to the item */
-.shop-item .item-desc::after {
-  content: "";
-  position: absolute;
-  bottom: -10px;
-  left: 50%;
-  transform: translateX(-50%);
-  border-width: 10px 8px 0 8px;
-  border-style: solid;
-  border-color: #2980b9 transparent transparent transparent;
-}
-
-/* Simple direct display for tooltip on hover with JS position calculation */
-.shop-item:hover .item-desc {
-  visibility: visible;
-  opacity: 1;
-}
-
-/* ...existing code... */
-
-/* SHOP Container - Fix header overflow */
-#shopContainer {
-  display: none;
-  position: fixed;
-  top: 20px;
-  left: 95px;
-  width: 280px;
-  background: linear-gradient(to bottom, #fffaf0, #f8f8ff);
-  padding: 0;
-  border-radius: 15px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2),
-              inset 0 1px 3px rgba(255, 255, 255, 0.8);
-  z-index: 210;
-  overflow: hidden; /* Change to hidden to contain the header */
-  border: 1px solid rgba(210, 210, 210, 0.8);
-}
-
-#shopContainer .shop-header {
-  background: linear-gradient(145deg, #2980b9, #3498db);
-  color: white;
-  padding: 12px 15px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  border-bottom: 2px solid rgba(0, 0, 0, 0.1);
-  width: 100%; /* Ensure header fits container */
-  box-sizing: border-box; /* Include padding in width calculation */
-  margin: 0; /* Remove any margin */
-}
-
-#shopContainer .shop-content {
-  padding: 15px;
-  max-height: 300px;
-  overflow-y: auto;
-  overflow-x: visible; /* Allow tooltips to show */
-  position: relative;
-}
-
-/* Completely redesigned tooltip with better visibility */
-.shop-item .item-desc {
-  background: rgba(255, 255, 255, 0.9); /* semi-transparent white */
-  color: #333;
-  padding: 8px 10px; /* more compact padding */
-  border: 2px solid #2980b9;
-  border-radius: 5px;
-  width: 220px; /* fixed width */
-  font-size: 13px; /* slightly reduced font-size for compactness */
-  line-height: 1.2; /* tighter line spacing */
-  word-wrap: break-word; /* allow breaking long words */
-  white-space: normal;
-  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.35);
-  pointer-events: none;
-  visibility: hidden;
-  opacity: 0;
-  /* Remove any absolute or fixed positioning so JS sets them */
-  position: initial;
-  margin-bottom: 10px;
-}
-
-.shop-item .item-desc::after {
-  content: "";
-  position: absolute;
-  bottom: -10px;
-  left: 50%;
-  transform: translateX(-50%);
-  border-width: 10px 8px 0 8px;
-  border-style: solid;
-  border-color: #2980b9 transparent transparent transparent;
-}
-
-/* Simple direct display for tooltip on hover */
-.shop-item:hover .item-desc {
-  visibility: visible;
-  opacity: 1;
-}
-
-/* ...existing code... */
-
-/* Completely redesigned tooltip with better visibility and positioning */
-.shop-item .item-desc {
-  position: absolute;
-  bottom: 100%; /* Position above the item */
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(0, 0, 0, 0.9); /* Darker background for better contrast */
-  color: #333; /* Dark text color */
-  padding: 10px 12px;
-  border: 1px solid #2980b9;
-  border-radius: 5px;
-  width: max-content;
-  max-width: 200px;
-  font-size: 13px;
-  line-height: 1.3;
-  word-wrap: break-word;
-  word-break: break-word;
-  hyphens: auto;
-  white-space: normal;
-  text-align: center;
-  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.5);
-  pointer-events: none;
-  margin-bottom: 10px;
-  z-index: 999999;
-}
-
-/* Improved text-highlight styling for better visibility */
-.shop-item .item-desc .text-highlight {
-  background-color: #ffffff; /* Pure white background */
-  color: #000000; /* Black text for maximum contrast */
-  padding: 3px 6px; /* More padding around text */
-  margin: 2px 0; /* Space between lines */
-  border-radius: 3px; /* Rounded corners */
-  display: inline-block; /* Ensure block behavior */
-  line-height: 1.2; /* Tighter line spacing */
-  box-shadow: 0 1px 2px rgba(0,0,0,0.2); /* Subtle shadow for depth */
-}
-
-/* Arrow pointing down from tooltip - match darker background */
-.shop-item .item-desc::after {
-  content: "";
-  position: absolute;
-  bottom: -8px;
-  left: 50%;
-  transform: translateX(-50%);
-  border-width: 8px 8px 0 8px;
-  border-style: solid;
-  border-color: rgba(0, 0, 0, 0.9) transparent transparent transparent; /* Match background */
-}
-
-/* ...existing code... */
-
-/* Special class for tooltips that would appear off-screen */
-.shop-item .item-desc.align-left {
-  left: 0;
-  transform: translateX(0);
-}
-
-.shop-item .item-desc.align-left::after {
-  left: 20px; /* Align arrow with item when left-aligned */
-  transform: translateX(0);
-}
-
-/* Add styling for text with white background */
-.shop-item .item-desc br {
-  display: block; /* Ensure line breaks work properly */
-  content: "";
-  margin-top: 3px; /* Spacing between lines */
-}
-
-/* Style each line of text with a white background */
-.shop-item .item-desc {
-  /* Text styling with background */
-  text-shadow: 
-    -1px -1px 0 #fff, 
-    1px -1px 0 #fff, 
-    -1px 1px 0 #fff, 
-    1px 1px 0 #fff;
-  background-clip: text; /* Modern browsers */
-}
-
-/* Alternative approach - add spans with white background to each line */
-.shop-item .item-desc .text-highlight {
-  background-color: white;
-  padding: 2px 4px;
-  border-radius: 2px;
-  box-decoration-break: clone;
-  -webkit-box-decoration-break: clone;
-}
-
-/* ...existing code... */
-
-/* Completely redesigned tooltip with clear text highlights */
-.shop-item .item-desc {
-  position: absolute;
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(0, 0, 0, 0.85);
-  padding: 12px;
-  border: 1px solid #2980b9;
-  border-radius: 6px;
-  width: max-content;
-  max-width: 220px;
-  font-size: 13px;
-  line-height: 1.5;
-  text-align: center;
-  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.5);
-  pointer-events: none;
-  margin-bottom: 12px;
-  z-index: 999999;
-}
-
-/* Remove all previous text highlighting approaches */
-.shop-item .item-desc .text-highlight {
-  display: inline-block;
-  background-color: #ffffff;
-  color: #000000;
-  padding: 3px 6px;
-  margin: 2px 0;
-  border-radius: 3px;
-  font-weight: 500;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.3);
-}
-
-/* Add spacing between highlighted lines */
-.shop-item .item-desc br {
+.upgrade .button_top {
   display: block;
-  content: "";
-  margin-top: 4px;
+  border: none;
+  background: linear-gradient(145deg, #2980b9, #3498db) !important;
+  font-size: medium;
 }
 
-/* Arrow pointing down from tooltip - match darker background */
-.shop-item .item-desc::after {
-  content: "";
-  position: absolute;
-  bottom: -8px;
+button.upgrade:disabled .button_top {
+  /* background-color: #1ED760 !important; */
+  border-color: #ccc !important;
+  background: #ccc !important;
+ color: #999 !important;
+
+}
+
+ #settingsMenu {
+  position: fixed;
+  top: 50%;
   left: 50%;
-  transform: translateX(-50%);
-  border-width: 8px 8px 0 8px;
-  border-style: solid;
-  border-color: rgba(0, 0, 0, 0.85) transparent transparent transparent;
+  height: 180px;
+  transform: translate(-50%, -50%);
+  background: rgba(255, 255, 255, 0.9); 
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  display: none; 
 }
 
-/* Important override to ensure visibility */
-.shop-item:hover .item-desc {
-  visibility: visible !important;
-  opacity: 1 !important;
-  display: block !important;
-}
 
-/* Cookie animation when accelerated */
-#cookie.accelerated {
-  animation: shake 0.5s infinite alternate;
-}
-
-@keyframes shake {
-  0% { transform: rotate(-3deg) scale(1.05); }
-  100% { transform: rotate(3deg) scale(1.1); }
-}
-
-/* ...existing code... */
-
-/* SHOP Container styles - keep existing settings */
-#shopContainer {
-  /* ...existing code... */
-}
-
-/* Updated shop item styling for better proportions */
-.shop-item {
-  position: relative;
-  display: inline-block;
-  margin: 8px;
-  padding: 5px;
-  text-align: center;
-  width: 60px; /* Fixed width to match image + padding */
-  vertical-align: top;
-  border-radius: 5px;
-  transition: background-color 0.2s ease;
-  background-color: rgba(255, 255, 255, 0.1);
-  border-bottom: 1px solid #ddd;
-}
-
-.shop-item:hover {
-  background-color: rgba(255, 255, 255, 0.2);
-}
-
-/* Keep existing image styling */
-.shop-item img.shop-item-image {
+ #settingsMenu .show {
   display: block;
-  width: 40px;
-  height: 40px;
-  cursor: pointer;
-  margin: 0 auto 4px; /* Center horizontally with bottom margin */
-  transition: transform 0.2s ease;
-}
-
-/* Improved cost display to fit compact layout */
-.shop-item .item-cost {
-  display: block;
-  font-size: 11px;
-  margin-top: 2px;
-  color: #888;
-  white-space: nowrap;
-}
-
-/* Shop content layout for compact items */
-#shopContainer .shop-content {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  padding: 10px;
-}
-
-/* Enhanced active shop item highlighting */
-.shop-item.active {
-  background-color: rgba(255, 215, 0, 0.2);
-  border: 1px solid #ff4444;
-  box-shadow: 0 0 5px gold;
-}
-
-/* ...existing code... */
-
-/* Golden Cookie styling */
-#goldenCookieContainer {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 10000;
-}
-
-.golden-cookie {
-  position: absolute;
-  width: 60px;
-  height: 60px;
-  background-image: url('image/goldencookie.png');
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
-  cursor: pointer;
-  pointer-events: auto;
-  z-index: 10001;
-  animation: goldenCookiePulse 1.5s infinite alternate;
-  filter: drop-shadow(0 0 10px gold);
-}
-
-@keyframes goldenCookiePulse {
-  0% {
-    transform: scale(0.9);
-    opacity: 0.8;
-  }
-  100% {
-    transform: scale(1.1);
-    opacity: 1;
-  }
-}
-
-/* Indicator for applied multiplier */
-.multiplier-indicator {
-  position: absolute;
-  top: -10px;
-  right: -10px;
-  background: gold;
-  color: #333;
-  border-radius: 50%;
-  width: 24px;
-  height: 24px;
-  text-align: center;
-  line-height: 24px;
-  font-size: 12px;
-  font-weight: bold;
-  box-shadow: 0 0 8px rgba(255, 215, 0, 0.8);
-}
-
-/* Update shop content layout for 3 items */
-#shopContainer .shop-content {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  padding: 10px;
-  max-height: 400px; /* Increased to accommodate more items */
-}
-
-/* ...existing code... */
-
-/* Toast Notification Container */
-.toast-container {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 10000;
-  display: flex;
-  flex-direction: column-reverse;
-  align-items: center;
-  gap: 10px;
-  pointer-events: none;
-  width: auto;
-}
-
-/* Toast Notification Item */
-.auto-save-notification {
-  position: relative; /* Changed from fixed to relative */
-  background: rgba(0, 0, 0, 0.7);
-  color: white;
-  padding: 10px 20px;
-  border-radius: 5px;
-  font-size: 14px;
-  opacity: 0;
-  animation: fadeInOut 3s forwards;
-  white-space: nowrap;
-  pointer-events: none;
-  margin-bottom: 5px; /* Add margin between toasts */
-  width: 100%;
-  text-align: center;
-}
-
-@keyframes fadeInOut {
-  0% {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  10% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  90% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-}
-
-/* ...existing code... */
-
-/* Golden Cookie styling - enhanced visibility */
-#goldenCookieContainer {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 10000; /* Very high z-index to be above everything */
-}
-
-.golden-cookie {
-  position: absolute;
-  width: 80px; /* Larger size for better visibility */
-  height: 80px;
-  background-image: url('image/goldencookie.png');
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
-  cursor: pointer;
-  pointer-events: auto; /* Make it clickable */
-  z-index: 10001;
-  animation: goldenCookiePulse 1.5s infinite alternate;
-  filter: drop-shadow(0 0 15px gold);
   
-  /* Debugging outline and background */
-  outline: 2px solid gold;
-  background-color: rgba(255, 215, 0, 0.2);
-  border-radius: 50%;
 }
-
-@keyframes goldenCookiePulse {
-  0% {
-    transform: scale(0.9);
-    opacity: 0.8;
-  }
-  100% {
-    transform: scale(1.1);
-    opacity: 1;
-  }
+#achievementsContainer {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  height: 180px;
+  transform: translate(-50%, -50%);
+  background: rgba(255, 255, 255, 0.9); 
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  display: none; 
 }
-
-/* ...existing code... */
-
-/* Golden cookie animation when clicked */
-.golden-cookie-clicked {
-  animation: zoom-out 0.5s forwards;
-  filter: brightness(1.5);
+#achievementsContainer .show{
+  display: block;
 }
-
-@keyframes zoom-out {
-  0% {
-    transform: scale(1);
-    opacity: 1;
-  }
-  100% {
-    transform: scale(2);
-    opacity: 0;
-  }
 }
-
-/* Pulse animation for bonus indicators */
-@keyframes pulse {
-  0% {
-    opacity: 0.8;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-
-/* Click power boosted cookie animation */
-#cookie.click-boosted {
-  animation: click-pulse 0.8s infinite alternate;
-  filter: brightness(1.2) drop-shadow(0 0 10px orange);
-}
-
-@keyframes click-pulse {
-  0% {
-    transform: scale(1.02);
-  }
-  100% {
-    transform: scale(1.08);
-    filter: brightness(1.4) drop-shadow(0 0 15px orange);
-  }
-}
-
-/* New Frenzy animation for clicking frenzy */
-#cookie.frenzy-boosted {
-  animation: frenzy-pulse 0.4s infinite alternate;
-  filter: brightness(1.5) drop-shadow(0 0 15px crimson);
-}
-
-@keyframes frenzy-pulse {
-  0% {
-    transform: scale(1.1) rotate(-2deg);
-  }
-  100% {
-    transform: scale(1.2) rotate(2deg);
-    filter: brightness(1.8) saturate(1.5) drop-shadow(0 0 20px crimson);
-  }
-}
-
-/* ...existing code... */
-
-/* Click power boosted cookie animation */
-#cookie.click-boosted {
-  animation: click-pulse 0.8s infinite alternate;
-  filter: brightness(1.2) drop-shadow(0 0 10px orange);
-}
-
-@keyframes click-pulse {
-  0% {
-    transform: scale(1.02);
-  }
-  100% {
-    transform: scale(1.08);
-    filter: brightness(1.4) drop-shadow(0 0 15px orange);
-  }
-}
-
-/* ...existing code... */
-
-/* Active Bonuses Section */
-.active-bonuses {
-  margin-top: 8px;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 5px;
-  max-width: 100%;
-  overflow: hidden;
-}
-
-.bonus-indicator {
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-size: 0.75em;
-  font-weight: bold;
-  color: white;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  animation: pulse-glow 1.5s infinite alternate;
-  white-space: nowrap;
-}
-
-.bonus-indicator .bonus-icon {
-  font-size: 1.2em;
-}
-
-.bonus-indicator .bonus-timer {
-  margin-left: 2px;
-  font-size: 0.9em;
-}
-
-.bonus-indicator.time-accelerator {
-  background: linear-gradient(135deg, #ff4500, #ff8c00);
-}
-
-.bonus-indicator.production-boost {
-  background: linear-gradient(135deg, #ffaa00, #ffcc00);
-}
-
-.bonus-indicator.click-boost {
-  background: linear-gradient(135deg, #ff6600, #ff9966);
-}
-
-.bonus-indicator.frenzy {
-  background: linear-gradient(135deg, #cc0000, #ff0000);
-}
-
-.bonus-indicator.cookie-multiplier {
-  background: linear-gradient(135deg, #9932cc, #ba55d3);
-}
-
-@keyframes pulse-glow {
-  0% {
-    box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
-    transform: scale(1);
-  }
-  100% {
-    box-shadow: 0 0 12px rgba(255, 255, 255, 0.8);
-    transform: scale(1.05);
-  }
-}
-
-/* Remove old boost indicators - they're replaced with the new system */
-#production-boost-indicator,
-#click-boost-indicator,
-#frenzy-indicator {
-  display: none;
-}
-
-/* ...existing code... */
-
-/* Fix duplicate tooltips by hiding the original static tooltips */
-.shop-item > .item-desc {
-  display: none !important; /* Hide the original tooltips that are direct children of shop-item */
-  visibility: hidden !important;
-  opacity: 0 !important;
-}
-
-/* Ensure only dynamically created tooltips are visible */
-body > .item-desc.item-desc-tooltip {
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  z-index: 9999999;
-  position: absolute;
-}
-
-/* ...existing code... */
