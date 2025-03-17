@@ -15,6 +15,11 @@
   <body >
     <!-- LEFT Section: Upgrade Buttons -->
     <section class="left">
+      <div class="complication">
+        <button class="btnCom" >1</button>
+        <button class="btnCom"onclick="complication()">10</button>
+        <button class="btnCom">100</button>
+      </div>
       <div class="button">
         <button
           id="clickUpgrade"
@@ -22,8 +27,9 @@
           class="upgrade"
           data-content="Upgrade Click Power (Cost: 10)"
         >
+       
         <img class="button_image" src="image/hand.png" alt="Click Upgrade" />
-        <span class="button_top">Upgrade Click Power(Cost: 10)</span>
+        <span class="button_top" id="upgradeClick" >Upgrade Click Power(Cost: 10)</span>
         </button>
       </div>
       <div class="button">
@@ -35,7 +41,7 @@
         >
         <img class="button_image" src="image/hand.png" alt="Click Upgrade" />
 
-          <span class="button_top">Buy Auto Clicker (Cost: 50)</span>
+          <span class="button_top" id="upgradeAuto">Buy Auto Clicker (Cost: 50)</span>
        
         </button>
       </div>
@@ -48,7 +54,7 @@
         >
         <img class="button_image" src="image/grandma.png" alt="Click Upgrade" />
 
-          <span class="button_top">Buy Grandma's Bakery (Cost: 100)</span>
+          <span class="button_top" id="upgradeGrandma">Buy Grandma's Bakery (Cost: 100)</span>
         </button>
       </div>
       <div class="button">
@@ -60,7 +66,7 @@
         >
         <img class="button_image" src="image/farm.png" alt="Click Upgrade" />
 
-          <span class="button_top">Buy Cookie Farm (Cost: 500)</span>
+          <span class="button_top" id="upgradeFarm">Buy Cookie Farm (Cost: 500)</span>
         </button>
       </div>
       <div class="button">

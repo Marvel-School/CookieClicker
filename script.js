@@ -19,7 +19,7 @@ class Upgrade {
   // }
   getDisplayText() {
     if (window.innerWidth > 932) {
-        return ` ${this.displayPrefix} (Cost: ${this.cost})`; // النص العادي
+        return ` ${this.displayPrefix} (Cost: ${this.cost})`; 
     } else {
         return `(Cost: ${this.cost})`; 
     }
@@ -1163,72 +1163,107 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 
+// body blur
+class ToggleMenu {
+  constructor(iconId, menuId) {
+    this.icon = document.getElementById(iconId);
+    this.menu = document.getElementById(menuId);
+    this.body = document.body;
 
-  document.addEventListener("DOMContentLoaded", function () {
-    const settingsIcon = document.getElementById("settingsIcon");
-    const settingsMenu = document.getElementById("settingsMenu");
+    this.init();
+  }
 
-    const body = document.body;
-    
-    settingsIcon.addEventListener("click", function () {
-      settingsMenu.classList.toggle("show"); 
-      body.classList.toggle("blur");
-      console.log("werk");
-    });
-  
-    // Close settings menu when clicking outside
-    document.addEventListener("click", function (event) {
-      if (!settingsMenu.contains(event.target) && !settingsIcon.contains(event.target)) {
-        settingsMenu.classList.remove("show");
-        body.classList.remove("blur");
-        console.log("eerst");
-      }
-    });
-  });
+  init() {
+    this.icon.addEventListener("click", () => this.toggleMenu());
+    document.addEventListener("click", (event) => this.closeMenu(event));
+  }
 
-  document.addEventListener("DOMContentLoaded", function () {
-  const achievementsIcon = document.getElementById("achievementsIcon");
-  const achievementsContainer = document.getElementById("achievementsContainer");
-  
-  achievementsIcon.addEventListener("click", function () {
-    achievementsContainer.classList.add("show"); 
-    body.classList.add("blur");
-  console.log("werk");
-  });
+  toggleMenu() {
+    this.menu.classList.toggle("show");
+    this.body.classList.toggle("blur");
+    console.log("werk");
+  }
 
-  // Close settings menu when clicking outside
-  document.addEventListener("click", function (event) {
-    if (!achievementsContainer.contains(event.target) && !achievementsIcon.contains(event.target)) {
-      achievementsContainer.classList.remove("show");
-      body.classList.remove("blur");
+  closeMenu(event) {
+    if (!this.menu.contains(event.target) && !this.icon.contains(event.target)) {
+      this.menu.classList.remove("show");
+      this.body.classList.remove("blur");
       console.log("eerst");
     }
-  });
+  }
+}
+
+
+document.addEventListener("DOMContentLoaded", function () {
+  new ToggleMenu("settingsIcon", "settingsMenu");
+  new ToggleMenu("achievementsIcon", "achievementsContainer");
 });
 
+// image falling
 document.addEventListener("DOMContentLoaded", function () {
   let cookie = document.getElementById("cookie");
   let images = document.querySelectorAll(".set img");
 
-  cookie.addEventListener("click", function () {
-      if (images.length === 0) return; 
+function dropCookieImage() {
+  if (images.length === 0) return; 
 
-      let randomIndex = Math.floor(Math.random() * images.length); 
-      let selectedImage = images[randomIndex];
+  let randomIndex = Math.floor(Math.random() * images.length);
+  let selectedImage = images[randomIndex];
 
-      let newImg = document.createElement("img");
-      newImg.src = selectedImage.src;
-      newImg.classList.add("falling");
+  let newImg = document.createElement("img");
+  newImg.src = selectedImage.src;
+  newImg.classList.add("falling");
 
-      newImg.style.left = Math.random() * window.innerWidth + "px";
+  newImg.style.left = Math.random() * window.innerWidth + "px";
 
-      document.body.appendChild(newImg); 
+  document.body.appendChild(newImg);
 
-      
-      setTimeout(() => {
-          newImg.remove();
-      }, 2000);
-  });
+  setTimeout(() => {
+      newImg.remove();
+  }, 2000);
+}
+cookie.addEventListener("click", function () {
+  dropCookieImage();
 });
+function autoGenerateCookies() {
+  dropCookieImage();
+}
+let lastCookieCount = 0;
+setInterval(() => {
+    if (typeof game !== "undefined" && game.state.cookies > lastCookieCount) {
+        autoGenerateCookies();
+        lastCookieCount = game.state.cookies;
+    }
+}, 500);
+});
+let dropCount = 1;
+
+setInterval(() => {
+    if (typeof game !== "undefined" && game.state.cookies > lastCookieCount) {
+        for (let i = 0; i < dropCount; i++) {
+            autoGenerateCookies();
+        }
+        lastCookieCount = game.state.cookies;
+
+        // زيادة عدد الصور المتساقطة تدريجيًا
+        if (dropCount < 10) dropCount++;
+    }
+}, 500);
+
+
+function complication() {
+  const newText1 = "Upgrade Auto Clicker (Cost:300)";
+  const newText2 = "Upgrade Click Power (Cost: 100)";
+  const newText3 = "Buy Auto Clicker (Cost: 500)";
+  const newText4 = "Upgrade Grandma's Bakery (Cost: 1000)";
+  const newText5 = "Buy Cookie Farm (Cost: 5000)";
+
+
+  const upgradeClick = document.getElementById("upgradeClick").innerText=newText2;
+  const upgradeAuto= document.getElementById("upgradeAuto").innerText=newText3;
+  const upgradeGrandma = document.getElementById("upgradeGrandma").innerText=newText4;
+  const upgradeFarm = document.getElementById("upgradeFarm").innerText=newText5;
+  // upgradeClick.innerHTML = newText;
+}
 
 

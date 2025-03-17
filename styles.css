@@ -656,23 +656,17 @@ body {
 }
 
 /* Floating Numbers */
-.floating-number {
+.falling {
   position: absolute;
-  color: red;
-  font-size: 20px;
-  animation: floatUp 1s ease-out;
-  pointer-events: none;
+  animation: fallAnimation 2s linear;
+  width: 50px; /* يمكنك ضبط الحجم */
 }
-@keyframes floatUp {
-  0% {
-    transform: translateY(0);
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(-50px);
-    opacity: 0;
-  }
+
+@keyframes fallAnimation {
+  0% { transform: translateY(-50px); opacity: 1; }
+  100% { transform: translateY(100vh); opacity: 0; }
 }
+
 
 /* Upgrade Visualization Boxes */
 .upgrade-box {
@@ -904,11 +898,14 @@ button.upgrade:disabled .button_top {
 /* responsive */
 @media (max-width: 932px) {
  
-  #aNewBodyElement .blur{
-  backdrop-filter: blur(10px);
- 
- 
+  body.blur {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px); 
+    background: rgba(0, 0, 0, 0.3); 
+    z-index: 9999;
 }
+
+  
   .upgrade-box {
     width: 120px;
   }
