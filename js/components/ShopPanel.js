@@ -14,14 +14,16 @@ export class ShopPanel extends UIComponent {
     const shopItems = this.container.querySelectorAll('.shop-item');
     
     shopItems.forEach((item, index) => {
-      // Rebuild shop items to ensure no duplicate event listeners
-      const clone = item.cloneNode(true);
-      item.parentNode.replaceChild(clone, item);
+      // Generate clean version of the item without any tooltips
+      const cleanItem = this.createCleanShopItem(item);
+      
+      // Replace original item with clean version
+      item.parentNode.replaceChild(cleanItem, item);
       
       // Add click handler to the entire shop item
-      clone.addEventListener('click', (e) => {
+      cleanItem.addEventListener('click', (e) => {
         e.stopPropagation();
-        const upgradeKey = clone.getAttribute("data-upgrade");
+        const upgradeKey = cleanItem.getAttribute("data-upgrade");
         
         if (upgradeKey && this.game.shopUpgrades[upgradeKey]) {
           this.game.purchaseShopUpgrade(upgradeKey);
@@ -29,63 +31,52 @@ export class ShopPanel extends UIComponent {
           console.error(`Shop upgrade not found: ${upgradeKey}`);
         }
       });
-      
-      // Set up tooltips using a single implementation
-      this.setupTooltip(clone);
     });
   }
   
-  setupTooltip(item) {
-    // DISABLE TOOLTIP FUNCTIONALITY
-    // Function is empty to prevent tooltips from being created
-    return;
+  /**
+   * Creates a clean version of a shop item with all tooltip elements removed
+   */
+  createCleanShopItem(originalItem) {
+    // Create a fresh item div
+    const cleanItem = document.createElement('div');
+    cleanItem.className = originalItem.className;
+    cleanItem.setAttribute('data-upgrade', originalItem.getAttribute('data-upgrade'));
     
-    /* Original tooltip code removed
-    const tooltip = item.querySelector('.item-desc');
-    if (!tooltip) return;
+    // Copy data attributes
+    Array.from(originalItem.attributes)
+      .filter(attr => attr.name.startsWith('data-'))
+      .forEach(attr => {
+        cleanItem.setAttribute(attr.name, attr.value);
+      });
     
-    // Store tooltip content
-    const originalContent = tooltip.innerHTML;
+    // Only copy essential content (image and cost), skip tooltip elements
+    const image = originalItem.querySelector('img.shop-item-image');
+    if (image) {
+      const newImage = image.cloneNode(true);
+      cleanItem.appendChild(newImage);
+    }
     
-    // Add mouse events
-    item.addEventListener('mouseenter', (e) => {
-      e.stopPropagation();
-      
-      // Remove existing tooltips
-      document.querySelectorAll('.item-desc-tooltip').forEach(t => t.remove());
-      
-      // Create fresh tooltip
-      const newTooltip = document.createElement('div');
-      newTooltip.className = 'item-desc item-desc-tooltip';
-      newTooltip.innerHTML = originalContent;
-      document.body.appendChild(newTooltip);
-      
-      // Position tooltip
-      const rect = item.getBoundingClientRect();
-      const tooltipHeight = newTooltip.offsetHeight || 120;
-      const tooltipWidth = newTooltip.offsetWidth || 220;
-      
-      // Handle vertical positioning
-      if (rect.top - tooltipHeight - 15 < 10) {
-        // Show below if not enough room above
-        newTooltip.style.top = (rect.bottom + 15) + 'px';
-      } else {
-        // Show above (default)
-        newTooltip.style.top = (rect.top - tooltipHeight - 15) + 'px';
-      }
-      
-      // Handle horizontal positioning
-      let leftPos = rect.left + (rect.width / 2) - (tooltipWidth / 2);
-      leftPos = Math.max(10, Math.min(leftPos, window.innerWidth - tooltipWidth - 10));
-      newTooltip.style.left = leftPos + 'px';
-      
-      newTooltip.style.zIndex = '999999';
-    });
+    const itemName = originalItem.querySelector('.item-name');
+    if (itemName) {
+      const newName = itemName.cloneNode(true);
+      cleanItem.appendChild(newName);
+    }
     
-    item.addEventListener('mouseleave', () => {
-      document.querySelectorAll('.item-desc-tooltip').forEach(t => t.remove());
-    });
-    */
+    const itemCost = originalItem.querySelector('.item-cost');
+    if (itemCost) {
+      const newCost = itemCost.cloneNode(true);
+      cleanItem.appendChild(newCost);
+    }
+    
+    // Copy timer element if it exists (for time accelerator)
+    const timer = originalItem.querySelector('.time-accelerator-timer');
+    if (timer) {
+      const newTimer = timer.cloneNode(true);
+      cleanItem.appendChild(newTimer);
+    }
+    
+    return cleanItem;
   }
   
   updatePrices() {

@@ -12,6 +12,30 @@
     <link rel="stylesheet" href="personalization.css" />
     <link rel="preload" href="image/cookie.png" as="image" />
     <link rel="preload" href="sounds/click.mp3" as="audio" />
+
+    <style>
+      /* Immediately disable all tooltips */
+      .item-desc, .tooltip, [data-tooltip], [title] {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+      }
+    </style>
+
+    <script type="text/javascript">
+      // Clean up tooltips after page loads
+      document.addEventListener('DOMContentLoaded', function() {
+        // Remove all tooltip elements from the DOM
+        document.querySelectorAll('.item-desc, .tooltip, [data-tooltip]').forEach(tooltip => {
+          if (tooltip.parentNode) tooltip.parentNode.removeChild(tooltip);
+        });
+        
+        // Prevent tooltip attributes from working
+        document.querySelectorAll('[title]').forEach(el => {
+          el.removeAttribute('title');
+        });
+      });
+    </script>
   </head>
   <body>
     <!-- LEFT Section: Upgrade Buttons -->

@@ -57,25 +57,37 @@ export function setupEventListeners(game) {
 }
 
 function setupTooltips(game) {
-  console.log("Setting up shop item tooltips and click handlers");
+  console.log("Setting up shop item click handlers - tooltips completely removed");
   
   // Get all shop items first to see if they exist
   const shopItems = document.querySelectorAll('.shop-item');
   console.log(`Found ${shopItems.length} shop items to set up`);
   
   shopItems.forEach((item, index) => {
-    // Log the original data-upgrade attribute to verify it exists
+    // Create a clean replacement without any tooltip elements
     const upgradeKey = item.getAttribute("data-upgrade");
     console.log(`Shop item ${index + 1} has data-upgrade="${upgradeKey}"`);
     
-    // First, clone the item to remove existing event handlers
-    const clone = item.cloneNode(true);
-    item.parentNode.replaceChild(clone, item);
+    // Create a completely new element without tooltips
+    const cleanItem = document.createElement('div');
+    cleanItem.className = item.className;
+    cleanItem.setAttribute('data-upgrade', upgradeKey);
     
-    // Add click handler to the ENTIRE shop item (not just the image)
-    clone.addEventListener('click', (e) => {
+    // Only copy essential child elements, excluding tooltips
+    const essentialSelectors = ['img.shop-item-image', '.item-name', '.item-cost', '.time-accelerator-timer'];
+    essentialSelectors.forEach(selector => {
+      const element = item.querySelector(selector);
+      if (element) {
+        cleanItem.appendChild(element.cloneNode(true));
+      }
+    });
+    
+    // Replace the original item with our clean version
+    item.parentNode.replaceChild(cleanItem, item);
+    
+    // Add click handler to the entire shop item
+    cleanItem.addEventListener('click', (e) => {
       e.stopPropagation(); // Prevent bubbling
-      const upgradeKey = clone.getAttribute("data-upgrade");
       console.log(`Shop item clicked with key: ${upgradeKey}`);
       
       if (upgradeKey && game.shopUpgrades[upgradeKey]) {
@@ -90,54 +102,6 @@ function setupTooltips(game) {
         console.log("Available upgrades:", Object.keys(game.shopUpgrades));
       }
     });
-    
-    // Also keep the image click handler as a backup
-    const itemImage = clone.querySelector('img.shop-item-image');
-    if (itemImage) {
-      itemImage.addEventListener('click', (e) => {
-        e.stopPropagation(); // Prevent bubbling
-        const upgradeKey = clone.getAttribute("data-upgrade");
-        console.log(`Shop item IMAGE clicked with key: ${upgradeKey}`);
-        
-        if (upgradeKey && game.shopUpgrades[upgradeKey]) {
-          console.log(`Found matching upgrade for ${upgradeKey} attempting purchase`);
-          game.purchaseShopUpgrade(upgradeKey);
-        } else {
-          console.error(`Shop upgrade not found in game.shopUpgrades: ${upgradeKey}`);
-          console.log("Available upgrades:", Object.keys(game.shopUpgrades));
-        }
-      });
-    } else {
-      console.warn(`No image found for shop item with upgrade ${upgradeKey}`);
-    }
-    
-    // REMOVE TOOLTIP FUNCTIONALITY - Don't set up tooltips
-    // The below code is removed/commented out to disable tooltips
-    /*
-    const tooltip = clone.querySelector('.item-desc');
-    if (tooltip) {
-      // Store tooltip content
-      const originalContent = tooltip.innerHTML;
-      
-      // Add mouse events
-      clone.addEventListener('mouseenter', (e) => {
-        e.stopPropagation(); 
-        document.querySelectorAll('.item-desc-tooltip').forEach(t => t.remove());
-        
-        const newTooltip = document.createElement('div');
-        newTooltip.className = 'item-desc item-desc-tooltip';
-        newTooltip.innerHTML = `<div class="text-container">${originalContent}</div>`;
-        document.body.appendChild(newTooltip);
-        
-        // Position tooltip...
-      });
-      
-      clone.addEventListener('mouseleave', (e) => {
-        e.stopPropagation();
-        document.querySelectorAll('.item-desc-tooltip').forEach(t => t.remove());
-      });
-    }
-    */
   });
 }
 
