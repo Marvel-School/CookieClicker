@@ -262,9 +262,7 @@ class Game {
     // Shop Items: Purchase by clicking the item image
     document.querySelectorAll(".shop-item img").forEach((itemImage) => {
       itemImage.addEventListener("click", () => {
-        const upgradeKey = itemImage
-          .closest(".shop-item")
-          .getAttribute("data-upgrade");
+        const upgradeKey = itemImage.closest(".shop-item").getAttribute("data-upgrade");
         this.purchaseShopUpgrade(upgradeKey);
       });
     });
@@ -272,17 +270,13 @@ class Game {
     // New shop icon click handler
     if (this.shopIcon && this.shopContainer) {
       this.shopIcon.addEventListener("click", (e) => {
-        e.stopPropagation(); // Prevent closing when clicking the icon
+        e.stopPropagation();
         const isVisible = this.shopContainer.style.display === "block";
         this.shopContainer.style.display = isVisible ? "none" : "block";
       });
-      
-      // Prevent clicks inside the shop container from closing it
       this.shopContainer.addEventListener("click", (e) => {
         e.stopPropagation();
       });
-      
-      // Close shop panel when clicking elsewhere
       document.addEventListener("click", () => {
         if (this.shopContainer.style.display === "block") {
           this.shopContainer.style.display = "none";
@@ -292,39 +286,28 @@ class Game {
       this.log("ERROR: shopIcon or shopContainer not found!");
     }
 
-    // Settings Panel: Toggle display on settings icon click with improved handling
+    // Settings Panel: Toggle display on settings icon click
     this.settingsIcon.addEventListener("click", (e) => {
-      e.stopPropagation(); // Prevent document click from immediately closing it
-      this.settingsMenu.style.display = 
+      e.stopPropagation();
+      this.settingsMenu.style.display =
         this.settingsMenu.style.display === "block" ? "none" : "block";
-      this.log(
-        `Settings menu ${
-          this.settingsMenu.style.display === "block" ? "shown" : "hidden"
-        }`
-      );
+      this.log(`Settings menu ${this.settingsMenu.style.display === "block" ? "shown" : "hidden"}`);
     });
-    
-    // Prevent clicks inside the settings menu from closing it
     this.settingsMenu.addEventListener("click", (e) => {
       e.stopPropagation();
     });
-    
-    // Add click-outside handling for settings menu
     document.addEventListener("click", () => {
       if (this.settingsMenu.style.display === "block") {
         this.settingsMenu.style.display = "none";
       }
     });
-
     // Add hover sound to settings control buttons
     [
       this.saveGameButton,
       this.loadGameButton,
       this.resetGameButton,
       this.toggleSoundButton,
-    ].forEach((btn) =>
-      btn.addEventListener("mouseover", () => this.playHoverSound())
-    );
+    ].forEach((btn) => btn.addEventListener("mouseover", () => this.playHoverSound()));
     this.saveGameButton.addEventListener("click", () => this.saveGame());
     this.loadGameButton.addEventListener("click", () => this.loadGame());
     this.resetGameButton.addEventListener("click", () => this.resetGame());
@@ -334,24 +317,16 @@ class Game {
       this.log("Sound toggled:", this.soundOn);
     });
 
-    // Fix achievements icon click handler
+    // Achievements Panel: Simplified toggle
     const achievementsIcon = document.getElementById("achievementsIcon");
     const achievementsContainer = document.getElementById("achievementsContainer");
-    
     if (achievementsIcon && achievementsContainer) {
-      // Simplified toggle logic
       achievementsIcon.addEventListener("click", (e) => {
-        e.stopPropagation(); // Prevent closing when clicking the icon
+        e.stopPropagation();
         const isVisible = achievementsContainer.style.display === "block";
         achievementsContainer.style.display = isVisible ? "none" : "block";
       });
-      
-      // Prevent clicks inside the achievements container from closing it
-      achievementsContainer.addEventListener("click", (e) => {
-        e.stopPropagation();
-      });
-      
-      // Close achievements panel when clicking elsewhere
+      achievementsContainer.addEventListener("click", (e) => e.stopPropagation());
       document.addEventListener("click", () => {
         if (achievementsContainer.style.display === "block") {
           achievementsContainer.style.display = "none";
@@ -364,147 +339,8 @@ class Game {
     // Cookie click handler
     this.cookie.addEventListener("click", (e) => this.handleCookieClick(e));
 
-    // CLEANUP: REMOVE ALL DUPLICATE TOOLTIP IMPLEMENTATIONS AND REPLACE WITH THIS SINGLE IMPLEMENTATION
-    document.querySelectorAll('.shop-item').forEach(item => {
-      // First, let's completely clone the item to remove any existing event handlers
-      const clone = item.cloneNode(true);
-      item.parentNode.replaceChild(clone, item);
-      
-      // Add purchase functionality
-      const itemImage = clone.querySelector('img.shop-item-image');
-      if (itemImage) {
-        itemImage.addEventListener('click', () => {
-          const upgradeKey = clone.getAttribute("data-upgrade");
-          if (upgradeKey) this.purchaseShopUpgrade(upgradeKey);
-        });
-      }
-      
-      // Single tooltip implementation with viewport boundary checking
-      const tooltip = clone.querySelector('.item-desc');
-      if (tooltip) {
-        // Store tooltip content
-        const originalContent = tooltip.innerHTML;
-        
-        // Add mouse events
-        clone.addEventListener('mouseenter', () => {
-          // Remove any existing tooltips to avoid duplicates
-          document.querySelectorAll('body > .item-desc').forEach(t => t.remove());
-          
-          // Create fresh tooltip element
-          const newTooltip = document.createElement('div');
-          newTooltip.className = 'item-desc';
-          newTooltip.innerHTML = `<div class="text-container">${originalContent}</div>`;
-          document.body.appendChild(newTooltip);
-          
-          // Get positioning information
-          const rect = clone.getBoundingClientRect();
-          const tooltipHeight = newTooltip.offsetHeight || 120;
-          const tooltipWidth = newTooltip.offsetWidth || 220;
-          const minPadding = 10;
-          
-          // Check if tooltip would be cut off at top
-          const positionAbove = rect.top - tooltipHeight - 15;
-          if (positionAbove < minPadding) {
-            // Position below instead
-            newTooltip.style.top = (rect.bottom + 15) + 'px';
-            newTooltip.classList.add('position-below');
-          } else {
-            // Position above (standard)
-            newTooltip.style.top = positionAbove + 'px';
-          }
-          
-          // Handle horizontal positioning
-          let leftPos = rect.left + (rect.width / 2) - (tooltipWidth / 2);
-          if (leftPos < minPadding) {
-            leftPos = minPadding;
-          } else if (leftPos + tooltipWidth > window.innerWidth - minPadding) {
-            leftPos = window.innerWidth - tooltipWidth - minPadding;
-          }
-          newTooltip.style.left = leftPos + 'px';
-          
-          // Ensure visibility
-          newTooltip.style.zIndex = '100000000';
-        });
-        
-        clone.addEventListener('mouseleave', () => {
-          // Clean up any tooltips when mouse leaves
-          document.querySelectorAll('body > .item-desc').forEach(t => t.remove());
-        });
-      }
-    });
-
-    // IMPROVED TOOLTIP IMPLEMENTATION - Fixes multiple tooltips
-    document.querySelectorAll('.shop-item').forEach(item => {
-      // First, let's completely clone the item to remove any existing event handlers
-      const clone = item.cloneNode(true);
-      item.parentNode.replaceChild(clone, item);
-      
-      // Add purchase functionality
-      const itemImage = clone.querySelector('img.shop-item-image');
-      if (itemImage) {
-        itemImage.addEventListener('click', (e) => {
-          e.stopPropagation(); // Prevent bubbling
-          const upgradeKey = clone.getAttribute("data-upgrade");
-          if (upgradeKey) this.purchaseShopUpgrade(upgradeKey);
-        });
-      }
-      
-      // Single tooltip implementation with better cleanup
-      const tooltip = clone.querySelector('.item-desc');
-      if (tooltip) {
-        // Store tooltip content
-        const originalContent = tooltip.innerHTML;
-        
-        // Add mouse events
-        clone.addEventListener('mouseenter', (e) => {
-          e.stopPropagation(); // Prevent event bubbling
-          
-          // Remove ANY tooltip elements from anywhere in the DOM
-          document.querySelectorAll('.item-desc-tooltip').forEach(t => t.remove());
-          
-          // Create fresh tooltip element with special class for identification
-          const newTooltip = document.createElement('div');
-          newTooltip.className = 'item-desc item-desc-tooltip'; // Add specific class
-          newTooltip.innerHTML = `<div class="text-container">${originalContent}</div>`;
-          document.body.appendChild(newTooltip);
-          
-          // Get positioning information
-          const rect = clone.getBoundingClientRect();
-          const tooltipHeight = newTooltip.offsetHeight || 120;
-          const tooltipWidth = newTooltip.offsetWidth || 220;
-          const minPadding = 10;
-          
-          // Check if tooltip would be cut off at top
-          const positionAbove = rect.top - tooltipHeight - 15;
-          if (positionAbove < minPadding) {
-            // Position below instead
-            newTooltip.style.top = (rect.bottom + 15) + 'px';
-            newTooltip.classList.add('position-below');
-          } else {
-            // Position above (standard)
-            newTooltip.style.top = positionAbove + 'px';
-          }
-          
-          // Handle horizontal positioning
-          let leftPos = rect.left + (rect.width / 2) - (tooltipWidth / 2);
-          if (leftPos < minPadding) {
-            leftPos = minPadding;
-          } else if (leftPos + tooltipWidth > window.innerWidth - minPadding) {
-            leftPos = window.innerWidth - tooltipWidth - minPadding;
-          }
-          newTooltip.style.left = leftPos + 'px';
-          
-          // Ensure visibility
-          newTooltip.style.zIndex = '100000000';
-        });
-        
-        clone.addEventListener('mouseleave', (e) => {
-          e.stopPropagation(); // Prevent event bubbling
-          // Clean up any tooltips when mouse leaves using the specific class
-          document.querySelectorAll('.item-desc-tooltip').forEach(t => t.remove());
-        });
-      }
-    });
+    // >>> All tooltip event listener blocks removed <<<
+    // (Previously there were multiple blocks creating or positioning tooltips on '.shop-item'; they have been entirely removed.)
 
   }
 
