@@ -894,18 +894,33 @@ button.upgrade:disabled .button_top {
 /* Remove all other duplicate disabled styling rules */
 
 /* ...existing code... */
-
+.blurz{
+  display: none;
+}
 /* responsive */
 @media (max-width: 932px) {
  
-  body.blur {
+  /* body.blur {
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px); 
     background: rgba(0, 0, 0, 0.3); 
     z-index: 9999;
-}
+} */
 
-  
+  .blurz{
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 500;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(15px);
+
+  }
+  .blurz.show{
+    display: block;
+  }
   .upgrade-box {
     width: 120px;
   }

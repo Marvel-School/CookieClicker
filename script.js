@@ -1168,6 +1168,7 @@ class ToggleMenu {
   constructor(iconId, menuId) {
     this.icon = document.getElementById(iconId);
     this.menu = document.getElementById(menuId);
+    this.backdrop = document.getElementById("backdrop");
     this.body = document.body;
 
     this.init();
@@ -1181,6 +1182,8 @@ class ToggleMenu {
   toggleMenu() {
     this.menu.classList.toggle("show");
     this.body.classList.toggle("blur");
+    // this.backdrop.classList.toggle("show");
+    document.getElementById("backdrop").classList.toggle("show");
     console.log("werk");
   }
 
