@@ -63,6 +63,48 @@ document.addEventListener('DOMContentLoaded', () => {
       console.error("Error initializing personalization:", e);
     }
     
+    // Set up personalization button in settings menu
+    const settingsMenu = document.getElementById('settingsMenu');
+    const personalizationBtn = document.getElementById('personalizationBtn');
+    const personalizationContainer = document.getElementById('personalizationContainer');
+    
+    if (settingsMenu && !personalizationBtn) {
+      // Create personalization button if it doesn't exist
+      const newPersonalizationBtn = document.createElement('button');
+      newPersonalizationBtn.id = 'personalizationBtn';
+      newPersonalizationBtn.textContent = 'Personalization';
+      settingsMenu.appendChild(newPersonalizationBtn);
+    }
+    
+    // Set up personalization panel toggle
+    if (personalizationBtn && personalizationContainer) {
+      personalizationBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        personalizationContainer.style.display = 
+          personalizationContainer.style.display === 'block' ? 'none' : 'block';
+      });
+      
+      // Close button
+      const closeBtn = document.getElementById('closePersonalization');
+      if (closeBtn) {
+        closeBtn.addEventListener('click', () => {
+          personalizationContainer.style.display = 'none';
+        });
+      }
+      
+      // Close panel when clicking outside
+      document.addEventListener('click', () => {
+        if (personalizationContainer.style.display === 'block') {
+          personalizationContainer.style.display = 'none';
+        }
+      });
+      
+      // Prevent clicks inside from closing
+      personalizationContainer.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+    }
+    
     // Legacy support for achievements dropdown
     const achieveWrapper = document.getElementById("achievementsWrapper");
     const dropdownContent = document.getElementById("achievementsContainer");
@@ -84,8 +126,46 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
     
+    // Add keyboard shortcut for saving (Ctrl+S)
+    document.addEventListener('keydown', function(event) {
+      try {
+        // Check if Ctrl+S or Cmd+S (for Mac) was pressed
+        if ((event.ctrlKey || event.metaKey) && event.key === 's') {
+          // Prevent the default browser save dialog
+          event.preventDefault();
+          
+          // Save the game
+          if (gameInstance && typeof gameInstance.saveGame === 'function') {
+            gameInstance.saveGame();
+            console.log('Game saved with keyboard shortcut (Ctrl+S)');
+          }
+        }
+      } catch (e) {
+        console.error("Error in keyboard handler:", e);
+      }
+    });
+    
     console.log("Cookie Clicker initialization complete");
   } catch (e) {
-    console.error("Error initializing Cookie Clicker:", e);
+    console.error("CRITICAL ERROR initializing Cookie Clicker:", e);
+    
+    // Emergency recovery - show error to user
+    const errorMsg = document.createElement('div');
+    errorMsg.style.position = 'fixed';
+    errorMsg.style.top = '10px';
+    errorMsg.style.left = '50%';
+    errorMsg.style.transform = 'translateX(-50%)';
+    errorMsg.style.padding = '20px';
+    errorMsg.style.background = 'rgba(255,0,0,0.8)';
+    errorMsg.style.color = 'white';
+    errorMsg.style.borderRadius = '5px';
+    errorMsg.style.zIndex = '999999';
+    errorMsg.innerHTML = `
+      <h3>Error Loading Game</h3>
+      <p>There was a problem initializing the game. Try refreshing the page.</p>
+      <p>Error details: ${e.message}</p>
+      <button onclick="location.reload()" style="padding: 5px 10px; margin-top: 10px;">Reload Page</button>
+    `;
+    document.body.appendChild(errorMsg);
   }
 });

@@ -79,7 +79,7 @@ function setupTooltips(game) {
       console.log(`Shop item clicked with key: ${upgradeKey}`);
       
       if (upgradeKey && game.shopUpgrades[upgradeKey]) {
-        console.log(`Found matching upgrade for ${upgradeKey}, attempting purchase`);
+        console.log(`Found matching upgrade for ${upgradeKey} attempting purchase`);
         try {
           game.purchaseShopUpgrade(upgradeKey);
         } catch (error) {
@@ -100,7 +100,7 @@ function setupTooltips(game) {
         console.log(`Shop item IMAGE clicked with key: ${upgradeKey}`);
         
         if (upgradeKey && game.shopUpgrades[upgradeKey]) {
-          console.log(`Found matching upgrade for ${upgradeKey}, attempting purchase`);
+          console.log(`Found matching upgrade for ${upgradeKey} attempting purchase`);
           game.purchaseShopUpgrade(upgradeKey);
         } else {
           console.error(`Shop upgrade not found in game.shopUpgrades: ${upgradeKey}`);
@@ -111,7 +111,9 @@ function setupTooltips(game) {
       console.warn(`No image found for shop item with upgrade ${upgradeKey}`);
     }
     
-    // Single tooltip implementation with better cleanup
+    // REMOVE TOOLTIP FUNCTIONALITY - Don't set up tooltips
+    // The below code is removed/commented out to disable tooltips
+    /*
     const tooltip = clone.querySelector('.item-desc');
     if (tooltip) {
       // Store tooltip content
@@ -119,52 +121,23 @@ function setupTooltips(game) {
       
       // Add mouse events
       clone.addEventListener('mouseenter', (e) => {
-        e.stopPropagation(); // Prevent event bubbling
-        
-        // Remove ANY tooltip elements from anywhere in the DOM
+        e.stopPropagation(); 
         document.querySelectorAll('.item-desc-tooltip').forEach(t => t.remove());
         
-        // Create fresh tooltip element with special class for identification
         const newTooltip = document.createElement('div');
-        newTooltip.className = 'item-desc item-desc-tooltip'; // Add specific class
+        newTooltip.className = 'item-desc item-desc-tooltip';
         newTooltip.innerHTML = `<div class="text-container">${originalContent}</div>`;
         document.body.appendChild(newTooltip);
         
-        // Get positioning information
-        const rect = clone.getBoundingClientRect();
-        const tooltipHeight = newTooltip.offsetHeight || 120;
-        const tooltipWidth = newTooltip.offsetWidth || 220;
-        const minPadding = 10;
-        
-        // Check if tooltip would be cut off at top
-        const positionAbove = rect.top - tooltipHeight - 15;
-        if (positionAbove < minPadding) {
-          // Position below instead
-          newTooltip.style.top = (rect.bottom + 15) + 'px';
-          newTooltip.classList.add('position-below');
-        } else {
-          // Position above (standard)
-          newTooltip.style.top = positionAbove + 'px';
-        }
-        
-        // Handle horizontal positioning
-        let leftPos = rect.left + (rect.width / 2) - (tooltipWidth / 2);
-        if (leftPos < minPadding) {
-          leftPos = minPadding;
-        } else if (leftPos + tooltipWidth > window.innerWidth - minPadding) {
-          leftPos = window.innerWidth - tooltipWidth - minPadding;
-        }
-        newTooltip.style.left = leftPos + 'px';
-        
-        // Ensure visibility
-        newTooltip.style.zIndex = '100000000';
+        // Position tooltip...
       });
       
       clone.addEventListener('mouseleave', (e) => {
-        e.stopPropagation(); // Prevent event bubbling
+        e.stopPropagation();
         document.querySelectorAll('.item-desc-tooltip').forEach(t => t.remove());
       });
     }
+    */
   });
 }
 
@@ -239,48 +212,87 @@ function setupAchievementsPanel(game) {
 }
 
 export function updateGameDisplay(game) {
-  // Protect against NaN in cookie count
-  if (isNaN(game.state.cookies)) {
-    console.error("Cookie count is NaN, fixing...");
-    game.state.cookies = 0;
-  }
-  
-  const cookies = Math.floor(game.state.cookies);
-  
-  // Update text displays using formatted numbers for better readability
-  game.cookieCount.textContent = formatNumber(cookies);
-  game.clickPowerDisplay.textContent = formatNumber(game.state.clickPower);
-  game.count.textContent = formatNumber(cookies) + " cookies";
-
-  // Update button states
-  updateButtonStates(game, cookies);
-  
-  // Update time accelerator display
-  updateTimeAccelerator(game);
-  
-  // Update progression visuals
-  updateProgressionVisuals(game);
-  
-  // Show multiplier in stats if above 1
-  if (game.state.cookieMultiplier > 1) {
-    if (!document.getElementById('multiplierDisplay')) {
-      const multiplierEl = document.createElement('div');
-      multiplierEl.id = 'multiplierDisplay';
-      const statsDiv = document.querySelector('.stats');
-      statsDiv.appendChild(multiplierEl);
+  try {
+    // Protect against NaN in cookie count
+    if (isNaN(game.state.cookies)) {
+      console.error("Cookie count is NaN, fixing...");
+      game.state.cookies = 0;
     }
-    const multiplierDisplay = document.getElementById('multiplierDisplay');
-    multiplierDisplay.textContent = `Multiplier: ${Number(game.state.cookieMultiplier).toFixed(1)}x`;
-    multiplierDisplay.style.color = game.state.cookieMultiplier >= 2 ? '#ffbb00' : '';
+    
+    const cookies = Math.floor(game.state.cookies);
+    
+    // Update text displays using formatted numbers for better readability
+    if (game.cookieCount) game.cookieCount.textContent = formatNumber(cookies);
+    
+    // Limit click power display to 1 decimal place with fallback
+    if (game.clickPowerDisplay) {
+      try {
+        game.clickPowerDisplay.textContent = formatNumberWithDecimals(game.state.clickPower);
+      } catch (e) {
+        console.error("Error formatting click power:", e);
+        // Fallback to simple display
+        game.clickPowerDisplay.textContent = game.state.clickPower;
+      }
+    }
+    
+    if (game.count) game.count.textContent = formatNumber(cookies) + " cookies";
+
+    // Update button states
+    updateButtonStates(game, cookies);
+    
+    // Update time accelerator display
+    updateTimeAccelerator(game);
+    
+    // Update progression visuals
+    updateProgressionVisuals(game);
+    
+    // Show multiplier in stats if above 1
+    if (game.state.cookieMultiplier > 1) {
+      if (!document.getElementById('multiplierDisplay')) {
+        const multiplierEl = document.createElement('div');
+        multiplierEl.id = 'multiplierDisplay';
+        const statsDiv = document.querySelector('.stats');
+        if (statsDiv) statsDiv.appendChild(multiplierEl);
+      }
+      const multiplierDisplay = document.getElementById('multiplierDisplay');
+      if (multiplierDisplay) {
+        multiplierDisplay.textContent = `Multiplier: ${Number(game.state.cookieMultiplier).toFixed(1)}x`;
+        multiplierDisplay.style.color = game.state.cookieMultiplier >= 2 ? '#ffbb00' : '';
+      }
+    }
+  } catch (e) {
+    console.error("ERROR in updateGameDisplay:", e);
   }
 }
 
 // Helper function to format large numbers
 function formatNumber(num) {
-  if (num < 1000) return num;
+  if (num === undefined || num === null) return "0";
+  if (isNaN(num)) return "0";
+  if (num < 1000) return Math.floor(num);
   if (num < 1000000) return (num / 1000).toFixed(1) + 'K';
   if (num < 1000000000) return (num / 1000000).toFixed(1) + 'M';
   return (num / 1000000000).toFixed(1) + 'B';
+}
+
+// New helper function to format numbers with limited decimal places
+function formatNumberWithDecimals(num) {
+  // Safety checks
+  if (num === undefined || num === null) return "0";
+  if (isNaN(num)) return "0";
+  
+  // First check if it's an integer
+  if (Number.isInteger(num)) {
+    return num;
+  }
+  
+  // If it's less than 1000, format with 1 decimal place
+  if (num < 1000) {
+    return parseFloat(num.toFixed(1));
+  }
+  
+  // For larger numbers, use the regular formatter
+  return formatNumber(num);
 }
 
 function updateButtonStates(game, cookies) {
@@ -348,46 +360,51 @@ function updateTimeAccelerator(game) {
 }
 
 function updateProgressionVisuals(game) {
-  // Update cookies per second display
-  const autoClickers = game.upgrades.autoClicker.count || 0;
-  const grandmas = game.upgrades.grandma.count || 0;
-  const farms = game.upgrades.farm.count || 0;
-  let cps = autoClickers * 1 + grandmas * 5 + farms * 10;
-  
-  // Apply cookie multiplier (protect against NaN)
-  if (typeof game.state.cookieMultiplier === 'number' && !isNaN(game.state.cookieMultiplier)) {
-    cps *= game.state.cookieMultiplier;
-  } else {
-    console.error("Cookie multiplier is not a valid number:", game.state.cookieMultiplier);
-    game.state.cookieMultiplier = 1; // Reset to default if invalid
-  }
-  
-  game.cpsDisplay.textContent = Math.floor(cps);
-  
-  // Check if elements exist before trying to update them
-  if (game.autoClickersProgressBar && game.autoClickersCountVisual) {
-    updateResourceBar(game.autoClickersProgressBar, game.autoClickersCountVisual, autoClickers, 100);
-  }
-  
-  if (game.farmsProgressBar && game.farmsCountVisual) {
-    updateResourceBar(game.farmsProgressBar, game.farmsCountVisual, farms, 100);
-  }
-  
-  if (game.grandmaProgressBar && game.grandmaCountDisplay) {
-    updateResourceBar(game.grandmaProgressBar, game.grandmaCountDisplay, grandmas, 100);
-    console.log("Updated grandma visual:", grandmas);
-  } else {
-    console.error("Grandma visual elements not found:", 
-                  {progressBar: !!game.grandmaProgressBar, 
-                   countDisplay: !!game.grandmaCountDisplay});
+  try {
+    // Update cookies per second display
+    const autoClickers = game.upgrades?.autoClicker?.count || 0;
+    const grandmas = game.upgrades?.grandma?.count || 0;
+    const farms = game.upgrades?.farm?.count || 0;
+    let cps = autoClickers * 1 + grandmas * 5 + farms * 10;
+    
+    // Apply cookie multiplier (protect against NaN)
+    if (typeof game.state.cookieMultiplier === 'number' && !isNaN(game.state.cookieMultiplier)) {
+      cps *= game.state.cookieMultiplier;
+    } else {
+      console.error("Cookie multiplier is not a valid number:", game.state.cookieMultiplier);
+      game.state.cookieMultiplier = 1; // Reset to default if invalid
+    }
+    
+    if (game.cpsDisplay) game.cpsDisplay.textContent = Math.floor(cps);
+    
+    // Check if elements exist before trying to update them
+    if (game.autoClickersProgressBar && game.autoClickersCountVisual) {
+      updateResourceBar(game.autoClickersProgressBar, game.autoClickersCountVisual, autoClickers, 100);
+    }
+    
+    if (game.farmsProgressBar && game.farmsCountVisual) {
+      updateResourceBar(game.farmsProgressBar, game.farmsCountVisual, farms, 100);
+    }
+    
+    if (game.grandmaProgressBar && game.grandmaCountDisplay) {
+      updateResourceBar(game.grandmaProgressBar, game.grandmaCountDisplay, grandmas, 100);
+    } else {
+      console.warn("Grandma visual elements not found, will try again later");
+    }
+  } catch (e) {
+    console.error("ERROR in updateProgressionVisuals:", e);
   }
 }
 
 function updateResourceBar(progressBar, countDisplay, count, max) {
-  if (progressBar && countDisplay) {
+  if (!progressBar || !countDisplay) return;
+  
+  try {
     const progressWidth = (count / max) * 100;
     progressBar.style.width = `${Math.min(progressWidth, 100)}%`;
     countDisplay.textContent = count;
+  } catch (e) {
+    console.error("ERROR updating resource bar:", e);
   }
 }
 

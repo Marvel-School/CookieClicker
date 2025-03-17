@@ -36,6 +36,11 @@ export class ShopPanel extends UIComponent {
   }
   
   setupTooltip(item) {
+    // DISABLE TOOLTIP FUNCTIONALITY
+    // Function is empty to prevent tooltips from being created
+    return;
+    
+    /* Original tooltip code removed
     const tooltip = item.querySelector('.item-desc');
     if (!tooltip) return;
     
@@ -80,6 +85,7 @@ export class ShopPanel extends UIComponent {
     item.addEventListener('mouseleave', () => {
       document.querySelectorAll('.item-desc-tooltip').forEach(t => t.remove());
     });
+    */
   }
   
   updatePrices() {

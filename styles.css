@@ -5,6 +5,9 @@ body {
   margin: 0;
   padding: 0;
   color: #333;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
 }
 
 /* LEFT Section: Upgrade Buttons */
@@ -86,6 +89,9 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.3);
   backdrop-filter: blur(5px);
   -webkit-backdrop-filter: blur(5px);
+  visibility: visible !important;
+  opacity: 1 !important;
+  display: block !important;
 }
 
 /* New cookie count styling */
@@ -697,6 +703,9 @@ section .set div:nth-child(25) {
   transition: transform 0.1s ease;
   will-change: transform;
   transform: translateZ(0);
+  visibility: visible !important;
+  opacity: 1 !important;
+  display: block !important;
 }
 #cookie:hover {
   transform: scale(1.05);
@@ -765,6 +774,23 @@ section .set div:nth-child(25) {
 
 /* REMOVE ALL TOOLTIP STYLES FROM HERE - Tooltips now controlled by tooltip.css */
 /* Tooltip Speech Bubble, Reset tooltip styles, etc. sections should be removed */
+
+/* Hide all shop item tooltips */
+.shop-item .item-desc,
+.item-desc-tooltip {
+  display: none !important;
+}
+
+/* Remove tooltip arrows */
+.shop-item .item-desc::after,
+.item-desc-tooltip::after {
+  display: none !important;
+}
+
+/* Make sure dynamically created tooltips are also removed */
+body > .item-desc.item-desc-tooltip {
+  display: none !important;
+}
 
 /* SHOP Container - Fixed header overflow issue */
 #shopContainer {
@@ -973,6 +999,9 @@ section .set div:nth-child(25) {
   position: relative;
   overflow: visible; /* Changed from hidden to visible so title can appear outside box */
   margin-top: 15px; /* Added margin to ensure space for the title */
+  visibility: visible !important;
+  opacity: 1 !important;
+  display: block !important;
 }
 
 .upgrade-box:hover {
@@ -1138,23 +1167,6 @@ section .set div:nth-child(25) {
   color: #555;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   z-index: 10; /* Higher z-index to ensure visibility */
-  white-space: nowrap; /* Ensure text doesn't wrap */
-}
-
-#autoClickersBox::before {
-  content: "Auto Clickers";
-  background: #e1f5fe;
-  color: #0288d1;
-}
-
-#grandmasBox::before {
-  content: "Grandmas";
-  background: #ffebee;
-  color: #c62828;
-}
-
-#farmsBox::before {
-  content: "Farms";
   background: #e8f5e9;
   color: #2e7d32;
 }
@@ -2264,6 +2276,51 @@ body > .item-desc.item-desc-tooltip {
 .theme-button.active, .animation-button.active {
   background: linear-gradient(145deg, #27ae60, #2ecc71);
   box-shadow: 0 0 0 2px rgba(46, 204, 113, 0.5);
+}
+
+/* Enhanced Lucky Click Effects */
+.floating-effect {
+  position: absolute;
+  animation: floatUpSpecial 2s ease-out;
+  pointer-events: none;
+  font-weight: bold;
+}
+
+@keyframes floatUpSpecial {
+  0% { transform: translateY(0) scale(1); opacity: 1; }
+  50% { transform: translateY(-50px) scale(1.2); opacity: 1; }
+  100% { transform: translateY(-100px) scale(1); opacity: 0; }
+}
+
+/* Boosted Click Power Display */
+#clickPower.boosted {
+  color: #ff6600 !important;
+  text-shadow: 0 0 5px rgba(255, 102, 0, 0.5) !important;
+  animation: pulsate 1s infinite alternate;
+}
+
+@keyframes pulsate {
+  from { transform: scale(1); }
+  to { transform: scale(1.1); }
+}
+
+/* Click Power Boost Indicator */
+#click-boost-indicator {
+  background: linear-gradient(to right, #ff6600, #ff9933);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 10px;
+  margin-top: 5px;
+  font-size: 0.8em;
+  font-weight: bold;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+  animation: pulseGlow 1.5s infinite alternate;
+  display: inline-block;
+}
+
+@keyframes pulseGlow {
+  from { box-shadow: 0 0 5px rgba(255, 102, 0, 0.5); }
+  to { box-shadow: 0 0 15px rgba(255, 102, 0, 0.8); }
 }
 
 /* ...existing code... */

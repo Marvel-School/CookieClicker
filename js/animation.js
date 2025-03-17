@@ -6,7 +6,13 @@ const PARTICLE_LIFETIME = 2000;
 export function showFloatingNumber(element, amount, isBonus = false) {
   const floatingNumber = document.createElement("div");
   floatingNumber.className = "floating-number";
-  floatingNumber.textContent = `+${amount}`;
+  
+  // Format amount with fewer decimal places - limit to 1 decimal place
+  const formattedAmount = typeof amount === 'number' ? 
+    (Number.isInteger(amount) ? amount : parseFloat(amount.toFixed(1))) : 
+    amount;
+  
+  floatingNumber.textContent = `+${formattedAmount}`;
   floatingNumber.style.color = isBonus ? "blue" : "red";
   const { left, top, width } = element.getBoundingClientRect();
   floatingNumber.style.left = `${left + width / 2 - 15}px`;

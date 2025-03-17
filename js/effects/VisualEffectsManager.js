@@ -13,7 +13,13 @@ export class VisualEffectsManager {
   showFloatingNumber(element, amount, isBonus = false) {
     const floatingNumber = document.createElement("div");
     floatingNumber.className = "floating-number";
-    floatingNumber.textContent = `+${amount}`;
+    
+    // Format with 0 or 1 decimal place only
+    const formattedAmount = typeof amount === 'number' ? 
+      (Number.isInteger(amount) ? amount : parseFloat(amount.toFixed(1))) : 
+      amount;
+      
+    floatingNumber.textContent = `+${formattedAmount}`;
     floatingNumber.style.color = isBonus ? "blue" : "red";
     
     const { left, top, width } = element.getBoundingClientRect();
