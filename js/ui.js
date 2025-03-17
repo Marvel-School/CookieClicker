@@ -130,34 +130,11 @@ function setupTooltips(game) {
         newTooltip.innerHTML = `<div class="text-container">${originalContent}</div>`;
         document.body.appendChild(newTooltip);
         
-        // Get positioning information
-        const rect = clone.getBoundingClientRect();
-        const tooltipHeight = newTooltip.offsetHeight || 120;
-        const tooltipWidth = newTooltip.offsetWidth || 220;
-        const minPadding = 10;
-        
-        // Check if tooltip would be cut off at top
-        const positionAbove = rect.top - tooltipHeight - 15;
-        if (positionAbove < minPadding) {
-          // Position below instead
-          newTooltip.style.top = (rect.bottom + 15) + 'px';
-          newTooltip.classList.add('position-below');
-        } else {
-          // Position above (standard)
-          newTooltip.style.top = positionAbove + 'px';
-        }
-        
-        // Handle horizontal positioning
-        let leftPos = rect.left + (rect.width / 2) - (tooltipWidth / 2);
-        if (leftPos < minPadding) {
-          leftPos = minPadding;
-        } else if (leftPos + tooltipWidth > window.innerWidth - minPadding) {
-          leftPos = window.innerWidth - tooltipWidth - minPadding;
-        }
-        newTooltip.style.left = leftPos + 'px';
-        
-        // Ensure visibility
-        newTooltip.style.zIndex = '100000000';
+        // Follow the mouse with the tooltip
+        clone.addEventListener('mousemove', (e) => {
+          newTooltip.style.left = (e.pageX + 10) + 'px';
+          newTooltip.style.top = (e.pageY + 10) + 'px';
+        });
       });
       
       clone.addEventListener('mouseleave', (e) => {

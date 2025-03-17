@@ -1,1 +1,44 @@
-/* Tooltip styles removed per user request */
+.shop-item {
+  position: relative; /* Create positioning context */
+  overflow: visible;  /* Allow tooltip to overflow if needed */
+}
+
+.shop-item .item-desc {
+  display: none;             /* Hidden by default */
+  position: fixed;           /* JS will position it using fixed positioning */
+  /* Remove static top/left settings */
+  background: rgba(0, 0, 0, 0.85);
+  color: #fff;
+  padding: 8px 12px;
+  font-size: 13px;
+  border-radius: 4px;
+  white-space: nowrap;
+  z-index: 1000;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+}
+
+/* Remove the default hover rule */
+/* .shop-item:hover .item-desc { display: block; opacity: 1; } */
+
+/* Arrow remains unchanged if needed */
+.shop-item .item-desc::after {
+  content: "";
+  position: absolute;
+  top: -5px; /* Positioned just above the tooltip */
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 5px 5px 0 5px;
+  border-style: solid;
+  border-color: rgba(0, 0, 0, 0.85) transparent transparent transparent;
+}
+
+.item-desc-tooltip {
+    display: block;
+}
+
+.item-desc-tooltip .text-container {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 4px;
+    border-radius: 3px;
+}

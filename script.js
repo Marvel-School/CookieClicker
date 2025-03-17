@@ -267,6 +267,26 @@ class Game {
       });
     });
 
+    // NEW: Make tooltip follow the mouse for each shop item
+    document.querySelectorAll('.shop-item').forEach(item => {
+      const tooltip = item.querySelector('.item-desc');
+      if (tooltip) {
+        item.addEventListener('mouseenter', (e) => {
+          tooltip.style.display = 'block';
+          tooltip.style.opacity = '1';
+        });
+        item.addEventListener('mousemove', (e) => {
+          // Offset by 10px so tooltip doesn't cover the cursor
+          tooltip.style.left = (e.clientX + 10) + 'px';
+          tooltip.style.top = (e.clientY + 10) + 'px';
+        });
+        item.addEventListener('mouseleave', (e) => {
+          tooltip.style.display = 'none';
+          tooltip.style.opacity = '0';
+        });
+      }
+    });
+
     // New shop icon click handler
     if (this.shopIcon && this.shopContainer) {
       this.shopIcon.addEventListener("click", (e) => {

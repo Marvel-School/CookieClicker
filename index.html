@@ -7,7 +7,10 @@
     <link rel="icon" type="image/png" href="image/cookie.png" />
     <!-- Put tooltip.css AFTER styles.css for higher precedence -->
     <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="tooltip.css" />
+
     <!-- <link rel="stylesheet" href="tooltip.css" /> removed per tooltip removal -->
+
     <!-- Add personalization CSS -->
     <link rel="stylesheet" href="personalization.css" />
     <link rel="preload" href="image/cookie.png" as="image" />
@@ -70,7 +73,10 @@
           <div class="shop-item" data-upgrade="timeAccelerator">
             <img src="image/timeaccelerator.png" alt="Time Accelerator" class="shop-item-image" />
             <span class="item-cost">Cost: <span>1000</span></span>
-            <!-- Countdown timer when active -->
+            <!-- Tooltip content stored in HTML per item -->
+            <span class="item-desc">
+              Temporarily boosts cookie production 4×. Duration varies with cost.
+            </span>
             <span class="time-accelerator-timer"></span>
           </div>
           
@@ -78,12 +84,18 @@
           <div class="shop-item" data-upgrade="cookieMultiplier">
             <img src="image/multiplier.png" alt="Cookie Multiplier" class="shop-item-image" />
             <span class="item-cost">Cost: <span>2000</span></span>
+            <span class="item-desc">
+              Permanently increases cookie production by 50%. Stacks with each purchase.
+            </span>
           </div>
           
           <!-- Golden Cookie Charm Shop Item -->
           <div class="shop-item" data-upgrade="goldenCookieChance">
             <img src="image/goldencookie.png" alt="Golden Cookie Charm" class="shop-item-image" />
             <span class="item-cost">Cost: <span>3000</span></span>
+            <span class="item-desc">
+              Increases the chance for golden cookies. Click them to get bonus rewards!
+            </span>
           </div>
         </div>
       </section>
