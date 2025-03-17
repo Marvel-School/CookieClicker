@@ -64,12 +64,80 @@ class IncrementUpgrade extends Upgrade {
 
 class LuckyUpgrade extends Upgrade {
   constructor(cost, multiplier, displayPrefix) {
-    super(cost, multiplier, displayPrefix);
+    // Lower initial cost to 15 (down from 20) and slower cost increase (1.15 instead of 1.5)
+    super(15, 1.15, displayPrefix);
   }
+  
   executePurchase(game) {
-    const bonus = Math.floor(Math.random() * 10) + 1;
+    // Get production values
+    const autoClickers = game.upgrades.autoClicker.count || 0;
+    const grandmas = game.upgrades.grandma.count || 0;
+    const farms = game.upgrades.farm.count || 0;
+    
+    // Calculate CPS (cookies per second)
+    const baseCps = autoClickers * 1 + grandmas * 5 + farms * 10;
+    
+    // Apply multipliers if present
+    const cps = baseCps * (game.state.cookieMultiplier || 1);
+    
+    // ENHANCEMENT 1: Much more generous base reward (30-90 seconds worth of production)
+    const productionSeconds = 30 + Math.floor(Math.random() * 60);
+    const baseBonus = Math.max(100, cps * productionSeconds);
+    
+    // ENHANCEMENT 2: More generous adaptive cap based on game progression
+    const gameProgress = game.state.cookies / 500;
+    const adaptiveCap = Math.max(1000, 2000 + gameProgress * 2);
+    const cappedBonus = Math.min(baseBonus, adaptiveCap);
+
+    // ENHANCEMENT 3: Higher chance for critical hits (30% chance)
+    let bonus = 0;
+    let effectMessage = "";
+    let isCritical = false;
+    
+    if (Math.random() < 0.3) { // 30% chance of critical
+      // Critical hit gives 2.5-3.5x the bonus
+      const critMultiplier = 2.5 + Math.random();
+      bonus = Math.floor(cappedBonus * critMultiplier);
+      isCritical = true;
+      effectMessage = "CRITICAL LUCKY HIT! 💥";
+    } else {
+      // Normal hit with increased randomness (80%-140%)
+      const randomFactor = 0.8 + (Math.random() * 0.6);
+      bonus = Math.floor(cappedBonus * randomFactor);
+    }
+    
+    // Add cookies
     game.state.cookies += bonus;
+    
+    // Show floating number and animation
     game.showFloatingNumber(bonus, true);
+    
+    // Show effect message if needed
+    if (effectMessage) {
+      const message = document.createElement("div");
+      message.className = "floating-effect";
+      message.textContent = effectMessage;
+      message.style.position = "absolute";
+      message.style.fontSize = isCritical ? "24px" : "18px";
+      message.style.color = isCritical ? "#ff4500" : "#1e90ff";
+      message.style.fontWeight = "bold";
+      message.style.textShadow = "0px 0px 5px white";
+      message.style.zIndex = "9999";
+      
+      const { left, top, width } = game.cookie.getBoundingClientRect();
+      message.style.left = `${left + width / 2 - 120}px`;
+      message.style.top = `${top - 50}px`;
+      message.style.width = "240px";
+      message.style.textAlign = "center";
+      message.style.pointerEvents = "none";
+      document.body.appendChild(message);
+      
+      // Animation and cleanup
+      setTimeout(() => message.remove(), 2000);
+    }
+    
+    // Track lucky streak
+    game.state.luckyStreak = (game.state.luckyStreak || 0) + 1;
   }
 }
 
@@ -140,7 +208,7 @@ class Game {
       autoClicker: new IncrementUpgrade(50, 1.5, "Buy Auto Clicker"),
       grandma: new IncrementUpgrade(100, 1.5, "Buy Grandma's Bakery", "updateGrandmasVisual"),
       farm: new IncrementUpgrade(500, 1.5, "Buy Cookie Farm"),
-      luckyClick: new LuckyUpgrade(20, 1, "Lucky Click"),
+      luckyClick: new LuckyUpgrade(15, 1.15, "Lucky Click"), // Updated cost and multiplier
     };
 
     this.shopUpgrades = {
@@ -726,7 +794,22 @@ class Game {
   showFloatingNumber(amount, isBonus = false) {
     const floatingNumber = document.createElement("div");
     floatingNumber.className = "floating-number";
-    floatingNumber.textContent = `+${amount}`;
+    
+    // Format number to reduce decimal places
+    let displayAmount;
+    if (typeof amount === 'number') {
+      // If it's an integer, show as is
+      if (Number.isInteger(amount)) {
+        displayAmount = amount;
+      } else {
+        // If decimal, limit to 1 decimal place
+        displayAmount = parseFloat(amount.toFixed(1));
+      }
+    } else {
+      displayAmount = amount;
+    }
+    
+    floatingNumber.textContent = `+${displayAmount}`;
     floatingNumber.style.color = isBonus ? "blue" : "red";
     const { left, top, width } = this.cookie.getBoundingClientRect();
     floatingNumber.style.left = `${left + width / 2 - 15}px`;
@@ -1166,7 +1249,22 @@ class Game {
   showFloatingNumber(amount, isBonus = false) {
     const floatingNumber = document.createElement("div");
     floatingNumber.className = "floating-number";
-    floatingNumber.textContent = `+${amount}`;
+    
+    // Format number to reduce decimal places
+    let displayAmount;
+    if (typeof amount === 'number') {
+      // If it's an integer, show as is
+      if (Number.isInteger(amount)) {
+        displayAmount = amount;
+      } else {
+        // If decimal, limit to 1 decimal place
+        displayAmount = parseFloat(amount.toFixed(1));
+      }
+    } else {
+      displayAmount = amount;
+    }
+    
+    floatingNumber.textContent = `+${displayAmount}`;
     floatingNumber.style.color = isBonus ? "blue" : "red";
     const { left, top, width } = this.cookie.getBoundingClientRect();
     floatingNumber.style.left = `${left + width / 2 - 15}px`;
@@ -1230,7 +1328,7 @@ class Game {
           autoClicker: new IncrementUpgrade(50, 1.5, "Buy Auto Clicker"),
           grandma: new IncrementUpgrade(100, 1.5, "Buy Grandma's Bakery", "updateGrandmasVisual"),
           farm: new IncrementUpgrade(500, 1.5, "Buy Cookie Farm"),
-          luckyClick: new LuckyUpgrade(20, 1, "Lucky Click"),
+          luckyClick: new LuckyUpgrade(15, 1.15, "Lucky Click"), // Updated cost and multiplier
         };
         Object.keys(savedGame.upgrades).forEach((key) => {
           if (savedGame.upgrades[key].cost !== undefined) {
@@ -1316,7 +1414,7 @@ class Game {
       autoClicker: new IncrementUpgrade(50, 1.5, "Buy Auto Clicker"),
       grandma: new IncrementUpgrade(100, 1.5, "Buy Grandma's Bakery", "updateGrandmasVisual"),
       farm: new IncrementUpgrade(500, 1.5, "Buy Cookie Farm"),
-      luckyClick: new LuckyUpgrade(20, 1, "Lucky Click"),
+      luckyClick: new LuckyUpgrade(15, 1.15, "Lucky Click"), // Updated cost and multiplier
     };
     this.shopUpgrades = {
       timeAccelerator: new ShopUpgrade(300, 2, "Time Accelerator", "timeAccelerator", 300),

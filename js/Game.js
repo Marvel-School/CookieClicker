@@ -5,6 +5,7 @@ import { setupAchievements } from './achievements.js';
 import { showFloatingNumber, createConfetti, applyTimeAcceleratorVisuals } from './animation.js';
 import { log, showToast, AUTO_SAVE_INTERVAL } from './utils.js';
 import { setupEventListeners, updateGameDisplay, updateAchievementsList } from './ui.js';
+import { PersonalizationManager } from './personalization.js';
 
 export default class Game {
   constructor() {
@@ -80,6 +81,9 @@ export default class Game {
     // For confetti animation
     this.lastConfettiTime = 0;
 
+    // Initialize personalization manager
+    this.personalization = new PersonalizationManager(this);
+
     // Initialize the game
     this.init();
 
@@ -96,6 +100,9 @@ export default class Game {
     document.addEventListener('click', () => {
       this.userHasInteracted = true;
     }, { once: true });
+
+    // Load and apply personalization settings
+    this.initPersonalization();
   }
 
   log(message, ...data) {
@@ -265,7 +272,13 @@ export default class Game {
       this.safePlaySound(this.clickSound);
     }
     
-    this.state.cookies += this.state.clickPower;
+    // Apply click power boost if active
+    let clickPower = this.state.clickPower;
+    if (this.state.clickPowerBoostActive && this.state.clickPowerBoostEndTime > Date.now()) {
+      clickPower *= this.state.clickPowerBoostMultiplier;
+    }
+    
+    this.state.cookies += clickPower;
     this.log("Cookie clicked. New cookies:", this.state.cookies);
     
     showFloatingNumber(this.cookie, this.state.clickPower);
@@ -918,6 +931,37 @@ export default class Game {
     if (this.state && this.state.activeGoldenCookieBonuses) {
       this.updateActiveBoostTimers();
     }
+    
+    // Update click power boost visuals if implemented
+    if (this.state.clickPowerBoostActive && this.state.clickPowerBoostEndTime > Date.now()) {
+      const secondsLeft = Math.floor((this.state.clickPowerBoostEndTime - Date.now()) / 1000);
+      
+      // Add a visual indicator
+      if (!document.getElementById('click-boost-indicator')) {
+        const boostIndicator = document.createElement('div');
+        boostIndicator.id = 'click-boost-indicator';
+        boostIndicator.innerHTML = `Click Power x${this.state.clickPowerBoostMultiplier} (${secondsLeft}s)`;
+        const statsDiv = document.querySelector('.stats');
+        if (statsDiv) statsDiv.appendChild(boostIndicator);
+      } else {
+        const indicator = document.getElementById('click-boost-indicator');
+        indicator.innerHTML = `Click Power x${this.state.clickPowerBoostMultiplier} (${secondsLeft}s)`;
+      }
+      
+      // Add visual effect to click power display
+      if (this.clickPowerDisplay) {
+        this.clickPowerDisplay.classList.add('boosted');
+      }
+    } else {
+      // Remove the indicator when boost ends
+      const indicator = document.getElementById('click-boost-indicator');
+      if (indicator) indicator.remove();
+      
+      // Remove visual effect from click power display
+      if (this.clickPowerDisplay) {
+        this.clickPowerDisplay.classList.remove('boosted');
+      }
+    }
   }
 
   showFloatingNumber(amount, isBonus = false) {
@@ -1415,5 +1459,34 @@ export default class Game {
       this.showToast("Time Accelerator expired");
       clearInterval(countdownInterval);
     }, duration * 1000);
+  }
+
+  initPersonalization() {
+    try {
+      // Load personalization settings from game state
+      this.personalization.loadFromGameState();
+      
+      // Link particle intensity slider if it exists
+      const intensitySlider = document.getElementById('particle-intensity');
+      const intensityValue = document.getElementById('intensity-value');
+      
+      if (intensitySlider && intensityValue) {
+        // Set initial value from current settings
+        intensitySlider.value = this.state.personalization?.particleIntensity || 1.0;
+        intensityValue.textContent = intensitySlider.value;
+        
+        // Update when slider changes
+        intensitySlider.addEventListener('input', () => {
+          const value = parseFloat(intensitySlider.value);
+          intensityValue.textContent = value.toFixed(1);
+          this.personalization.setParticleIntensity(value);
+          this.saveGame(); // Save settings when changed
+        });
+      }
+      
+      this.log("Personalization system initialized");
+    } catch (e) {
+      this.log("Error initializing personalization:", e);
+    }
   }
 }
