@@ -158,3 +158,55 @@ export function applyTimeAcceleratorVisuals(cookie, cpsDisplay, active) {
     }
   }
 }
+
+
+// image falling
+document.addEventListener("DOMContentLoaded", function () {
+  let cookie = document.getElementById("cookie");
+  let images = document.querySelectorAll(".set img");
+
+function dropCookieImage() {
+  if (images.length === 0) return; 
+
+  let randomIndex = Math.floor(Math.random() * images.length);
+  let selectedImage = images[randomIndex];
+
+  let newImg = document.createElement("img");
+  newImg.src = selectedImage.src;
+  newImg.classList.add("falling");
+
+  newImg.style.left = Math.random() * window.innerWidth + "px";
+
+  document.body.appendChild(newImg);
+
+  setTimeout(() => {
+      newImg.remove();
+  }, 2000);
+}
+cookie.addEventListener("click", function () {
+  dropCookieImage();
+});
+function autoGenerateCookies() {
+  dropCookieImage();
+}
+let lastCookieCount = 0;
+setInterval(() => {
+    if (typeof game !== "undefined" && game.state.cookies > lastCookieCount) {
+        autoGenerateCookies();
+        lastCookieCount = game.state.cookies;
+    }
+}, 500);
+});
+let dropCount = 1;
+
+setInterval(() => {
+    if (typeof game !== "undefined" && game.state.cookies > lastCookieCount) {
+        for (let i = 0; i < dropCount; i++) {
+            autoGenerateCookies();
+        }
+        lastCookieCount = game.state.cookies;
+
+      
+        if (dropCount < 10) dropCount++;
+    }
+}, 500);

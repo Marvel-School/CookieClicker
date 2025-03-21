@@ -13,9 +13,13 @@ class Upgrade {
     this.extra = extra;
   }
   // New: returns text for button display.
-  getDisplayText() {
-    return `${this.displayPrefix} (Cost: ${this.cost})`;
-  }
+//   getDisplayText() {
+//     if (window.innerWidth > 932) {
+//         return ` ${this.displayPrefix} (Cost: ${this.cost})`; 
+//     } else {
+//         return `(Cost: ${this.cost})`; 
+//     }
+// }
   canPurchase(game) {
     return game.state.cookies >= this.cost;
   }
@@ -1458,3 +1462,5 @@ console.log("Loading Cookie Clicker through module system...");
 
 // We're now using the module system initialized in main.js
 // No need for initialization code here
+
+
