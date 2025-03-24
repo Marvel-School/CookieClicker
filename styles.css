@@ -2331,13 +2331,20 @@ body > .item-desc,
     text-align: center;
   }
 } */
-  button.upgrade .button_image {
+  /* button.upgrade .button_image {
     display: block; 
     width: 30px;
     height: 30px; 
     border-radius: 5px; 
     z-index: 528;
-  }
+  } */
+  .button_image {
+    display: block; 
+    width: 30px;
+    height: 30px; 
+    border-radius: 5px; 
+    z-index: 528;
+  } 
   .button{
     width: 70%;
   }
@@ -2351,9 +2358,10 @@ body > .item-desc,
     gap: 8px;
    
 }
-.upgrade .button_top {
-  color: #0b63b8;
-}
+ /* .upgrade{
+  display: none;
+ } */
+
 .upgrade-image {
   width: 35px;
   height: 35px;
@@ -2362,7 +2370,8 @@ body > .item-desc,
 .upgrade .button_top {
   display: block;
   border: none;
-  background: linear-gradient(145deg, #2980b9, #3498db) !important;
+  color: #020202;
+  /* background: linear-gradient(145deg, #2980b9, #3498db) !important; */
   font-size: medium;
 }
 

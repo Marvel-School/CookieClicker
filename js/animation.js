@@ -186,6 +186,7 @@ function dropCookieImage() {
 cookie.addEventListener("click", function () {
   dropCookieImage();
 });
+
 function autoGenerateCookies() {
   dropCookieImage();
 }
