@@ -1063,15 +1063,37 @@ export default class Game {
     this.log("Game saved", gameState);
   }
 
-  saveGame() {
+  /**
+   * Save the game silently without showing a notification
+   */
+  silentSave() {
+    // Use the same saving logic as regular save but without the toast
     this.doSaveGame();
-    showToast("Game saved!");
-    this.log("Manual save complete.");
+    this.log("Game saved silently");
   }
 
-  autoSave() {
+  /**
+   * Save the game with an optional silent parameter
+   */
+  saveGame(silent = false) {
     this.doSaveGame();
-    showToast("Game auto-saved!");
+    
+    if (!silent) {
+      this.showToast("Game saved!");
+      this.log("Manual save complete with notification.");
+    } else {
+      this.log("Manual save complete silently.");
+    }
+  }
+
+  // You may also need to update autoSave to be silent optionally:
+  autoSave(silent = false) {
+    this.doSaveGame();
+    
+    if (!silent) {
+      this.showToast("Game auto-saved!");
+    }
+    
     this.log("Auto-saved game at", new Date());
   }
 
@@ -1436,21 +1458,17 @@ export default class Game {
         this.updateBonusIndicator('time-accelerator-bonus', null, timeLeft);
       }
     }, 1000);
-
+    
+    // Set timeout to deactivate the time accelerator when the duration ends
     setTimeout(() => {
       this.state.timeAcceleratorActive = false;
       this.state.timeAcceleratorMultiplier = 1;
-      this.state.timeAcceleratorEndTime = 0;
-      
-      // Remove visual indicator
       this.removeBonusIndicator('time-accelerator-bonus');
       
-      // Remove cookie animation
+      // Remove visual effects
       if (this.cookie) {
         this.cookie.classList.remove('accelerated');
       }
-      
-      // Remove CPS display effect
       if (this.cpsDisplay) {
         this.cpsDisplay.classList.remove('boosted');
       }

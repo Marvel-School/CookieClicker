@@ -106,8 +106,27 @@ export class PersonalizationManager {
   
   // Apply current theme to the page
   applyTheme() {
+    // First, completely reset any theme-specific styles
+    this.resetThemeStyles();
+    
     const theme = this.getCurrentTheme();
+    
+    // Store the previously active theme for cleanup
+    const oldTheme = document.documentElement.dataset.theme;
+    
+    // Update theme attribute on root element
     document.documentElement.dataset.theme = theme.id;
+    
+    // Apply theme classes to both html and body for complete coverage
+    document.documentElement.className = document.documentElement.className
+      .replace(/theme-\w+/g, '')
+      .trim();
+    document.body.className = document.body.className
+      .replace(/theme-\w+/g, '')
+      .trim();
+      
+    document.documentElement.classList.add(`theme-${theme.id}`);
+    document.body.classList.add(`theme-${theme.id}`);
     
     // Apply color variables to the root element
     const root = document.documentElement;
@@ -118,14 +137,22 @@ export class PersonalizationManager {
     root.style.setProperty('--accent-color', theme.colors.accent);
     root.style.setProperty('--panel-color', theme.colors.panels);
     
-    // Update background element
+    // Update background element with the new theme
     const background = document.querySelector('.background');
     if (background) {
       background.style.background = theme.colors.background;
     }
     
-    // Apply button styling
+    // Force-update dynamic components
     this.updateButtonStyles(theme);
+    this.updatePanelStyles(theme);
+    this.forceDOMUpdate();
+    
+    // Dispatch theme change event for components to respond
+    const themeChangeEvent = new CustomEvent('themechange', { 
+      detail: { oldTheme, newTheme: theme.id } 
+    });
+    document.dispatchEvent(themeChangeEvent);
     
     // Save to game state
     if (this.game && this.game.state) {
@@ -133,6 +160,271 @@ export class PersonalizationManager {
     }
     
     return theme;
+  }
+  
+  // Reset all theme-related inline styles
+  resetThemeStyles() {
+    // Reset inline styles on critical elements
+    const elementsToReset = [
+      ...document.querySelectorAll('button'), 
+      ...document.querySelectorAll('.stats *'),
+      ...document.querySelectorAll('#shopContainer, #shopContainer *'),
+      ...document.querySelectorAll('#achievementsContainer, #achievementsContainer *'),
+      ...document.querySelectorAll('#settingsMenu, #settingsMenu *'),
+      ...document.querySelectorAll('.panel-container, .panel-container *'),
+      ...document.querySelectorAll('.shop-item, .shop-item *'),
+    ];
+    
+    // Properties we need to reset to default/inherit
+    const propsToReset = [
+      'background', 'backgroundColor', 'color', 'borderColor', 
+      'boxShadow', 'textShadow', 'fontWeight', 'fontSize'
+    ];
+    
+    elementsToReset.forEach(el => {
+      // Only reset elements with inline styles
+      if (el.style.length) {
+        propsToReset.forEach(prop => {
+          // Convert camelCase to kebab-case for CSS properties
+          const kebabProp = prop.replace(/([A-Z])/g, "-$1").toLowerCase();
+          el.style.removeProperty(kebabProp);
+        });
+      }
+    });
+    
+    // Remove any dynamic style elements we may have created
+    const dynamicStyle = document.getElementById('theme-dynamic-styles');
+    if (dynamicStyle) {
+      dynamicStyle.textContent = '';
+    }
+  }
+  
+  // Force browser to recalculate styles by triggering a reflow
+  forceDOMUpdate() {
+    // This forces a reflow by reading a layout property
+    document.body.offsetHeight;
+    
+    // Force update on critical UI elements
+    this.updateCriticalElements(document.body);
+    
+    // Schedule another update for elements that might be animated/transitioning
+    setTimeout(() => this.updateCriticalElements(document.body), 50);
+  }
+  
+  // Update critical UI elements with current theme
+  updateCriticalElements(element) {
+    // Apply current theme to all elements with overridable styles
+    const themeElements = element.querySelectorAll('.stats, .shop-item, #achievementsContainer, #shopContainer, #settingsMenu, .panel-container, .button, button');
+    
+    const theme = this.getCurrentTheme();
+    
+    themeElements.forEach(el => {
+      // Reapply critical styles based on element type
+      if (el.classList.contains('stats')) {
+        this.updateStatsStyle(el, theme);
+      } else if (el.classList.contains('shop-item')) {
+        this.updateShopItemStyle(el, theme);
+      } else if (el.tagName.toLowerCase() === 'button') {
+        this.updateButtonStyle(el, theme);
+      } else if (el.classList.contains('panel-container')) {
+        this.updatePanelStyle(el, theme);
+      }
+      
+      // Force-update children recursively
+      this.updateCriticalElements(el);
+    });
+  }
+  
+  // Update button styles based on theme
+  updateButtonStyles(theme) {
+    // Create a style element for dynamic styles
+    let styleEl = document.getElementById('theme-dynamic-styles');
+    
+    if (!styleEl) {
+      styleEl = document.createElement('style');
+      styleEl.id = 'theme-dynamic-styles';
+      document.head.appendChild(styleEl);
+    }
+    
+    // Clear previous styles first
+    styleEl.textContent = '';
+    
+    // Update button styles based on theme colors
+    styleEl.textContent = `
+      .left button, 
+      #settingsMenu button,
+      .setting-btn,
+      .upgrade {
+        background: linear-gradient(145deg, ${theme.colors.primary}, ${theme.colors.secondary}) !important;
+      }
+      
+      .upgrade .button_top {
+        color: ${theme.colors.primary} !important;
+      }
+      
+      .upgrade-progress-bar {
+        background-color: ${theme.colors.accent} !important;
+      }
+      
+      #achievementsContainer .achievements-header,
+      #shopContainer .shop-header {
+        background: linear-gradient(145deg, ${theme.colors.primary}, ${theme.colors.secondary}) !important;
+        color: white !important;
+      }
+      
+      .panel-header,
+      .personalization-header {
+        background: linear-gradient(145deg, ${theme.colors.primary}, ${theme.colors.secondary}) !important;
+        color: white !important;
+      }
+    `;
+    
+    // Update all buttons immediately
+    document.querySelectorAll('button, .button').forEach(button => {
+      this.updateButtonStyle(button, theme);
+    });
+  }
+  
+  // Update a single button's style
+  updateButtonStyle(button, theme) {
+    if (!button) return;
+    
+    // Only apply to standard buttons, not those with special styling
+    if (!button.classList.contains('theme-exempt')) {
+      button.style.background = `linear-gradient(145deg, ${theme.colors.primary}, ${theme.colors.secondary})`;
+      button.style.color = 'white';
+      
+      // Update button top if it exists (for layered buttons)
+      const buttonTop = button.querySelector('.button_top');
+      if (buttonTop) {
+        buttonTop.style.color = theme.colors.primary;
+      }
+    }
+  }
+  
+  // Update all panels with theme styles
+  updatePanelStyles(theme) {
+    const panels = document.querySelectorAll('#achievementsContainer, #shopContainer, #settingsMenu, .panel-container');
+    
+    panels.forEach(panel => {
+      this.updatePanelStyle(panel, theme);
+    });
+  }
+  
+  // Update single panel style
+  updatePanelStyle(panel, theme) {
+    if (!panel) return;
+    
+    // Apply theme-specific panel styling
+    if (theme.id === 'dark') {
+      panel.style.background = 'rgba(35, 35, 40, 0.95)';
+      panel.style.color = 'white';
+      panel.style.borderColor = '#444';
+    } else if (theme.id === 'neon') {
+      panel.style.background = 'rgba(20, 20, 40, 0.9)';
+      panel.style.color = 'white';
+      panel.style.borderColor = theme.colors.accent;
+      panel.style.boxShadow = `0 0 15px ${theme.colors.accent}`;
+    } else {
+      // Classic/default
+      panel.style.background = 'rgba(255, 255, 255, 0.95)';
+      panel.style.color = '#333';
+      panel.style.borderColor = 'rgba(210, 210, 210, 0.8)';
+      panel.style.boxShadow = '0 10px 25px rgba(0, 0, 0, 0.3)';
+    }
+    
+    // Update panel headers
+    const header = panel.querySelector('.panel-header, .achievements-header, .shop-header');
+    if (header) {
+      header.style.background = `linear-gradient(145deg, ${theme.colors.primary}, ${theme.colors.secondary})`;
+      header.style.color = 'white';
+    }
+  }
+  
+  // Update stats panel style
+  updateStatsStyle(statsEl, theme) {
+    if (!statsEl) return;
+    
+    if (theme.id === 'dark') {
+      statsEl.style.background = 'rgba(40, 40, 45, 0.92)';
+      statsEl.style.color = 'white';
+      statsEl.style.borderColor = '#444';
+      
+      // Update text colors for better visibility
+      const textElements = statsEl.querySelectorAll('h1, .stats-metric .value, #cookieCount, #clickPower, #cps');
+      textElements.forEach(el => {
+        el.style.color = 'white';
+        el.style.textShadow = '1px 1px 3px rgba(0, 0, 0, 0.8)';
+      });
+      
+      const labels = statsEl.querySelectorAll('.stats-metric .label');
+      labels.forEach(label => {
+        label.style.color = '#aaa';
+      });
+    } else if (theme.id === 'neon') {
+      statsEl.style.background = 'rgba(20, 20, 40, 0.9)';
+      statsEl.style.color = 'white';
+      statsEl.style.borderColor = theme.colors.accent;
+      statsEl.style.boxShadow = `0 0 15px ${theme.colors.accent}`;
+      
+      const textElements = statsEl.querySelectorAll('h1, .stats-metric .value, #cookieCount, #clickPower, #cps');
+      textElements.forEach(el => {
+        el.style.color = 'white';
+        el.style.textShadow = `0 0 5px ${theme.colors.accent}`;
+      });
+    } else {
+      // Classic/default
+      statsEl.style.background = 'rgba(255, 255, 255, 0.92)';
+      statsEl.style.color = '#333';
+      statsEl.style.borderColor = 'rgba(255, 255, 255, 0.3)';
+      
+      const textElements = statsEl.querySelectorAll('h1, #cookieCount, #clickPower, #cps');
+      textElements.forEach(el => {
+        el.style.color = '';
+        el.style.textShadow = '';
+      });
+      
+      // Reset cookie count to brown
+      const cookieCount = statsEl.querySelector('#cookieCount');
+      if (cookieCount) {
+        cookieCount.style.color = '#8b4513';
+      }
+    }
+  }
+  
+  // Update shop item style
+  updateShopItemStyle(item, theme) {
+    if (!item) return;
+    
+    if (theme.id === 'dark') {
+      item.style.borderBottomColor = '#444';
+      
+      const itemName = item.querySelector('.item-name');
+      if (itemName) itemName.style.color = 'white';
+      
+      const itemCost = item.querySelector('.item-cost');
+      if (itemCost) itemCost.style.color = '#aaa';
+    } else if (theme.id === 'neon') {
+      item.style.borderBottomColor = 'rgba(255, 255, 255, 0.2)';
+      
+      const itemName = item.querySelector('.item-name');
+      if (itemName) {
+        itemName.style.color = theme.colors.accent;
+        itemName.style.textShadow = `0 0 5px ${theme.colors.accent}`;
+      }
+    } else {
+      // Classic/default
+      item.style.borderBottomColor = '#ddd';
+      
+      const itemName = item.querySelector('.item-name');
+      if (itemName) {
+        itemName.style.color = '';
+        itemName.style.textShadow = '';
+      }
+      
+      const itemCost = item.querySelector('.item-cost');
+      if (itemCost) itemCost.style.color = '';
+    }
   }
   
   // Update cookie skin
@@ -188,6 +480,14 @@ export class PersonalizationManager {
       if (THEMES[key].id === themeId) {
         this.settings.theme = themeId;
         this.applyTheme();
+        
+        // Save to game state silently
+        if (this.game && this.game.silentSave) {
+          this.game.silentSave();
+        } else if (this.game && this.game.saveGame) {
+          this.game.saveGame(true); // Pass true for silent save
+        }
+        
         return THEMES[key];
       }
     }
@@ -205,6 +505,14 @@ export class PersonalizationManager {
       if (COOKIE_SKINS[key].id === skinId) {
         this.settings.cookieSkin = skinId;
         this.applyCookieSkin();
+        
+        // Save to game state silently
+        if (this.game && this.game.silentSave) {
+          this.game.silentSave();
+        } else if (this.game && this.game.saveGame) {
+          this.game.saveGame(true); // Pass true for silent save
+        }
+        
         return COOKIE_SKINS[key];
       }
     }
@@ -222,6 +530,14 @@ export class PersonalizationManager {
       if (CURSOR_SKINS[key].id === skinId) {
         this.settings.cursorSkin = skinId;
         this.applyCursorSkin();
+        
+        // Save to game state silently
+        if (this.game && this.game.silentSave) {
+          this.game.silentSave();
+        } else if (this.game && this.game.saveGame) {
+          this.game.saveGame(true); // Pass true for silent save
+        }
+        
         return CURSOR_SKINS[key];
       }
     }
@@ -239,6 +555,14 @@ export class PersonalizationManager {
       if (ANIMATION_SETS[key].id === animationSetId) {
         this.settings.animations = animationSetId;
         this.applyAnimationSettings();
+        
+        // Save to game state silently
+        if (this.game && this.game.silentSave) {
+          this.game.silentSave();
+        } else if (this.game && this.game.saveGame) {
+          this.game.saveGame(true); // Pass true for silent save
+        }
+        
         return ANIMATION_SETS[key];
       }
     }
@@ -254,6 +578,14 @@ export class PersonalizationManager {
     // Clamp intensity between 0 and 2
     this.settings.particleIntensity = Math.max(0, Math.min(2, intensity));
     this.applyAnimationSettings();
+    
+    // Save to game state silently
+    if (this.game && this.game.silentSave) {
+      this.game.silentSave();
+    } else if (this.game && this.game.saveGame) {
+      this.game.saveGame(true); // Pass true for silent save
+    }
+    
     return this.settings.particleIntensity;
   }
   
@@ -297,46 +629,16 @@ export class PersonalizationManager {
     return ANIMATION_SETS.STANDARD;
   }
   
-  // Update button styles based on theme
-  updateButtonStyles(theme) {
-    // Create a style element for dynamic styles
-    let styleEl = document.getElementById('theme-dynamic-styles');
-    
-    if (!styleEl) {
-      styleEl = document.createElement('style');
-      styleEl.id = 'theme-dynamic-styles';
-      document.head.appendChild(styleEl);
-    }
-    
-    // Update button styles based on theme colors
-    styleEl.textContent = `
-      .left button, 
-      #settingsMenu button,
-      .setting-btn,
-      .upgrade {
-        background: linear-gradient(145deg, ${theme.colors.primary}, ${theme.colors.secondary});
-      }
-      
-      .upgrade .button_top {
-        color: ${theme.colors.primary};
-      }
-      
-      .upgrade-progress-bar {
-        background-color: ${theme.colors.accent};
-      }
-      
-      #achievementsContainer .achievements-header,
-      #shopContainer .shop-header {
-        background: linear-gradient(145deg, ${theme.colors.primary}, ${theme.colors.secondary});
-      }
-    `;
-  }
-  
   // Load personalization settings from game state
   loadFromGameState() {
     if (this.game && this.game.state && this.game.state.personalization) {
       this.settings = { ...this.settings, ...this.game.state.personalization };
     }
+    
+    // Reset any existing theme styles before applying new ones
+    this.resetThemeStyles();
+    
+    // Apply all settings
     this.applyAllSettings();
   }
 }
@@ -470,6 +772,9 @@ function applyPersonalizationSettings(settings) {
   const root = document.documentElement;
   const body = document.body;
   
+  // Reset any existing theme styles first
+  resetInlineThemeStyles();
+  
   // Set CSS variables for theming
   root.style.setProperty('--particle-intensity', settings.particleIntensity || 1.0);
   
@@ -478,9 +783,11 @@ function applyPersonalizationSettings(settings) {
   
   // Remove existing theme classes
   body.classList.remove('theme-classic', 'theme-dark', 'theme-neon');
+  root.classList.remove('theme-classic', 'theme-dark', 'theme-neon');
   
   // Add selected theme class
   body.classList.add(`theme-${theme}`);
+  root.classList.add(`theme-${theme}`);
   
   // Apply cookie skin
   applyCookieSkin(settings.cookieSkin || 'classic');
@@ -506,6 +813,23 @@ function applyPersonalizationSettings(settings) {
   }
   
   console.log(`Applied theme: ${theme}, animations: ${settings.animations}`);
+}
+
+// Helper function to reset theme styles
+function resetInlineThemeStyles() {
+  const elementsWithStyles = document.querySelectorAll('[style]');
+  const themeProps = ['background', 'background-color', 'color', 'border-color', 'box-shadow', 'text-shadow'];
+  
+  elementsWithStyles.forEach(el => {
+    // Check if element has theme-related styles
+    let style = el.getAttribute('style');
+    if (themeProps.some(prop => style.includes(prop))) {
+      // Only reset theme properties, leave other inline styles intact
+      themeProps.forEach(prop => {
+        el.style.removeProperty(prop);
+      });
+    }
+  });
 }
 
 /**
@@ -594,8 +918,12 @@ export function updatePersonalizationSetting(game, setting, value) {
   // Apply the updated settings
   applyPersonalizationSettings(game.state.personalization);
   
-  // Save settings to localStorage
-  game.saveGame();
+  // Save settings to localStorage silently
+  if (game.silentSave) {
+    game.silentSave();
+  } else if (game.saveGame) {
+    game.saveGame(true); // Pass true for silent save
+  }
   
   return game.state.personalization;
 }

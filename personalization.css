@@ -638,3 +638,220 @@ body.theme-neon .animation-button.active {
   padding-bottom: 10px;
   margin-bottom: 20px;
 }
+
+/* Make sure all transitions are fast enough to notice immediately */
+body * {
+  transition: background 0.2s ease, 
+              background-color 0.2s ease, 
+              color 0.2s ease, 
+              border-color 0.2s ease,
+              box-shadow 0.2s ease;
+}
+
+/* We need to ensure that both html and body elements have the theme class
+   This allows any descendant to use either :root or body as a parent selector */
+html.theme-dark,
+body.theme-dark {
+  --background: radial-gradient(#111, #000);
+  --text-color: #ffffff;
+  --primary-color: #444;
+  --secondary-color: #555;
+  --accent-color: #8e44ad;
+  --panel-color: rgba(40, 40, 40, 0.95);
+}
+
+html.theme-neon,
+body.theme-neon {
+  --background: radial-gradient(#111, #000);
+  --text-color: #fff;
+  --primary-color: #ff00ff;
+  --secondary-color: #00ffff;
+  --accent-color: #ffff00;
+  --panel-color: rgba(20, 20, 40, 0.9);
+}
+
+/* Force-mark important theme components with specificity high enough
+   to ensure they always receive theme styles */
+html[data-theme="dark"] .stats,
+html[data-theme="dark"] #shopContainer,
+html[data-theme="dark"] #achievementsContainer,
+html[data-theme="dark"] #settingsMenu,
+html[data-theme="dark"] .panel-container,
+body.theme-dark .stats,
+body.theme-dark #shopContainer,
+body.theme-dark #achievementsContainer,
+body.theme-dark #settingsMenu,
+body.theme-dark .panel-container {
+  background-color: rgba(35, 35, 40, 0.95) !important;
+  color: white !important;
+  border-color: #444 !important;
+}
+
+html[data-theme="dark"] .shop-item,
+body.theme-dark .shop-item {
+  border-bottom-color: #444 !important;
+}
+
+html[data-theme="dark"] .shop-item .item-name,
+html[data-theme="dark"] .shop-item .item-cost,
+body.theme-dark .shop-item .item-name,
+body.theme-dark .shop-item .item-cost {
+  color: white !important;
+}
+
+/* Similar high-specificity rules for neon theme */
+html[data-theme="neon"] .stats,
+html[data-theme="neon"] #shopContainer,
+html[data-theme="neon"] #achievementsContainer,
+html[data-theme="neon"] #settingsMenu,
+html[data-theme="neon"] .panel-container,
+body.theme-neon .stats,
+body.theme-neon #shopContainer,
+body.theme-neon #achievementsContainer,
+body.theme-neon #settingsMenu,
+body.theme-neon .panel-container {
+  background-color: rgba(20, 20, 40, 0.9) !important;
+  color: white !important;
+  border-color: var(--accent-color) !important;
+  box-shadow: 0 0 15px var(--accent-color) !important;
+}
+
+/* Fix specific elements like stats with theme-specific styles */
+html[data-theme="dark"] .stats h1, 
+html[data-theme="dark"] .stats-metric .value, 
+html[data-theme="dark"] #cookieCount, 
+html[data-theme="dark"] #clickPower, 
+html[data-theme="dark"] #cps,
+body.theme-dark .stats h1, 
+body.theme-dark .stats-metric .value, 
+body.theme-dark #cookieCount, 
+body.theme-dark #clickPower, 
+body.theme-dark #cps {
+  color: white !important;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8) !important;
+}
+
+html[data-theme="dark"] .stats-metric .label,
+body.theme-dark .stats-metric .label {
+  color: #aaa !important;
+}
+
+/* Adding more specific selectors for headers to ensure they get themed */
+html[data-theme="dark"] #achievementsContainer .achievements-header,
+html[data-theme="dark"] #shopContainer .shop-header,
+body.theme-dark #achievementsContainer .achievements-header,
+body.theme-dark #shopContainer .shop-header,
+html[data-theme="dark"] .panel-header,
+body.theme-dark .panel-header {
+  background: linear-gradient(145deg, var(--primary-color), var(--secondary-color)) !important;
+  color: white !important;
+}
+
+/* Theme switching notification */
+.theme-switch-notification {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  z-index: 10000;
+  opacity: 0;
+  animation: fadeInOut 3s ease;
+}
+
+/* Theme System Rewrite */
+
+/* Make sure theme colors don't persist inappropriately */
+
+/* Reset all theme classes on body */
+body {
+  /* Reset all theme-related properties to defaults */
+  --background: initial;
+  --text-color: initial;
+  --primary-color: initial;
+  --secondary-color: initial;
+  --accent-color: initial;
+  --panel-color: initial;
+}
+
+/* CLASSIC THEME - Base theme */
+:root,
+html.theme-classic,
+body.theme-classic {
+  --background: radial-gradient(#333, #000);
+  --text-color: #333;
+  --primary-color: #2980b9;
+  --secondary-color: #3498db;
+  --accent-color: #ff8c42;
+  --panel-color: rgba(255, 255, 255, 0.95);
+}
+
+/* DARK THEME - Always override classic */
+html.theme-dark,
+body.theme-dark {
+  --background: radial-gradient(#111, #000) !important;
+  --text-color: #ffffff !important;
+  --primary-color: #444 !important;
+  --secondary-color: #555 !important;
+  --accent-color: #8e44ad !important;
+  --panel-color: rgba(40, 40, 40, 0.95) !important;
+}
+
+/* NEON THEME - Always override both classic and dark */
+html.theme-neon,
+body.theme-neon {
+  --background: radial-gradient(#111, #000) !important;
+  --text-color: #fff !important;
+  --primary-color: #ff00ff !important;
+  --secondary-color: #00ffff !important;
+  --accent-color: #ffff00 !important;
+  --panel-color: rgba(20, 20, 40, 0.9) !important;
+}
+
+/* Ensure we detect theme changes quickly by keeping transitions short */
+body * {
+  transition: background 0.1s ease, 
+              background-color 0.1s ease, 
+              color 0.1s ease, 
+              border-color 0.1s ease,
+              box-shadow 0.1s ease;
+}
+
+/* Make sure panels use the correct theme variables */
+.stats, 
+#settingsMenu, 
+#shopContainer,
+#achievementsContainer,
+.panel-container {
+  background-color: var(--panel-color) !important;
+  color: var(--text-color) !important;
+}
+
+/* Apply theme-specific styles to headers */
+.panel-header,
+.achievements-header,
+.shop-header,
+.personalization-header {
+  background: linear-gradient(145deg, var(--primary-color), var(--secondary-color)) !important;
+  color: white !important;
+}
+
+/* DEBUG TOOL - Uncomment to see current theme variables */
+/*
+body::after {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  background: rgba(0,0,0,0.8);
+  color: white;
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 12px;
+  z-index: 9999;
+  content: "Theme: " attr(class) "\A --primary: " var(--primary-color) "\A --secondary: " var(--secondary-color) "\A --accent: " var(--accent-color);
+  white-space: pre;
+}
+*/

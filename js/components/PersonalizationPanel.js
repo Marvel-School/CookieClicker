@@ -9,7 +9,19 @@ export class PersonalizationPanel extends UIComponent {
     this.game = game;
     this.buttonsInitialized = false;
     this.toastDebounceTimer = null;
+    
+    // Ensure the container is properly hidden initially
+    this.container.style.display = 'none';
+    this.visible = false;
+    
     this.setupPanel();
+    
+    // Add theme change listener
+    document.addEventListener('themechange', (e) => {
+      this.onThemeChange(e.detail.newTheme);
+    });
+    
+    console.log('PersonalizationPanel initialized');
   }
   
   setupPanel() {
@@ -51,6 +63,20 @@ export class PersonalizationPanel extends UIComponent {
     } else {
       // Just update the active state if already initialized
       this.updateActiveButtonStates();
+    }
+    
+    // Update close button handler
+    const closeBtn = document.getElementById('closePersonalization');
+    if (closeBtn) {
+      // Remove any existing handlers
+      const newCloseBtn = closeBtn.cloneNode(true);
+      closeBtn.parentNode.replaceChild(newCloseBtn, closeBtn);
+      
+      // Add new handler using the hide method
+      newCloseBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.hide();
+      });
     }
   }
   
@@ -179,17 +205,39 @@ export class PersonalizationPanel extends UIComponent {
       this.game.state.personalization = {};
     }
     
+    // Call the game's personalization manager directly if available
+    if (this.game.personalization && typeof this.game.personalization.setTheme === 'function') {
+      this.game.personalization.setTheme(themeId);
+      
+      // Save settings silently (without notification)
+      if (typeof this.game.saveGame === 'function') {
+        // Use silentSave option if available, or pass true to saveGame
+        if (typeof this.game.silentSave === 'function') {
+          this.game.silentSave();
+        } else {
+          // Try with optional parameter for backward compatibility
+          this.game.saveGame(true);
+        }
+      }
+      return;
+    }
+    
+    // Fallback to direct implementation
     this.game.state.personalization.theme = themeId;
     
     // Apply theme
     this.applyTheme(themeId);
     
-    // Save settings
+    // Save settings silently
     if (typeof this.game.saveGame === 'function') {
-      this.game.saveGame();
+      // Use silentSave option if available, or pass true to saveGame
+      if (typeof this.game.silentSave === 'function') {
+        this.game.silentSave();
+      } else {
+        // Try with optional parameter for backward compatibility
+        this.game.saveGame(true);
+      }
     }
-    
-    // Show feedback - let applyTheme handle this
   }
   
   updateAnimationLevel(level) {
@@ -217,9 +265,15 @@ export class PersonalizationPanel extends UIComponent {
     // Apply settings
     this.applyAnimationLevel(level);
     
-    // Save settings
+    // Save settings silently (without notification)
     if (typeof this.game.saveGame === 'function') {
-      this.game.saveGame();
+      // Use silentSave option if available, or pass true to saveGame
+      if (typeof this.game.silentSave === 'function') {
+        this.game.silentSave();
+      } else {
+        // Try with optional parameter for backward compatibility
+        this.game.saveGame(true);
+      }
     }
     
     // Show feedback (using debounced method to prevent multiple notifications)
@@ -227,14 +281,20 @@ export class PersonalizationPanel extends UIComponent {
   }
   
   applyTheme(theme) {
-    const root = document.documentElement;
-    const body = document.body;
-    
-    // Remove all existing theme classes
-    body.classList.remove('theme-classic', 'theme-dark', 'theme-neon');
+    // Remove all existing theme classes first
+    document.documentElement.className = document.documentElement.className
+      .replace(/theme-\w+/g, '')
+      .trim();
+    document.body.className = document.body.className
+      .replace(/theme-\w+/g, '')
+      .trim();
     
     // Add the appropriate theme class
-    body.classList.add(`theme-${theme}`);
+    document.documentElement.classList.add(`theme-${theme}`);
+    document.body.classList.add(`theme-${theme}`);
+    
+    // Reset any conflicting inline styles
+    this.resetThemeInlineStyles();
     
     // Update background element directly for immediate visibility
     const background = document.querySelector('.background');
@@ -253,21 +313,184 @@ export class PersonalizationPanel extends UIComponent {
       }
     }
     
-    // Make sure the personalization panel is updated to reflect the new theme
-    if (this.container) {
-      // Force refresh the panel styles
-      this.container.style.display = 'none';
-      setTimeout(() => {
-        if (this.visible) {
-          this.container.style.display = 'block';
-        }
-      }, 50);
-    }
+    // Force layout recalculation
+    document.body.offsetHeight;
+    
+    // Immediately update personalization panel to match theme
+    this.updatePanelForTheme(theme);
     
     // Show feedback (using debounced method to prevent multiple notifications)
     this.debouncedToast(`${theme.charAt(0).toUpperCase() + theme.slice(1)} theme applied!`);
     
     console.log(`Theme applied: ${theme}`);
+  }
+  
+  // Helper function to reset inline styles that might interfere with theme
+  resetThemeInlineStyles() {
+    const elementsWithStyles = document.querySelectorAll('[style]');
+    elementsWithStyles.forEach(el => {
+      // Only for elements with style attribute
+      if (el.style.length) {
+        // Remove these specific properties that might conflict
+        ['backgroundColor', 'background', 'color', 'borderColor', 'boxShadow'].forEach(prop => {
+          el.style[prop] = '';
+        });
+      }
+    });
+  }
+  
+  // When theme changes externally
+  onThemeChange(theme) {
+    this.updatePanelForTheme(theme);
+    this.updateActiveButtonStates();
+  }
+  
+  // Update panel styling based on current theme
+  updatePanelForTheme(theme) {
+    if (!this.container) return;
+    
+    // Apply right styling immediately
+    switch (theme) {
+      case 'dark':
+        this.container.style.background = 'rgba(35, 35, 40, 0.95)';
+        this.container.style.color = 'white';
+        this.container.style.borderColor = '#444';
+        
+        // Style headings and buttons
+        this.container.querySelectorAll('.section h3').forEach(heading => {
+          heading.style.color = 'white';
+          heading.style.borderColor = '#444';
+        });
+        break;
+        
+      case 'neon':
+        this.container.style.background = 'rgba(20, 20, 40, 0.9)';
+        this.container.style.color = 'white';
+        this.container.style.borderColor = 'var(--accent-color)';
+        this.container.style.boxShadow = '0 0 15px var(--accent-color)';
+        
+        // Style headings and buttons
+        this.container.querySelectorAll('.section h3').forEach(heading => {
+          heading.style.color = 'white';
+          heading.style.borderColor = 'var(--accent-color)';
+        });
+        break;
+        
+      default: // classic
+        this.container.style.background = 'rgba(255, 255, 255, 0.95)';
+        this.container.style.color = '#333';
+        this.container.style.borderColor = 'rgba(210, 210, 210, 0.8)';
+        
+        // Style headings and buttons
+        this.container.querySelectorAll('.section h3').forEach(heading => {
+          heading.style.color = '#333';
+          heading.style.borderColor = 'rgba(128, 128, 128, 0.3)';
+        });
+        break;
+    }
+    
+    // Immediately update button styling
+    this.updateThemeButtonStyles(theme);
+  }
+  
+  updateThemeButtonStyles(theme) {
+    // Theme buttons
+    const themeButtons = {
+      'classic': document.getElementById('theme-classic'),
+      'dark': document.getElementById('theme-dark'),
+      'neon': document.getElementById('theme-neon')
+    };
+    
+    // Animation buttons
+    const animationButtons = {
+      'standard': document.getElementById('animations-standard'),
+      'reduced': document.getElementById('animations-reduced'),
+      'minimal': document.getElementById('animations-minimal')
+    };
+    
+    // Update theme button styles
+    if (theme === 'dark') {
+      Object.values(themeButtons).forEach(button => {
+        if (button) {
+          button.style.background = 'linear-gradient(145deg, #555, #444)';
+          button.style.color = 'white';
+        }
+      });
+      
+      // Style active theme button
+      if (themeButtons[theme]) {
+        themeButtons[theme].style.background = 'linear-gradient(145deg, #8e44ad, #9b59b6)';
+        themeButtons[theme].style.border = '1px solid white';
+      }
+      
+      // Update animation buttons
+      Object.values(animationButtons).forEach(button => {
+        if (button) {
+          button.style.background = 'linear-gradient(145deg, #555, #444)';
+          button.style.color = 'white';
+        }
+      });
+      
+      // Style active animation button
+      const currentAnimation = this.game.state.personalization?.animations || 'standard';
+      if (animationButtons[currentAnimation]) {
+        animationButtons[currentAnimation].style.background = 'linear-gradient(145deg, #8e44ad, #9b59b6)';
+        animationButtons[currentAnimation].style.border = '1px solid white';
+      }
+      
+    } else if (theme === 'neon') {
+      Object.values(themeButtons).forEach(button => {
+        if (button) {
+          button.style.background = 'linear-gradient(145deg, var(--primary-color), var(--secondary-color))';
+          button.style.color = 'white';
+          button.style.textShadow = '0 0 5px white';
+        }
+      });
+      
+      // Style active theme button
+      if (themeButtons[theme]) {
+        themeButtons[theme].style.boxShadow = '0 0 10px var(--accent-color)';
+        themeButtons[theme].style.border = '1px solid var(--accent-color)';
+      }
+      
+      // Update animation buttons
+      Object.values(animationButtons).forEach(button => {
+        if (button) {
+          button.style.background = 'linear-gradient(145deg, var(--primary-color), var(--secondary-color))';
+          button.style.color = 'white';
+          button.style.textShadow = '0 0 5px white';
+        }
+      });
+      
+      // Style active animation button
+      const currentAnimation = this.game.state.personalization?.animations || 'standard';
+      if (animationButtons[currentAnimation]) {
+        animationButtons[currentAnimation].style.boxShadow = '0 0 10px var(--accent-color)';
+        animationButtons[currentAnimation].style.border = '1px solid var(--accent-color)';
+      }
+      
+    } else { // classic or default
+      Object.values(themeButtons).forEach(button => {
+        if (button) {
+          button.style.background = '';
+          button.style.color = '';
+          button.style.textShadow = '';
+          button.style.border = '';
+        }
+      });
+      
+      // Update animation buttons
+      Object.values(animationButtons).forEach(button => {
+        if (button) {
+          button.style.background = '';
+          button.style.color = '';
+          button.style.textShadow = '';
+          button.style.border = '';
+        }
+      });
+    }
+    
+    this.updateActiveButtonStates();
   }
   
   applyAnimationLevel(level) {
@@ -357,8 +580,24 @@ export class PersonalizationPanel extends UIComponent {
 
   // Override show to ensure buttons are properly highlighted
   show() {
-    super.show();
-    // Just update active states but don't re-initialize buttons
-    this.updateActiveButtonStates();
+    if (this.container && !this.visible) {
+      console.log('PersonalizationPanel show() called');
+      
+      // Setup panel content if needed
+      if (!this.buttonsInitialized) {
+        this.setupButtons();
+        this.buttonsInitialized = true;
+      } else {
+        this.updateActiveButtonStates();
+      }
+      
+      // Now make panel visible
+      this.container.style.display = "block";
+      this.visible = true;
+      this.onShow();
+      
+      // Force reflow to ensure styles are applied
+      this.container.offsetHeight;
+    }
   }
 }

@@ -76,33 +76,29 @@ document.addEventListener('DOMContentLoaded', () => {
       settingsMenu.appendChild(newPersonalizationBtn);
     }
     
-    // Set up personalization panel toggle
+    // Set up personalization panel
     if (personalizationBtn && personalizationContainer) {
-      personalizationBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        personalizationContainer.style.display = 
-          personalizationContainer.style.display === 'block' ? 'none' : 'block';
-      });
+      // Create a global reference to the personalization panel
+      const personalizationPanel = new PersonalizationPanel(
+        gameInstance,
+        personalizationContainer,
+        personalizationBtn
+      );
       
-      // Close button
+      // Store in window for debugging
+      window.personalizationPanel = personalizationPanel;
+      
+      // Make sure it's hidden initially for consistency
+      personalizationContainer.style.display = 'none';
+      
+      // Direct close button to use hide method
       const closeBtn = document.getElementById('closePersonalization');
       if (closeBtn) {
-        closeBtn.addEventListener('click', () => {
-          personalizationContainer.style.display = 'none';
+        closeBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          personalizationPanel.hide();
         });
       }
-      
-      // Close panel when clicking outside
-      document.addEventListener('click', () => {
-        if (personalizationContainer.style.display === 'block') {
-          personalizationContainer.style.display = 'none';
-        }
-      });
-      
-      // Prevent clicks inside from closing
-      personalizationContainer.addEventListener('click', (e) => {
-        e.stopPropagation();
-      });
     }
     
     // Legacy support for achievements dropdown
@@ -143,6 +139,73 @@ document.addEventListener('DOMContentLoaded', () => {
       } catch (e) {
         console.error("Error in keyboard handler:", e);
       }
+    });
+    
+    // Listen for theme changes to ensure UI updates completely
+    document.addEventListener('themechange', (e) => {
+      console.log(`Theme changed from ${e.detail.oldTheme} to ${e.detail.newTheme}`);
+      
+      // Force a complete style recalculation after theme change
+      const forceReflow = () => {
+        // Access a layout property to force reflow
+        document.body.offsetHeight;
+        
+        // Update UI components that might need refreshing
+        if (gameInstance) {
+          // Force display update for game stats and panels
+          gameInstance.updateDisplay();
+          
+          // Make sure panels reflect the new theme
+          const panels = document.querySelectorAll('.panel-container, #shopContainer, #achievementsContainer, #settingsMenu');
+          panels.forEach(panel => {
+            // Force repaint by toggling display slightly
+            const currentDisplay = panel.style.display;
+            panel.style.display = 'none';
+            setTimeout(() => {
+              panel.style.display = currentDisplay;
+            }, 10);
+          });
+        }
+      };
+      
+      // Apply immediately and then again after a short delay to catch transitions
+      forceReflow();
+      setTimeout(forceReflow, 50);
+      setTimeout(forceReflow, 200);
+    });
+    
+    // Add this after the existing themechange event listener to force a full refresh
+    document.addEventListener('themechange', (e) => {
+      // Force a complete CSS recalculation on theme change
+      const styleSheets = Array.from(document.styleSheets);
+      for (const sheet of styleSheets) {
+        try {
+          // This forces the browser to reparse the stylesheet
+          const rules = sheet.cssRules;
+          for (let i = 0; i < rules.length; i++) {
+            const rule = rules[i];
+            // Access a property to force rule revalidation
+            if (rule.style) {
+              const temp = rule.style.cssText;
+            }
+          }
+        } catch (err) {
+          // Some stylesheets may not be accessible due to CORS
+          console.log("Could not refresh stylesheet:", sheet.href);
+        }
+      }
+      
+      console.log(`Theme completely refreshed from ${e.detail.oldTheme} to ${e.detail.newTheme}`);
+      
+      // Add a debug helper for theme variables
+      console.log("Current theme variables:", {
+        background: getComputedStyle(document.documentElement).getPropertyValue('--background'),
+        textColor: getComputedStyle(document.documentElement).getPropertyValue('--text-color'),
+        primaryColor: getComputedStyle(document.documentElement).getPropertyValue('--primary-color'),
+        secondaryColor: getComputedStyle(document.documentElement).getPropertyValue('--secondary-color'),
+        accentColor: getComputedStyle(document.documentElement).getPropertyValue('--accent-color'),
+        panelColor: getComputedStyle(document.documentElement).getPropertyValue('--panel-color')
+      });
     });
     
     console.log("Cookie Clicker initialization complete");
