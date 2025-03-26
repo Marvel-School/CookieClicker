@@ -1,15 +1,19 @@
-// Contains all upgrade-related classes
+// Contains all upgrade class definitions
 
+/**
+ * Base class for all upgrades
+ */
 export class Upgrade {
-  constructor(cost, multiplier, displayPrefix, extra = null) {
+  constructor(cost, multiplier, displayPrefix, description = '', extra = null) {
     this.cost = cost;
     this.multiplier = multiplier;
     this.displayPrefix = displayPrefix;
+    this.description = description;
     this.extra = extra;
   }
   
   getDisplayText() {
-    return `${this.displayPrefix} (Cost: ${this.cost})`;
+    return `${this.displayPrefix} (Cost: ${this.cost}) - ${this.description}`;
   }
   
   canPurchase(game) {
@@ -25,49 +29,64 @@ export class Upgrade {
       game.log(
         `Not enough cookies for ${this.constructor.name}. Cost: ${this.cost}, have: ${game.state.cookies}`
       );
-      return;
+      return false;
     }
+    
     game.state.cookies -= this.cost;
     this.executePurchase(game);
     this.updateCost();
+    
     if (this.extra && typeof game[this.extra] === "function") {
       game[this.extra]();
     }
+    
     game.updateDisplay();
+    return true;
   }
   
-  // To be defined in subclasses
+  // To be overridden in subclasses
   executePurchase(game) {
-    // ...override in subclass...
+    // Default implementation does nothing
   }
 }
 
+/**
+ * Upgrade that multiplies click power by 2
+ */
 export class ClickMultiplierUpgrade extends Upgrade {
-  constructor(cost, multiplier, displayPrefix) {
-    super(cost, multiplier, displayPrefix);
+  constructor(cost, multiplier, displayPrefix, description = 'Doubles your click power') {
+    super(cost, multiplier, displayPrefix, description);
   }
   
   executePurchase(game) {
-    // Change from 2x to 1.5x for better balance
-    game.state.clickPower *= 1.5;
+    game.state.clickPower *= 2;
   }
 }
 
+/**
+ * Upgrade that increments a counter (buildings)
+ */
 export class IncrementUpgrade extends Upgrade {
-  constructor(cost, multiplier, displayPrefix, extra = null) {
-    super(cost, multiplier, displayPrefix, extra);
+  constructor(cost, multiplier, displayPrefix, description = '', extra = null) {
+    super(cost, multiplier, displayPrefix, description, extra);
     this.count = 0;
   }
   
   executePurchase(game) {
     this.count++;
   }
+  
+  getDisplayText() {
+    return `${this.displayPrefix} (Cost: ${this.cost})${this.count > 0 ? ' - ' + this.count : ''}`;
+  }
 }
 
+/**
+ * Special lucky upgrade with random bonuses
+ */
 export class LuckyUpgrade extends Upgrade {
-  constructor(cost, multiplier, displayPrefix) {
-    // Lower initial cost to 15 (down from 20) and slower cost increase (1.15 instead of 1.5)
-    super(15, 1.15, displayPrefix);
+  constructor(cost, multiplier, displayPrefix, description = 'Try your luck for bonuses!') {
+    super(cost, multiplier, displayPrefix, description);
   }
   
   executePurchase(game) {
@@ -77,195 +96,142 @@ export class LuckyUpgrade extends Upgrade {
     const farms = game.upgrades.farm.count || 0;
     
     // Calculate CPS (cookies per second)
-    const baseCps = autoClickers * 1 + grandmas * 5 + farms * 10;
+    const baseCps = autoClickers * 1 + grandmas * 3 + farms * 6; // Using rebalanced production values
     
     // Apply multipliers if present
     const cps = baseCps * (game.state.cookieMultiplier || 1);
     
-    // ENHANCEMENT 1: Much more generous base reward (30-90 seconds worth of production)
-    // This is double what it was before (was 15-45 seconds)
+    // Base reward is 30-90 seconds of production
     const productionSeconds = 30 + Math.floor(Math.random() * 60);
     
-    // Minimum reward now 100 cookies (up from 50) for early game value
+    // Minimum reward is 100 cookies
     const baseBonus = Math.max(100, cps * productionSeconds);
     
-    // ENHANCEMENT 2: More generous adaptive cap based on game progression
-    // Base cap increased from 500 to 1000, and scaling factor doubled
-    const gameProgress = game.state.cookies / 500; // More aggressive scaling (was /1000)
+    // Cap the bonus relative to game progress
+    const gameProgress = game.state.cookies / 500;
     const adaptiveCap = Math.max(1000, 2000 + gameProgress * 2);
     const cappedBonus = Math.min(baseBonus, adaptiveCap);
 
-    // ENHANCEMENT 3: Higher chance for critical hits (30% chance, up from 20%)
-    // And better critical multipliers (2.5-3.5x, up from 2-3x)
+    // Determine if this is a critical hit (30% chance)
     let bonus = 0;
     let effectMessage = "";
     let isCritical = false;
     
-    if (Math.random() < 0.3) { // 30% chance of critical
-      // Critical hit gives 2.5-3.5x the bonus
+    if (Math.random() < 0.3) {
+      // Critical hit: 2.5-3.5x bonus
       const critMultiplier = 2.5 + Math.random();
       bonus = Math.floor(cappedBonus * critMultiplier);
       isCritical = true;
       effectMessage = "CRITICAL LUCKY HIT! 💥";
     } else {
-      // Normal hit with increased randomness (80%-140%, up from 70%-130%)
+      // Regular hit: 80-140% of base bonus
       const randomFactor = 0.8 + (Math.random() * 0.6);
       bonus = Math.floor(cappedBonus * randomFactor);
     }
     
-    // Add cookies and show floating number
+    // Add cookies to player's total
     game.state.cookies += bonus;
     
-    // Show effects (compatibility with both systems)
-    if (typeof game.showFloatingNumber === "function") {
+    // Show floating number animation
+    if (typeof game.showFloatingNumber === 'function') {
       game.showFloatingNumber(bonus, true);
+    }
+    
+    // Random special effects (15% chance if not critical)
+    if (!isCritical && Math.random() < 0.15) {
+      const effect = Math.floor(Math.random() * 4);
       
-      // Also show effect message if applicable
-      if (effectMessage) {
-        // Create a special effect message
-        const message = document.createElement("div");
-        message.className = "floating-effect";
-        message.textContent = effectMessage;
-        message.style.position = "absolute";
-        message.style.fontSize = isCritical ? "24px" : "18px";
-        message.style.color = isCritical ? "#ff4500" : "#1e90ff";
-        message.style.fontWeight = "bold";
-        message.style.textShadow = "0px 0px 5px white";
-        message.style.zIndex = "9999";
-        
-        const { left, top, width } = game.cookie.getBoundingClientRect();
-        message.style.left = `${left + width / 2 - 120}px`;
-        message.style.top = `${top - 50}px`;
-        message.style.width = "240px";
-        message.style.textAlign = "center";
-        message.style.pointerEvents = "none";
-        document.body.appendChild(message);
-        
-        // Animate and remove after animation
-        message.animate(
-          [
-            { transform: "translateY(0) scale(1)", opacity: 1 },
-            { transform: "translateY(-50px) scale(1.2)", opacity: 1 },
-            { transform: "translateY(-100px) scale(1)", opacity: 0 }
-          ],
-          {
-            duration: 2000,
-            easing: "cubic-bezier(0.215, 0.61, 0.355, 1)"
+      switch(effect) {
+        case 0: // Temporary click power boost
+          game.state.clickPowerBoostActive = true;
+          game.state.clickPowerBoostMultiplier = 3;
+          game.state.clickPowerBoostEndTime = Date.now() + 40000;
+          effectMessage = "Click Power x3 for 40s! 👆";
+          
+          setTimeout(() => {
+            game.state.clickPowerBoostActive = false;
+            game.state.clickPowerBoostMultiplier = 1;
+          }, 40000);
+          break;
+          
+        case 1: // Permanent CPS boost
+          game.state.cookieMultiplier = (game.state.cookieMultiplier || 1) * 1.08;
+          effectMessage = "Production +8% Permanently! 📈";
+          break;
+          
+        case 2: // Free auto-clickers
+          if (game.upgrades.autoClicker) {
+            game.upgrades.autoClicker.count = (game.upgrades.autoClicker.count || 0) + 2;
+            effectMessage = "Free 2 Auto-Clickers! 🤖🤖";
+            game.updateDisplay();
           }
-        );
-        
-        setTimeout(() => message.remove(), 2000);
+          break;
+          
+        case 3: // Temporary CPS boost
+          const tempMultiplier = 2;
+          const duration = 60; // seconds
+          
+          const originalMultiplier = game.state.cookieMultiplier || 1;
+          game.state.cookieMultiplier *= tempMultiplier;
+          game.state.cpsBoostActive = true;
+          game.state.cpsBoostEndTime = Date.now() + (duration * 1000);
+          
+          effectMessage = "Cookie Production x2 for 60s! 🚀";
+          
+          setTimeout(() => {
+            if (game.state.cpsBoostActive && game.state.cpsBoostEndTime <= Date.now()) {
+              game.state.cookieMultiplier = originalMultiplier;
+              game.state.cpsBoostActive = false;
+              game.updateDisplay();
+            }
+          }, duration * 1000);
+          break;
       }
     }
     
-    // Special effect chances (higher 15% chance)
-    if (Math.random() < 0.15) {
-      // Similar special effects as in LuckyUpgrade.js
-      // Implementation...
+    // Show effect message if there is one
+    if (effectMessage && typeof game.showToast === 'function') {
+      game.showToast(effectMessage);
     }
     
-    // Track the lucky streak for related achievements
+    // Track lucky streak for achievements
     game.state.luckyStreak = (game.state.luckyStreak || 0) + 1;
   }
 }
 
+/**
+ * Shop upgrades with custom purchase behavior
+ */
 export class ShopUpgrade extends Upgrade {
   constructor(cost, multiplier, displayPrefix, extra = null, baseCost) {
-    super(cost, multiplier, displayPrefix, extra);
-    this.baseCost = baseCost;
-    // Store the name that will be used in data-upgrade attributes
-    this.key = '';
+    super(cost, multiplier, displayPrefix, '', extra);
+    this.baseCost = baseCost || cost;
   }
   
-  // Override purchase entirely (different cost update)
   purchase(game) {
-    // Ensure cookies is a number and not NaN
-    if (isNaN(game.state.cookies)) {
-      console.error("Cookie count is NaN, fixing...");
-      game.state.cookies = 0;
-    }
-    
     if (!this.canPurchase(game)) {
-      console.log(`Not enough cookies for ${this.displayPrefix}. Cost: ${this.cost}, have: ${game.state.cookies}`);
-      
-      try {
-        // Use direct import function if game.showToast fails
-        if (typeof game.showToast === 'function') {
-          game.showToast(`Not enough cookies for ${this.displayPrefix}`);
-        } else {
-          const { showToast } = require('./utils.js');
-          showToast(`Not enough cookies for ${this.displayPrefix}`);
-        }
-      } catch (e) {
-        console.error("Could not show toast notification:", e);
-        // Fallback to alert for critical errors
-        alert(`Not enough cookies for ${this.displayPrefix}`);
+      game.log(
+        `Not enough cookies for ${this.extra || this.displayPrefix}. Cost: ${this.cost}, have: ${game.state.cookies}`
+      );
+      if (typeof game.showToast === 'function') {
+        game.showToast(`Not enough cookies for ${this.extra || this.displayPrefix}`);
       }
-      return;
+      return false;
     }
     
-    // Deduct cookies from player's total
     game.state.cookies -= this.cost;
     
-    // Call the appropriate method based on the upgrade type
-    if (typeof game[this.extra] === 'function') {
-      try {
-        game[this.extra](this);
-        console.log(`Successfully executed ${this.extra} method`);
-        
-        // If this is the timeAccelerator method, rebalance it
-        if (this.extra === 'timeAccelerator') {
-          // Rebalance within the method instead of in the method definition
-        }
-        
-        // If this is the goldenCookieChance upgrade, log the new chance
-        if (this.extra === 'increaseGoldenCookieChance') {
-          console.log(`New golden cookie chance: ${game.state.goldenCookieChance}`);
-        }
-      } catch (e) {
-        console.error(`Error executing method ${this.extra}:`, e);
-      }
-    } else {
-      console.error(`Method ${this.extra} not found in game object`);
+    if (this.extra && typeof game[this.extra] === 'function') {
+      game[this.extra](this);
     }
     
-    // Update the cost for next purchase
     this.cost = Math.floor(this.cost * this.multiplier);
-    
-    // Find the key of this upgrade in the shopUpgrades object
-    let upgradeKey = '';
-    for (const key in game.shopUpgrades) {
-      if (game.shopUpgrades[key] === this) {
-        upgradeKey = key;
-        break;
-      }
-    }
-    
-    // Update the cost display in the UI using the upgrade key
-    if (upgradeKey) {
-      const upgradeElement = document.querySelector(`[data-upgrade="${upgradeKey}"] .item-cost span`);
-      if (upgradeElement) {
-        upgradeElement.textContent = this.cost;
-      }
-    }
-    
-    // Update game display
     game.updateDisplay();
     
-    try {
-      // Use direct import function if game.showToast fails
-      if (typeof game.showToast === 'function') {
-        game.showToast(`${this.displayPrefix} purchased!`);
-      } else {
-        // Try to import it directly
-        import('./utils.js').then(utils => {
-          utils.showToast(`${this.displayPrefix} purchased!`);
-        }).catch(e => {
-          console.error("Could not import showToast:", e);
-        });
-      }
-    } catch (e) {
-      console.error("Could not show toast notification:", e);
+    if (typeof game.showToast === 'function') {
+      game.showToast(`${this.extra || this.displayPrefix} purchased!`);
     }
+    
+    return true;
   }
 }

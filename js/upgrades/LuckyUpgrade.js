@@ -1,4 +1,5 @@
 import { Upgrade } from './Upgrade.js';
+import { showToast } from '../utils.js';
 
 /**
  * Specialized upgrade for random/lucky bonuses
@@ -6,7 +7,7 @@ import { Upgrade } from './Upgrade.js';
 export class LuckyUpgrade extends Upgrade {
   constructor(cost, multiplier, displayPrefix) {
     // Lower initial cost to 15 (down from 20) and slower cost increase (1.15 instead of standard 1.5)
-    super(15, 1.15, displayPrefix);
+    super(cost, multiplier, displayPrefix);
   }
   
   executePurchase(game) {
@@ -16,7 +17,7 @@ export class LuckyUpgrade extends Upgrade {
     const farms = game.upgrades.farm.count || 0;
     
     // Calculate CPS (cookies per second)
-    const baseCps = autoClickers * 1 + grandmas * 5 + farms * 10;
+    const baseCps = autoClickers * 1 + grandmas * 3 + farms * 6;  // Using rebalanced production values
     
     // Apply multipliers if present
     const cps = baseCps * (game.state.cookieMultiplier || 1);

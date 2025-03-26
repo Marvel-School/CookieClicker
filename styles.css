@@ -38,6 +38,10 @@ body {
   display: inline-block;
   padding: 0;
   margin: 0;
+  margin-bottom: 10px;
+  width: 100%;
+  /* Add better text wrapping */
+  overflow: hidden;
 }
 
 .left button:disabled {
@@ -52,14 +56,33 @@ body {
 .left button {
   background: linear-gradient(145deg, #2980b9, #3498db);
   color: #fff;
-  font-size: 18px;     /* reduced font size */
-  padding: 10px;        /* reduced padding */
-  width: auto;         /* removed full width */
+  font-size: 16px;     /* adjusted font size */
+  padding: 12px 15px;   /* adjusted padding */
+  width: 100%;         /* make button fill container */
   border: none;
   border-radius: 12px;
   cursor: pointer;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  /* Improve button text display */
+  white-space: normal; /* Allow text to wrap */
+  height: auto;        /* Auto height for content */
+  min-height: 45px;    /* Set minimum height */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;    /* Prevent text overflow */
+  text-align: center;  /* Center text */
+}
+
+.left button .button_top {
+  /* Add text wrapping for long button names */
+  width: 100%;
+  text-align: center;
+  word-wrap: break-word;
+  overflow-wrap: break-word; /* Better word wrapping */
+  hyphens: auto;        /* Allow hyphenation */
 }
 
 .left button:hover {
@@ -952,25 +975,6 @@ section .set div:nth-child(25) {
   position: absolute;
   color: red;
   font-size: 20px;
-  animation: floatUp 1s ease-out;
-  pointer-events: none;
-}
-@keyframes floatUp {
-  0% {
-    transform: translateY(0);
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(-50px);
-    opacity: 0;
-  }
-}
-
-/* Enhanced Upgrade Visualization Boxes */
-.upgrade-box {
-  background: linear-gradient(145deg, #ffffff, #f0f0f0);
-  border-radius: 12px;
-  padding: 25px 15px 15px 15px; /* Increased top padding to make room for title */
   width: 220px;
   display: flex;
   flex-direction: column;
@@ -2439,3 +2443,142 @@ body > .item-desc,
 }
 
 /* ...existing code... */
+
+/* ...existing code... */
+
+.upgrade .description {
+  display: block;
+  font-size: 12px;
+  color: #777;
+  margin-top: 5px;
+}
+
+/* Golden Cookie feature */
+.golden-cookie {
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  background-image: url('image/goldencookie.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  z-index: 1000;
+  cursor: pointer;
+  animation: pulse 1.5s infinite ease-in-out;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  filter: drop-shadow(0 0 15px gold);
+}
+
+.golden-cookie:hover {
+  transform: scale(1.1);
+}
+
+.golden-cookie-clicked {
+  animation: explode 0.5s forwards;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 0.9; }
+  50% { transform: scale(1.1); opacity: 1; }
+}
+
+@keyframes explode {
+  0% { transform: scale(1.1); opacity: 1; }
+  80% { transform: scale(2); opacity: 0.5; }
+  100% { transform: scale(3); opacity: 0; }
+}
+
+/* Toast container */
+.toast-container {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Toast notification types */
+.auto-save-notification.toast-success {
+  background-color: rgba(76, 175, 80, 0.9);
+  border-left: 5px solid #2e7d32;
+}
+
+.auto-save-notification.toast-error {
+  background-color: rgba(244, 67, 54, 0.9);
+  border-left: 5px solid #c62828;
+}
+
+.auto-save-notification.toast-info {
+  background-color: rgba(33, 150, 243, 0.9);
+  border-left: 5px solid #1565c0;
+}
+
+/* Active bonuses display in stats */
+.active-bonuses {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 10px;
+  min-height: 0;
+  transition: min-height 0.3s ease;
+}
+
+.bonus-indicator {
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 15px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  animation: fadeInScale 0.3s ease;
+}
+
+.bonus-indicator.click-boost {
+  background: linear-gradient(to right, #ff9a00, #ff6b00);
+}
+
+.bonus-indicator.production-boost {
+  background: linear-gradient(to right, #2196f3, #03a9f4);
+}
+
+.bonus-indicator.frenzy {
+  background: linear-gradient(to right, #f44336, #e91e63);
+  font-weight: bold;
+}
+
+.bonus-timer {
+  margin-left: 5px;
+  font-weight: bold;
+}
+
+@keyframes fadeInScale {
+  from { transform: scale(0.7); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* Visual effects for cookie during bonuses */
+.click-boosted {
+  filter: brightness(1.2) drop-shadow(0 0 10px orange) !important;
+  animation: clickBoost 0.5s infinite alternate !important;
+}
+
+.frenzy-boosted {
+  filter: brightness(1.4) drop-shadow(0 0 15px red) saturate(1.5) !important;
+  animation: frenzyBoost 0.3s infinite alternate !important;
+}
+
+@keyframes clickBoost {
+  from { transform: scale(1); }
+  to { transform: scale(1.03); }
+}
+
+@keyframes frenzyBoost {
+  from { transform: scale(1); }
+  to { transform: scale(1.05); }
+}

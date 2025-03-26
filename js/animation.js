@@ -3,26 +3,48 @@
 const PARTICLE_SIZE = 20;
 const PARTICLE_LIFETIME = 2000;
 
+// Show floating number animation
 export function showFloatingNumber(element, amount, isBonus = false) {
+  if (!element) return;
+  
   const floatingNumber = document.createElement("div");
   floatingNumber.className = "floating-number";
   
-  // Format amount with fewer decimal places - limit to 1 decimal place
-  const formattedAmount = typeof amount === 'number' ? 
-    (Number.isInteger(amount) ? amount : parseFloat(amount.toFixed(1))) : 
-    amount;
+  // Format number to reduce decimal places
+  let displayAmount;
+  if (typeof amount === 'number') {
+    // If it's an integer, show as is
+    if (Number.isInteger(amount)) {
+      displayAmount = amount;
+    } else {
+      displayAmount = amount.toFixed(1);
+    }
+  } else {
+    displayAmount = amount;
+  }
   
-  floatingNumber.textContent = `+${formattedAmount}`;
-  floatingNumber.style.color = isBonus ? "blue" : "red";
+  floatingNumber.textContent = `+${displayAmount}`;
+  floatingNumber.style.color = isBonus ? "#4caf50" : "#ff5722";
+  floatingNumber.style.position = "absolute";
+  floatingNumber.style.fontSize = isBonus ? "24px" : "20px";
+  floatingNumber.style.fontWeight = "bold";
+  floatingNumber.style.zIndex = "100";
+  
   const { left, top, width } = element.getBoundingClientRect();
   floatingNumber.style.left = `${left + width / 2 - 15}px`;
   floatingNumber.style.top = `${top - 10}px`;
   document.body.appendChild(floatingNumber);
+  
+  // Animate using CSS animation
+  floatingNumber.style.animation = "float-up 1s forwards";
+  
+  // Remove after animation completes
   setTimeout(() => floatingNumber.remove(), 1000);
 }
 
+// Create confetti effect
 export function createConfetti(x, y, lastConfettiTime) {
-  // Skip if called too frequently (improved debouncing)
+  // Skip if called too frequently
   const now = Date.now();
   if (lastConfettiTime && now - lastConfettiTime < 200) {
     return lastConfettiTime;
@@ -135,6 +157,7 @@ export function createConfetti(x, y, lastConfettiTime) {
   return now;
 }
 
+// Apply visual effects for time accelerator
 export function applyTimeAcceleratorVisuals(cookie, cpsDisplay, active) {
   // Apply effects to cookie
   if (cookie) {

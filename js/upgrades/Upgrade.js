@@ -2,15 +2,16 @@
  * Base class for all upgrades
  */
 export class Upgrade {
-  constructor(cost, multiplier, displayPrefix, extra = null) {
+  constructor(cost, multiplier, displayPrefix, description = '', extra = null) {
     this.cost = cost;
     this.multiplier = multiplier;
     this.displayPrefix = displayPrefix;
+    this.description = description;
     this.extra = extra;
   }
   
   getDisplayText() {
-    return `${this.displayPrefix} (Cost: ${this.cost})`;
+    return `${this.displayPrefix} (Cost: ${this.cost}) - ${this.description}`;
   }
   
   canPurchase(game) {

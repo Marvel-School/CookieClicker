@@ -54,6 +54,9 @@ export function setupEventListeners(game) {
 
   // Set up shop item tooltips
   setupTooltips(game);
+
+  // Update upgrade descriptions on load
+  game.uiManager.updateUpgradeDescriptions();
 }
 
 function setupTooltips(game) {

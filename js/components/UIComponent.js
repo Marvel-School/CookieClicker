@@ -1,87 +1,104 @@
-/**
- * Base class for UI panels like shop, achievements, settings
- * Handles common functionality like toggling visibility and click handling
- */
+// Base class for UI components
 export class UIComponent {
-  constructor(containerElement, toggleElement) {
-    this.container = containerElement;
-    this.toggleElement = toggleElement;
+  /**
+   * Create a new UI component
+   * @param {Object} game - The game instance
+   * @param {HTMLElement} element - The DOM element for this component
+   */
+  constructor(game, element) {
+    this.game = game;
+    this.element = element;
+    this.visible = false;
+    this.initialized = false;
     
-    // Initialize visible state based on actual DOM state
-    if (this.container) {
-      // Check actual display state instead of assuming it's hidden
-      const computedStyle = window.getComputedStyle(this.container);
-      this.visible = computedStyle.display !== 'none';
-      
-      // Ensure DOM matches our initial state for consistency
-      this.container.style.display = this.visible ? 'block' : 'none';
-    } else {
-      this.visible = false;
+    // Initialize if element exists
+    if (this.element) {
+      this.initialize();
     }
-    
-    this.setupEventListeners();
-    
-    // Debug log for initialization
-    console.log(`UIComponent initialized: ${this.constructor.name}, visible: ${this.visible}`);
   }
   
-  setupEventListeners() {
-    if (this.toggleElement && this.container) {
-      // Remove any existing click handlers to prevent duplicates
-      const newToggle = this.toggleElement.cloneNode(true);
-      if (this.toggleElement.parentNode) {
-        this.toggleElement.parentNode.replaceChild(newToggle, this.toggleElement);
+  /**
+   * Initialize the component
+   */
+  initialize() {
+    if (this.initialized) return;
+    this.initialized = true;
+    
+    // Add click outside listener to document
+    document.addEventListener('click', this.handleDocumentClick.bind(this));
+  }
+  
+  /**
+   * Handle document click to close panel when clicking outside
+   * @param {Event} event - Click event
+   */
+  handleDocumentClick(event) {
+    if (!this.visible) return;
+    
+    // Check if click is outside the component
+    if (this.element && !this.element.contains(event.target)) {
+      // Don't close if clicking a toggle button
+      if (this.toggleButton && this.toggleButton.contains(event.target)) {
+        return;
       }
-      this.toggleElement = newToggle;
       
-      // Toggle visibility on toggle element click
-      this.toggleElement.addEventListener("click", (e) => {
-        e.stopPropagation();
-        e.preventDefault(); // Prevent any default behavior
-        this.toggle();
-        console.log(`${this.constructor.name} toggled, now ${this.visible ? 'visible' : 'hidden'}`);
-      });
-      
-      // Prevent clicks inside from closing
-      this.container.addEventListener("click", (e) => {
-        e.stopPropagation();
-      });
-      
-      // Close when clicking elsewhere (using capture phase for earlier interception)
-      document.addEventListener("click", () => {
-        if (this.visible) {
-          this.hide();
-          console.log(`${this.constructor.name} hidden by document click`);
-        }
-      }, true);
+      this.hide();
     }
   }
   
-  show() {
-    if (this.container && !this.visible) {
-      // Set display before updating state
-      this.container.style.display = "block";
-      this.visible = true;
-      this.onShow();
-      console.log(`${this.constructor.name} shown`);
-    }
-  }
-  
-  hide() {
-    if (this.container && this.visible) {
-      // Set display before updating state
-      this.container.style.display = "none";
-      this.visible = false;
-      this.onHide();
-      console.log(`${this.constructor.name} hidden`);
-    }
-  }
-  
-  toggle() {
-    // Log before state changes
-    console.log(`${this.constructor.name} toggling from ${this.visible ? 'visible' : 'hidden'}`);
+  /**
+   * Add a toggle button to show/hide the component
+   * @param {HTMLElement} button - The button element
+   */
+  setToggleButton(button) {
+    this.toggleButton = button;
     
-    // Simple toggle based on current state
+    if (this.toggleButton) {
+      this.toggleButton.addEventListener('click', (e) => {
+        e.stopPropagation(); // Prevent document click
+        this.toggle();
+      });
+    }
+  }
+  
+  /**
+   * Show the component
+   */
+  show() {
+    if (this.element) {
+      this.element.style.display = 'block';
+      this.visible = true;
+      
+      // Add active class to toggle button if exists
+      if (this.toggleButton) {
+        this.toggleButton.classList.add('active');
+      }
+      
+      this.onShow();
+    }
+  }
+  
+  /**
+   * Hide the component
+   */
+  hide() {
+    if (this.element) {
+      this.element.style.display = 'none';
+      this.visible = false;
+      
+      // Remove active class from toggle button if exists
+      if (this.toggleButton) {
+        this.toggleButton.classList.remove('active');
+      }
+      
+      this.onHide();
+    }
+  }
+  
+  /**
+   * Toggle component visibility
+   */
+  toggle() {
     if (this.visible) {
       this.hide();
     } else {
@@ -89,7 +106,27 @@ export class UIComponent {
     }
   }
   
-  // Hook methods for derived classes to override
-  onShow() {}
-  onHide() {}
+  /**
+   * Called when component is shown
+   * Override in child classes
+   */
+  onShow() {
+    // Override in child classes
+  }
+  
+  /**
+   * Called when component is hidden
+   * Override in child classes
+   */
+  onHide() {
+    // Override in child classes
+  }
+  
+  /**
+   * Update the component
+   * Override in child classes
+   */
+  update() {
+    // Override in child classes
+  }
 }

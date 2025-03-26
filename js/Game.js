@@ -6,6 +6,11 @@ import { showFloatingNumber, createConfetti, applyTimeAcceleratorVisuals } from 
 import { log, showToast, AUTO_SAVE_INTERVAL } from './utils.js';
 import { setupEventListeners, updateGameDisplay, updateAchievementsList } from './ui.js';
 import { PersonalizationManager } from './personalization.js';
+import { UIManager } from './UIManager.js';
+import { ShopPanel } from './components/ShopPanel.js';
+import { AchievementsPanel } from './components/AchievementsPanel.js';
+import { SettingsPanel } from './components/SettingsPanel.js';
+import { PersonalizationPanel } from './components/PersonalizationPanel.js';
 
 export default class Game {
   constructor() {
@@ -52,13 +57,13 @@ export default class Game {
       }
     };
 
-    // Initialize upgrades - REBALANCED VALUES
+    // Initialize upgrades with descriptions
     this.upgrades = {
-      clickUpgrade: new ClickMultiplierUpgrade(15, 2.5, "Upgrade Click Power"),  // Was 10, 3 - now more expensive with slower scaling
-      autoClicker: new IncrementUpgrade(60, 1.6, "Buy Auto Clicker"),           // Was 50, 1.5 - slightly more expensive
-      grandma: new IncrementUpgrade(120, 1.7, "Buy Grandma's Bakery", "updateGrandmasVisual"), // Was 100, 1.5 - more expensive with better scaling
-      farm: new IncrementUpgrade(600, 1.8, "Buy Cookie Farm"),                  // Was 500, 1.5 - more expensive with better scaling
-      luckyClick: new LuckyUpgrade(25, 1.3, "Lucky Click"),                     // Was 20, 1 - now properly scales in cost
+      clickUpgrade: new ClickMultiplierUpgrade(15, 2.5, "Upgrade Click Power", "Increases click power by 2x"),
+      autoClicker: new IncrementUpgrade(60, 1.6, "Buy Auto Clicker", "Automatically clicks for you"),
+      grandma: new IncrementUpgrade(120, 1.7, "Buy Grandma's Bakery", "Grandmas bake cookies for you", "updateGrandmasVisual"),
+      farm: new IncrementUpgrade(600, 1.8, "Buy Cookie Farm", "Farms produce cookies"),
+      luckyClick: new LuckyUpgrade(25, 1.3, "Lucky Click", "Chance to earn a large number of cookies"),
     };
 
     // Shop upgrades - REBALANCED VALUES
@@ -80,6 +85,9 @@ export default class Game {
     
     // For confetti animation
     this.lastConfettiTime = 0;
+
+    // Initialize UI manager
+    this.uiManager = new UIManager(this);
 
     // Initialize personalization manager
     this.personalization = new PersonalizationManager(this);
@@ -200,6 +208,45 @@ export default class Game {
     // Start golden cookie spawning logic
     this.startGoldenCookieTimer();
     this.log("Golden cookie timer initialized with chance:", this.state.goldenCookieChance);
+
+    // Update upgrade descriptions on init
+    this.uiManager.updateUpgradeDescriptions();
+
+    // Initialize UI Panels
+    this.initPanels();
+  }
+
+  initPanels() {
+    // Shop Panel
+    this.shopPanel = new ShopPanel(
+      this,
+      document.getElementById("shopContainer"),
+      document.getElementById("shopIcon")
+    );
+    
+    // Achievements Panel
+    this.achievementsPanel = new AchievementsPanel(
+      this,
+      document.getElementById("achievementsContainer"),
+      document.getElementById("achievementsIcon"),
+      document.getElementById("achievementsList")
+    );
+    
+    // Settings Panel
+    this.settingsPanel = new SettingsPanel(
+      this,
+      document.getElementById("settingsMenu"),
+      document.getElementById("settingsIcon")
+    );
+    
+    // Personalization Panel
+    this.personalizationPanel = new PersonalizationPanel(
+      this,
+      document.getElementById("personalizationContainer")
+    );
+    
+    // Initialize the bonus indicators container
+    this.activeBonusesContainer = document.getElementById("activeBonuses");
   }
 
   // Add a new method to create and manage bonus indicators
