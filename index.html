@@ -2,7 +2,10 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
     <title id="count">Cookie Clicker</title>
     <link rel="icon" type="image/png" href="image/cookie.png" />
     <!-- Put tooltip.css AFTER styles.css for higher precedence -->
@@ -15,7 +18,10 @@
 
     <style>
       /* Immediately disable all tooltips */
-      .item-desc, .tooltip, [data-tooltip], [title] {
+      .item-desc,
+      .tooltip,
+      [data-tooltip],
+      [title] {
         display: none !important;
         visibility: hidden !important;
         opacity: 0 !important;
@@ -24,15 +30,17 @@
 
     <script type="text/javascript">
       // Clean up tooltips after page loads
-      document.addEventListener('DOMContentLoaded', function() {
+      document.addEventListener("DOMContentLoaded", function () {
         // Remove all tooltip elements from the DOM
-        document.querySelectorAll('.item-desc, .tooltip, [data-tooltip]').forEach(tooltip => {
-          if (tooltip.parentNode) tooltip.parentNode.removeChild(tooltip);
-        });
-        
+        document
+          .querySelectorAll(".item-desc, .tooltip, [data-tooltip]")
+          .forEach((tooltip) => {
+            if (tooltip.parentNode) tooltip.parentNode.removeChild(tooltip);
+          });
+
         // Prevent tooltip attributes from working
-        document.querySelectorAll('[title]').forEach(el => {
-          el.removeAttribute('title');
+        document.querySelectorAll("[title]").forEach((el) => {
+          el.removeAttribute("title");
         });
       });
     </script>
@@ -40,43 +48,99 @@
   <body>
     <!-- LEFT Section: Upgrade Buttons -->
     <section class="left">
+      <div class="button">
+        <button
+          id="clickUpgrade"
+          type="button"
+          class="upgrade"
+          data-content="Upgrade Click Power (Cost: 10)"
+          
+        >
+          <img class="button_image" src="image/double-tap.png" alt="Click Upgrade" />
+          <div class="productContainer">
+            <!-- <span class="product"> Click Power</span> -->
+           
+            <span class="button_top" id="upgradeClick"
+              >Upgrade Click Power (Cost: 10)</span
+            >
+          
+        </button>
+      </div>
 
       <div class="button">
-        <img class="button_image" src="image/hand.png" alt="Click Upgrade" />
-        <button id="clickUpgrade" type="button" class="upgrade" data-content="Upgrade Click Power (Cost: 10)">
-          <span class="button_top" id="upgradeClick">Upgrade Click Power (Cost: 10)</span>
-        </button>
-      </div>
-      
-      <div class="button">
-        <button id="autoClicker" type="button" class="upgrade" data-content="Buy Auto Clicker (Cost: 50)">
+        <button
+          id="autoClicker"
+          type="button"
+          class="upgrade"
+          data-content="Buy Auto Clicker (Cost: 50)"
+        >
           <img class="button_image" src="image/hand.png" alt="Click Upgrade" />
-          <span class="button_top">Buy Auto Clicker (Cost: 50)</span>
+          <div class="productContainer">
+            
+            <span class="button_top">Buy Auto Clicker (Cost: 50)</span>
+          </div>
         </button>
       </div>
       <div class="button">
-        <button id="grandma" type="button" class="upgrade" data-content="Buy Grandma's Bakery (Cost: 100)">
-          <img class="button_image" src="image/grandma.png" alt="Click Upgrade" />
-          <span class="button_top">Buy Grandma's Bakery (Cost: 100)</span>
+        <button
+          id="grandma"
+          type="button"
+          class="upgrade"
+          data-content="Buy Grandma's Bakery (Cost: 100)"
+        >
+          <img
+            class="button_image"
+            src="image/grandma.png"
+            alt="Click Upgrade"
+          />
+          <div class="productContainer">
+          
+            <span class="button_top">Buy Grandma's Bakery (Cost: 100)</span>
+          </div>
         </button>
       </div>
       <div class="button">
-        <button id="farm" type="button" class="upgrade" data-content="Buy Cookie Farm (Cost: 500)">
+        <button
+          id="farm"
+          type="button"
+          class="upgrade"
+          data-content="Buy Cookie Farm (Cost: 500)"
+        >
           <img class="button_image" src="image/farm.png" alt="Click Upgrade" />
-          <span class="button_top">Buy Cookie Farm (Cost: 500)</span>
+          <div class="productContainer">
+           
+            <span class="button_top">Buy Cookie Farm (Cost: 500)</span>
+          </div>
         </button>
       </div>
       <div class="button">
-        <button id="luckyClick" type="button" class="upgrade" data-content="Lucky Click (Cost: 20)">
-          <img class="button_image" src="image/O4XiGb.png" alt="Click Upgrade" />
-          <span class="button_top">Lucky Click (Cost: 20)</span>
+        <button
+          id="luckyClick"
+          type="button"
+          class="upgrade"
+          data-content="Lucky Click (Cost: 20)"
+        >
+          <img
+            class="button_image"
+            src="image/goodluck.png"
+            alt="Click Upgrade"
+          />
+          <div class="productContainer">
+            
+            <span class="button_top">Lucky Click (Cost: 20)</span>
+          </div>
         </button>
       </div>
     </section>
-   
+
     <!-- ACHIEVEMENTS Section: Toggled via the Achievements Icon -->
     <div id="achievementsWrapper">
-      <img id="achievementsIcon" src="image/achievements.png" alt="Achievements Icon" aria-label="Show Achievements" />
+      <img
+        id="achievementsIcon"
+        src="image/achievements.png"
+        alt="Achievements Icon"
+        aria-label="Show Achievements"
+      />
       <section id="achievementsContainer">
         <div class="achievements-header">
           <span class="trophy-icon">🏆</span>
@@ -90,7 +154,12 @@
 
     <!-- SHOP Section: Toggled via the Shop Icon -->
     <div id="shopWrapper">
-      <img id="shopIcon" src="image/shop.png" alt="Shop Icon" aria-label="Show Shop" />
+      <img
+        id="shopIcon"
+        src="image/shop.png"
+        alt="Shop Icon"
+        aria-label="Show Shop"
+      />
       <section id="shopContainer">
         <div class="shop-header">
           <span class="shop-icon">🛒</span>
@@ -99,42 +168,54 @@
         <div class="shop-content">
           <!-- Time Accelerator Shop Item -->
           <div class="shop-item" data-upgrade="timeAccelerator">
-            <img src="image/timeaccelerator.png" alt="Time Accelerator" class="shop-item-image" />
+            <img
+              src="image/timeaccelerator.png"
+              alt="Time Accelerator"
+              class="shop-item-image"
+            />
             <span class="item-cost">Cost: <span>1000</span></span>
             <!-- Simplified tooltip focusing on what the item does -->
             <span class="item-desc">
-              <span class="text-highlight">POWER BOOST!</span><br>
-              <span class="text-highlight">4x Cookie Production</span><br>
-              <span class="text-highlight">for a limited time</span><br>
-              <span class="text-highlight">Gets more expensive</span><br>
+              <span class="text-highlight">POWER BOOST!</span><br />
+              <span class="text-highlight">4x Cookie Production</span><br />
+              <span class="text-highlight">for a limited time</span><br />
+              <span class="text-highlight">Gets more expensive</span><br />
               <span class="text-highlight">with each purchase</span>
             </span>
             <!-- Countdown timer when active -->
             <span class="time-accelerator-timer"></span>
           </div>
-          
+
           <!-- Cookie Multiplier Shop Item -->
           <div class="shop-item" data-upgrade="cookieMultiplier">
-            <img src="image/multiplier.png" alt="Cookie Multiplier" class="shop-item-image" />
+            <img
+              src="image/multiplier.png"
+              alt="Cookie Multiplier"
+              class="shop-item-image"
+            />
             <span class="item-cost">Cost: <span>2000</span></span>
             <span class="item-desc">
-              <span class="text-highlight">PERMANENT BOOST!</span><br>
-              <span class="text-highlight">Increase cookie</span><br>
-              <span class="text-highlight">production by 50%</span><br>
-              <span class="text-highlight">Stacks with each</span><br>
+              <span class="text-highlight">PERMANENT BOOST!</span><br />
+              <span class="text-highlight">Increase cookie</span><br />
+              <span class="text-highlight">production by 50%</span><br />
+              <span class="text-highlight">Stacks with each</span><br />
               <span class="text-highlight">purchase!</span>
             </span>
           </div>
-          
+
           <!-- Golden Cookie Charm Shop Item -->
           <div class="shop-item" data-upgrade="goldenCookieChance">
-            <img src="image/goldencookie.png" alt="Golden Cookie Charm" class="shop-item-image" />
+            <img
+              src="image/goldencookie.png"
+              alt="Golden Cookie Charm"
+              class="shop-item-image"
+            />
             <span class="item-cost">Cost: <span>3000</span></span>
             <span class="item-desc">
-              <span class="text-highlight">LUCKY CHARM!</span><br>
-              <span class="text-highlight">Increases chance of</span><br>
-              <span class="text-highlight">golden cookies</span><br>
-              <span class="text-highlight">Click them for</span><br>
+              <span class="text-highlight">LUCKY CHARM!</span><br />
+              <span class="text-highlight">Increases chance of</span><br />
+              <span class="text-highlight">golden cookies</span><br />
+              <span class="text-highlight">Click them for</span><br />
               <span class="text-highlight">random bonuses!</span>
             </span>
           </div>
@@ -145,29 +226,36 @@
     <!-- CENTER Section: Background, Stats, and Cookie -->
     <section class="background">
       <!-- Animated Background Decoration -->
-      <div class="set" >
+      <div class="set">
         <div><img src="image/cookie1.png" alt="decorative cookie" /></div>
         <div><img src="image/cookie3.png" alt="decorative cookie" /></div>
         <div><img src="image/cookie4.png" alt="decorative cookie" /></div>
         <div><img src="image/cookie1.png" alt="decorative cookie" /></div>
-        
       </div>
 
       <!-- CENTER Section: Background, Stats, and Cookie -->
       <div class="center">
         <div class="stats">
-          <h1><span class="cookie-icon">🍪</span>Cookies: <span id="cookieCount">0</span></h1>
+          <h1>
+            <span class="cookie-icon">🍪</span>Cookies:
+            <span id="cookieCount">0</span>
+          </h1>
           <div class="stats-metrics">
             <div class="stats-metric">
               <span class="label">Per Click</span>
-              <span class="value"><span class="icon">👆</span><span id="clickPower">1</span></span>
+              <span class="value"
+                ><span class="icon">👆</span
+                ><span id="clickPower">1</span></span
+              >
             </div>
             <div class="stats-metric">
               <span class="label">Per Second</span>
-              <span class="value"><span class="icon">⏱️</span><span id="cps">0</span></span>
+              <span class="value"
+                ><span class="icon">⏱️</span><span id="cps">0</span></span
+              >
             </div>
           </div>
-          
+
           <!-- Add new active bonuses section -->
           <div id="activeBonuses" class="active-bonuses">
             <!-- Active bonuses will be inserted here dynamically -->
@@ -178,12 +266,23 @@
 
       <!-- RIGHT Section: Upgrade Visualizations Only -->
       <section class="right">
-        <div id="autoClickersBox" class="upgrade-box" data-title="Auto Clickers">
+        <div
+          id="autoClickersBox"
+          class="upgrade-box"
+          data-title="Auto Clickers"
+        >
           <div class="upgrade-progress">
-            <div id="autoClickersProgressBar" class="upgrade-progress-bar"></div>
+            <div
+              id="autoClickersProgressBar"
+              class="upgrade-progress-bar"
+            ></div>
           </div>
           <div class="upgrade-counter">
-            <img src="image/hand.png" alt="Auto Clicker" class="upgrade-image">
+            <img
+              src="image/hand.png"
+              alt="Auto Clicker"
+              class="upgrade-image"
+            />
             <span id="autoClickersCountVisual">0</span>
           </div>
         </div>
@@ -192,7 +291,7 @@
             <div id="farmsProgressBar" class="upgrade-progress-bar"></div>
           </div>
           <div class="upgrade-counter">
-            <img src="image/farm.png" alt="Farm" class="upgrade-image">
+            <img src="image/farm.png" alt="Farm" class="upgrade-image" />
             <span id="farmsCountVisual">0</span>
           </div>
         </div>
@@ -201,7 +300,7 @@
             <div id="grandmaProgressBar" class="upgrade-progress-bar"></div>
           </div>
           <div class="upgrade-counter">
-            <img src="image/grandma.png" alt="Grandma" class="upgrade-image">
+            <img src="image/grandma.png" alt="Grandma" class="upgrade-image" />
             <span id="grandmaCount">0</span>
           </div>
         </div>
@@ -228,7 +327,11 @@
       </div>
 
       <!-- Add Personalization Panel -->
-      <div id="personalizationContainer" class="panel-container" style="display: none">
+      <div
+        id="personalizationContainer"
+        class="panel-container"
+        style="display: none"
+      >
         <div class="panel-header">
           <span class="panel-icon">🎨</span>
           <h2>Personalization</h2>
@@ -246,14 +349,27 @@
           <div class="section">
             <h3>Animations</h3>
             <div class="animation-options">
-              <button id="animations-standard" class="animation-button">Standard</button>
-              <button id="animations-reduced" class="animation-button">Reduced</button>
-              <button id="animations-minimal" class="animation-button">Minimal</button>
+              <button id="animations-standard" class="animation-button">
+                Standard
+              </button>
+              <button id="animations-reduced" class="animation-button">
+                Reduced
+              </button>
+              <button id="animations-minimal" class="animation-button">
+                Minimal
+              </button>
             </div>
           </div>
           <div class="section">
             <h3>Particle Intensity</h3>
-            <input type="range" id="particle-intensity" min="0" max="2" step="0.1" value="1">
+            <input
+              type="range"
+              id="particle-intensity"
+              min="0"
+              max="2"
+              step="0.1"
+              value="1"
+            />
             <span id="intensity-value">1.0</span>
           </div>
         </div>
@@ -262,7 +378,7 @@
     <div class="blurz" id="backdrop"></div>
     <!-- Replace the script reference with a module type -->
     <script type="module" src="js/main.js"></script>
-    
+
     <!-- Comment out the old script reference -->
     <!-- <script src="script.js" defer></script> -->
   </body>

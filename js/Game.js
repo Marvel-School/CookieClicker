@@ -2,7 +2,7 @@
 
 import { ClickMultiplierUpgrade, IncrementUpgrade, LuckyUpgrade, ShopUpgrade } from './upgrades.js';
 import { setupAchievements } from './achievements.js';
-import { showFloatingNumber, createConfetti, applyTimeAcceleratorVisuals } from './animation.js';
+import { showFloatingNumber, createConfetti, applyTimeAcceleratorVisuals,dropCookieImage} from './animation.js';
 import { log, showToast, AUTO_SAVE_INTERVAL } from './utils.js';
 import { setupEventListeners, updateGameDisplay, updateAchievementsList } from './ui.js';
 import { PersonalizationManager } from './personalization.js';
@@ -200,6 +200,15 @@ export default class Game {
     // Start golden cookie spawning logic
     this.startGoldenCookieTimer();
     this.log("Golden cookie timer initialized with chance:", this.state.goldenCookieChance);
+
+    setInterval(() => {
+      const autoClickers = this.upgrades.autoClicker.count || 0;
+      const grandmas = this.upgrades.grandma.count || 0;
+      const farms = this.upgrades.farm.count || 0;
+      let cps = autoClickers * 1 + grandmas * 3 + farms * 6;  // Using rebalanced production values
+      for(let i = 0; i < cps; i++)
+        dropCookieImage();
+    }, 1000);
   }
 
   // Add a new method to create and manage bonus indicators
@@ -365,6 +374,7 @@ export default class Game {
         clearInterval(countdownInterval);
       } else {
         this.updateBonusIndicator('cookie-multiplier-boost', null, timeLeft);
+        dropCookieImage();
       }
     }, 1000);
     
@@ -588,6 +598,7 @@ export default class Game {
             clearInterval(countdownInterval);
           } else {
             this.updateBonusIndicator('golden-cookie-production-boost', null, timeLeft);
+            dropCookieImage();
           }
         }, 1000);
         
@@ -645,6 +656,7 @@ export default class Game {
             clearInterval(clickCountdownInterval);
           } else {
             this.updateBonusIndicator('golden-cookie-click-boost', null, clickTimeLeft);
+            dropCookieImage();
           }
         }, 1000);
         
@@ -702,6 +714,7 @@ export default class Game {
             clearInterval(frenzyCountdownInterval);
           } else {
             this.updateBonusIndicator('golden-cookie-frenzy', null, frenzyTimeLeft);
+            dropCookieImage();
           }
         }, 1000);
         
@@ -1434,6 +1447,7 @@ export default class Game {
         clearInterval(countdownInterval);
       } else {
         this.updateBonusIndicator('time-accelerator-bonus', null, timeLeft);
+        dropCookieImage();
       }
     }, 1000);
 
