@@ -172,36 +172,17 @@ export function updateGameDisplay(game) {
       game.count.textContent = cookies.toLocaleString() + " cookies";
     }
 
-    // Update CPS (cookies per second) display using upgrade methods
+    // Update CPS (cookies per second) display
     if (game.cpsDisplay) {
-      // Calculate CPS using each upgrade's getCPS method if available
-      let cps = 0;
+      const autoClickers = game.upgrades.autoClicker?.count || 0;
+      const grandmas = game.upgrades.grandma?.count || 0;
+      const farms = game.upgrades.farm?.count || 0;
       
-      Object.keys(game.upgrades || {}).forEach(key => {
-        const upgrade = game.upgrades[key];
-        if (upgrade.getCPS && typeof upgrade.getCPS === 'function') {
-          cps += upgrade.getCPS(game.state.cookieMultiplier || 1);
-        } else if (key === 'autoClicker' && upgrade.count) {
-          cps += upgrade.count * 1;
-        } else if (key === 'grandma' && upgrade.count) {
-          cps += upgrade.count * 3;
-        } else if (key === 'farm' && upgrade.count) {
-          cps += upgrade.count * 6;
-        }
-      });
+      // Reduced CPS values for better game balance
+      let cps = autoClickers * 1 + grandmas * 3 + farms * 6;
       
       // Apply cookie multiplier
       cps *= game.state.cookieMultiplier || 1;
-      
-      // Apply time accelerator if active
-      if (game.state.timeAcceleratorActive && game.state.timeAcceleratorMultiplier > 1) {
-        cps *= game.state.timeAcceleratorMultiplier;
-      }
-      
-      // Apply production boost from golden cookies if active
-      if (game.state.activeGoldenCookieBonuses?.production?.active) {
-        cps *= game.state.activeGoldenCookieBonuses.production.bonusValue;
-      }
       
       game.cpsDisplay.textContent = Math.floor(cps);
     }
@@ -235,68 +216,8 @@ export function updateGameDisplay(game) {
         shopItem.textContent = game.shopUpgrades[key].cost.toLocaleString();
       }
     });
-    
-    // Update active bonuses display
-    updateActiveBonuses(game);
   } catch (e) {
     console.error("Error updating game display:", e);
-  }
-}
-
-// New function to update active bonuses display
-function updateActiveBonuses(game) {
-  const activeBonusesContainer = document.getElementById('activeBonuses');
-  if (!activeBonusesContainer) return;
-  
-  // Clear existing bonuses
-  activeBonusesContainer.innerHTML = '';
-  
-  // Check for time accelerator bonus
-  if (game.state.timeAcceleratorActive && game.state.timeAcceleratorEndTime > Date.now()) {
-    const secondsLeft = Math.floor((game.state.timeAcceleratorEndTime - Date.now()) / 1000);
-    const bonusEl = document.createElement("div");
-    bonusEl.className = "bonus-indicator time-accelerator";
-    bonusEl.innerHTML = `<span class="bonus-icon">⚡</span> 4x Production <span class="bonus-timer">${secondsLeft}s</span>`;
-    activeBonusesContainer.appendChild(bonusEl);
-  }
-  
-  // Check for cookie multiplier (permanent)
-  if (game.state.cookieMultiplier > 1) {
-    const bonusEl = document.createElement("div");
-    bonusEl.className = "bonus-indicator cookie-multiplier";
-    bonusEl.innerHTML = `<span class="bonus-icon">✨</span> ${Math.round((game.state.cookieMultiplier - 1) * 100)}% Bonus`;
-    activeBonusesContainer.appendChild(bonusEl);
-  }
-
-  // Check for click power boost
-  if (game.state.activeGoldenCookieBonuses?.clickPower?.active) {
-    const secondsLeft = Math.floor((game.state.activeGoldenCookieBonuses.clickPower.endTime - Date.now()) / 1000);
-    if (secondsLeft > 0) {
-      const bonusEl = document.createElement("div");
-      bonusEl.className = "bonus-indicator click-boost";
-      bonusEl.innerHTML = `<span class="bonus-icon">👆</span> ${game.state.activeGoldenCookieBonuses.clickPower.bonusValue}x Click Power <span class="bonus-timer">${secondsLeft}s</span>`;
-      activeBonusesContainer.appendChild(bonusEl);
-    }
-  }
-
-  // Check for production boost
-  if (game.state.activeGoldenCookieBonuses?.production?.active) {
-    const secondsLeft = Math.floor((game.state.activeGoldenCookieBonuses.production.endTime - Date.now()) / 1000);
-    if (secondsLeft > 0) {
-      const bonusEl = document.createElement("div");
-      bonusEl.className = "bonus-indicator production-boost";
-      bonusEl.innerHTML = `<span class="bonus-icon">🚀</span> ${game.state.activeGoldenCookieBonuses.production.bonusValue}x Production <span class="bonus-timer">${secondsLeft}s</span>`;
-      activeBonusesContainer.appendChild(bonusEl);
-    }
-  }
-
-  // Check for clicking frenzy
-  if (game.state.clickingFrenzy && game.state.clickingFrenzyEndTime > Date.now()) {
-    const secondsLeft = Math.floor((game.state.clickingFrenzyEndTime - Date.now()) / 1000);
-    const bonusEl = document.createElement("div");
-    bonusEl.className = "bonus-indicator frenzy";
-    bonusEl.innerHTML = `<span class="bonus-icon">🔥</span> CLICKING FRENZY <span class="bonus-timer">${secondsLeft}s</span>`;
-    activeBonusesContainer.appendChild(bonusEl);
   }
 }
 

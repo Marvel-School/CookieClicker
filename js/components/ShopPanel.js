@@ -133,22 +133,10 @@ export class ShopPanel extends UIComponent {
         item.classList.remove('can-afford');
         item.classList.add('cannot-afford');
       }
-      
-      // Add animation for items that became affordable
-      if (!item.dataset.wasAffordable && cookies >= upgrade.cost) {
-        item.classList.add('newly-affordable');
-        setTimeout(() => item.classList.remove('newly-affordable'), 2000);
-      }
-      
-      // Track affordability state for next update
-      item.dataset.wasAffordable = cookies >= upgrade.cost ? 'true' : 'false';
     });
     
     // Update time accelerator timer if active
     this.updateTimeAcceleratorStatus();
-    
-    // Update tooltip positions if visible
-    this.updateTooltipPositions();
   }
   
   /**
@@ -197,37 +185,5 @@ export class ShopPanel extends UIComponent {
   onShow() {
     // Update prices when panel is shown
     this.updatePrices();
-  }
-  
-  /**
-   * Update positions of any visible tooltips
-   */
-  updateTooltipPositions() {
-    document.querySelectorAll('.item-desc-tooltip').forEach(tooltip => {
-      const itemId = tooltip.dataset.forItem;
-      if (!itemId) return;
-      
-      const item = document.querySelector(`[data-upgrade="${itemId}"]`);
-      if (!item) return;
-      
-      // Reposition tooltip
-      const rect = item.getBoundingClientRect();
-      const tooltipHeight = tooltip.offsetHeight;
-      const minPadding = 10;
-      
-      // Check if tooltip would be cut off at top
-      const positionAbove = rect.top - tooltipHeight - 15;
-      if (positionAbove < minPadding) {
-        // Position below instead
-        tooltip.style.top = (rect.bottom + 15) + 'px';
-        tooltip.classList.add('position-below');
-      } else {
-        // Position above (standard)
-        tooltip.style.top = positionAbove + 'px';
-      }
-      
-      // Set horizontal position
-      tooltip.style.left = (rect.left + rect.width/2 - tooltip.offsetWidth/2) + 'px';
-    });
   }
 }
