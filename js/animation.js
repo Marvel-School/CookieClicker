@@ -175,9 +175,47 @@ export function applyTimeAcceleratorVisuals(cookie, cpsDisplay, active) {
     if (active) {
       cpsDisplay.style.color = "#ff4500";
       cpsDisplay.style.fontWeight = "bold";
+      cpsDisplay.classList.add('boosted');
+      
+      // Add pulsing animation
+      const animation = document.createElement('style');
+      animation.id = 'cps-animation';
+      animation.textContent = `
+        #cps.boosted {
+          animation: cps-pulse 1s infinite alternate;
+        }
+        @keyframes cps-pulse {
+          from { transform: scale(1); }
+          to { transform: scale(1.1); text-shadow: 0 0 5px #ff4500; }
+        }
+      `;
+      document.head.appendChild(animation);
     } else {
       cpsDisplay.style.color = "";
       cpsDisplay.style.fontWeight = "";
+      cpsDisplay.classList.remove('boosted');
+      
+      // Remove animation
+      const animation = document.getElementById('cps-animation');
+      if (animation) animation.remove();
+    }
+  }
+  
+  // Update display with current theme
+  if (document.body.classList.contains('theme-dark')) {
+    // Dark theme adjustments
+    if (active && cpsDisplay) {
+      cpsDisplay.style.color = "#ff6600";
+      cpsDisplay.style.textShadow = "0 0 5px rgba(255, 102, 0, 0.7)";
+    }
+  } else if (document.body.classList.contains('theme-neon')) {
+    // Neon theme adjustments
+    if (active && cpsDisplay) {
+      cpsDisplay.style.color = "#ffcc00";
+      cpsDisplay.style.textShadow = "0 0 8px rgba(255, 204, 0, 0.9)";
+    }
+    if (active && cookie) {
+      cookie.style.filter = "brightness(1.6) drop-shadow(0 0 15px #ffcc00)";
     }
   }
 }

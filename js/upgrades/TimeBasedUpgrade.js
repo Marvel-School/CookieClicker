@@ -33,4 +33,34 @@ export class TimeBasedUpgrade extends Upgrade {
     if (!this.isActive()) return 0;
     return Math.max(0, Math.floor((this.effectEndTime - Date.now()) / 1000));
   }
+  
+  executePurchase(game) {
+    // Calculate duration based on base cost
+    const duration = this.calculateDuration(this.cost / this.multiplier);
+    const multiplier = this.calculateMultiplier();
+    
+    // Set end time
+    this.effectEndTime = Date.now() + (duration * 1000);
+    
+    // Apply the effect based on the effectMethod parameter
+    if (typeof game[this.description] === 'function') {
+      game[this.description](multiplier, duration, this);
+    }
+    
+    return {
+      duration,
+      multiplier
+    };
+  }
+  
+  getDisplayText() {
+    let text = `${this.displayPrefix} (Cost: ${this.cost})`;
+    
+    if (this.isActive()) {
+      const remainingTime = this.getRemainingTime();
+      text += ` - Active: ${remainingTime}s`;
+    }
+    
+    return text;
+  }
 }

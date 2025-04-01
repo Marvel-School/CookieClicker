@@ -159,9 +159,27 @@ export class VisualEffectsManager {
       if (active) {
         this.game.clickPowerDisplay.style.color = "#ff6600";
         this.game.clickPowerDisplay.style.fontWeight = "bold";
+        
+        // Create a pulsing animation effect
+        const animation = document.createElement('style');
+        animation.id = 'click-power-animation';
+        animation.textContent = `
+          #clickPower {
+            animation: pulsate 1s infinite alternate;
+          }
+          @keyframes pulsate {
+            from { transform: scale(1); }
+            to { transform: scale(1.1); text-shadow: 0 0 5px #ff6600; }
+          }
+        `;
+        document.head.appendChild(animation);
       } else {
         this.game.clickPowerDisplay.style.color = "";
         this.game.clickPowerDisplay.style.fontWeight = "";
+        
+        // Remove animation
+        const animation = document.getElementById('click-power-animation');
+        if (animation) animation.remove();
       }
     }
   }
@@ -181,5 +199,72 @@ export class VisualEffectsManager {
         this.game.clickPowerDisplay.style.fontSize = "";
       }
     }
+  }
+  
+  // Unified method to show an active bonus
+  showActiveBonus(type, value, duration) {
+    // Get or create container
+    let container = document.getElementById('activeBonuses');
+    if (!container) {
+      container = document.createElement('div');
+      container.id = 'activeBonuses';
+      container.className = 'active-bonuses';
+      this.game.stats.appendChild(container);
+    }
+    
+    // Create bonus indicator
+    const indicator = document.createElement('div');
+    indicator.className = `bonus-indicator ${type}`;
+    
+    let icon, text;
+    switch(type) {
+      case 'time-accelerator':
+        icon = '⚡';
+        text = `${value}x Production`;
+        break;
+      case 'click-boost':
+        icon = '👆';
+        text = `${value}x Click Power`;
+        break;
+      case 'production-boost':
+        icon = '🚀';
+        text = `${value}x Production`;
+        break;
+      case 'frenzy':
+        icon = '🔥';
+        text = 'CLICKING FRENZY';
+        break;
+      case 'cookie-multiplier':
+        icon = '✨';
+        text = `${Math.round((value - 1) * 100)}% Bonus`;
+        break;
+      default:
+        icon = '✨';
+        text = `${value}x Bonus`;
+    }
+    
+    indicator.innerHTML = `
+      <span class="bonus-icon">${icon}</span>
+      ${text}
+      <span class="bonus-timer">${duration}s</span>
+    `;
+    
+    container.appendChild(indicator);
+    
+    // Update the timer
+    let secondsLeft = duration;
+    const timer = indicator.querySelector('.bonus-timer');
+    
+    const interval = setInterval(() => {
+      secondsLeft--;
+      if (secondsLeft <= 0) {
+        clearInterval(interval);
+        indicator.remove();
+      } else {
+        timer.textContent = `${secondsLeft}s`;
+      }
+    }, 1000);
+    
+    return indicator;
   }
 }
