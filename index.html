@@ -272,6 +272,167 @@
         </div>
       </div>
     </section>
+
+    <!-- Add Mobile Sections BEFORE closing body tag -->
+    <!-- Mobile Cookie Section -->
+    <section id="mobile-cookie-section" class="mobile-section">
+      <div class="mobile-section-header">
+        <span class="icon">🍪</span>
+        <h2>Cookie Clicker</h2>
+      </div>
+      <div class="stats">
+        <h1><span class="cookie-icon">🍪</span>Cookies: <span id="mobile-cookie-count">0</span></h1>
+        <div class="stats-metrics">
+          <div class="stats-metric">
+            <span class="label">Per Click</span>
+            <span class="value"><span class="icon">👆</span><span id="mobile-click-power">1</span></span>
+          </div>
+          <div class="stats-metric">
+            <span class="label">Per Second</span>
+            <span class="value"><span class="icon">⏱️</span><span id="mobile-cps">0</span></span>
+          </div>
+        </div>
+        <div id="mobile-active-bonuses" class="active-bonuses">
+          <!-- Active bonuses will be inserted here dynamically -->
+        </div>
+      </div>
+      <div class="cookie-container">
+        <img id="mobile-cookie" src="image/cookie.png" alt="Cookie" />
+      </div>
+    </section>
+
+    <!-- Mobile Upgrades Section -->
+    <section id="mobile-upgrades-section" class="mobile-section">
+      <div class="mobile-section-header">
+        <span class="icon">⬆️</span>
+        <h2>Upgrades</h2>
+      </div>
+      <div class="upgrades-list">
+        <div class="button">
+          <button id="mobile-clickUpgrade" type="button" class="upgrade" data-content="Upgrade Click Power (Cost: 15)">
+            <span class="button_top">Upgrade Click Power (Cost: 15)</span>
+            <span class="description"></span>
+          </button>
+        </div>
+        <div class="button">
+          <button id="mobile-autoClicker" type="button" class="upgrade" data-content="Buy Auto Clicker (Cost: 50)">
+            <span class="button_top">Buy Auto Clicker (Cost: 50)</span>
+            <span class="description"></span>
+          </button>
+        </div>
+        <div class="button">
+          <button id="mobile-grandma" type="button" class="upgrade" data-content="Buy Grandma's Bakery (Cost: 100)">
+            <span class="button_top">Buy Grandma's Bakery (Cost: 100)</span>
+            <span class="description"></span>
+          </button>
+        </div>
+        <div class="button">
+          <button id="mobile-farm" type="button" class="upgrade" data-content="Buy Cookie Farm (Cost: 500)">
+            <span class="button_top">Buy Cookie Farm (Cost: 500)</span>
+            <span class="description"></span>
+          </button>
+        </div>
+        <div class="button">
+          <button id="mobile-luckyClick" type="button" class="upgrade" data-content="Lucky Click (Cost: 30)">
+            <span class="button_top">Lucky Click (Cost: 30)</span>
+            <span class="description"></span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Mobile Shop Section -->
+    <section id="mobile-shop-section" class="mobile-section">
+      <div class="mobile-section-header">
+        <span class="icon">🛒</span>
+        <h2>Shop</h2>
+      </div>
+      <div class="shop-items">
+        <!-- Time Accelerator Shop Item -->
+        <div class="shop-item" data-upgrade="timeAccelerator">
+          <img src="image/timeaccelerator.png" alt="Time Accelerator" class="shop-item-image" />
+          <span class="item-name">Time Accelerator</span>
+          <span class="item-cost">Cost: <span>800</span></span>
+          <span class="time-accelerator-timer"></span>
+        </div>
+        
+        <!-- Cookie Multiplier Shop Item -->
+        <div class="shop-item" data-upgrade="cookieMultiplier">
+          <img src="image/multiplier.png" alt="Cookie Multiplier" class="shop-item-image" />
+          <span class="item-name">Cookie Multiplier</span>
+          <span class="item-cost">Cost: <span>2000</span></span>
+        </div>
+        
+        <!-- Golden Cookie Charm Shop Item -->
+        <div class="shop-item" data-upgrade="goldenCookieChance">
+          <img src="image/goldencookie.png" alt="Golden Cookie Charm" class="shop-item-image" />
+          <span class="item-name">Golden Cookie Charm</span>
+          <span class="item-cost">Cost: <span>2500</span></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Mobile Achievements Section -->
+    <section id="mobile-achievements-section" class="mobile-section">
+      <div class="mobile-section-header">
+        <span class="icon">🏆</span>
+        <h2>Achievements</h2>
+      </div>
+      <div class="achievement-tabs">
+        <button class="achievement-tab active" data-tab="unlocked">Unlocked</button>
+        <button class="achievement-tab" data-tab="locked">Locked</button>
+      </div>
+      <div class="achievements-container" id="unlocked-achievements">
+        <ul id="mobile-achievement-list">
+          <!-- Achievements will be populated here -->
+        </ul>
+      </div>
+      <div class="achievements-container" id="locked-achievements" style="display:none;">
+        <ul id="mobile-locked-achievement-list">
+          <!-- Locked achievements will be populated here -->
+        </ul>
+      </div>
+    </section>
+
+    <!-- Mobile Inventory Section -->
+    <section id="mobile-inventory-section" class="mobile-section">
+      <div class="mobile-section-header">
+        <span class="icon">📦</span>
+        <h2>Inventory</h2>
+      </div>
+      <div class="inventory-container">
+        <div id="mobile-inventory-list">
+          <!-- Inventory items will be populated here -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Mobile Navigation Bar -->
+    <nav class="mobile-nav">
+      <div class="mobile-nav-buttons">
+        <a href="#cookie" class="mobile-nav-button active" data-section="mobile-cookie-section">
+          <span class="icon">🍪</span>
+          <span class="label">Cookie</span>
+        </a>
+        <a href="#upgrades" class="mobile-nav-button" data-section="mobile-upgrades-section">
+          <span class="icon">⬆️</span>
+          <span class="label">Upgrades</span>
+        </a>
+        <a href="#shop" class="mobile-nav-button" data-section="mobile-shop-section">
+          <span class="icon">🛒</span>
+          <span class="label">Shop</span>
+        </a>
+        <a href="#achievements" class="mobile-nav-button" data-section="mobile-achievements-section">
+          <span class="icon">🏆</span>
+          <span class="label">Achievements</span>
+        </a>
+        <a href="#inventory" class="mobile-nav-button" data-section="mobile-inventory-section">
+          <span class="icon">📦</span>
+          <span class="label">Inventory</span>
+        </a>
+      </div>
+    </nav>
+
     <!-- Replace the script reference with a module type -->
     <script type="module" src="js/main.js"></script>
     

@@ -3,6 +3,7 @@
 import Game from './Game.js';
 import { initPersonalizationSystem } from './personalization.js';
 import { PersonalizationPanel } from './components/PersonalizationPanel.js';
+import { initMobileNavigation, updateMobileUI } from './mobile.js';
 
 // Make sure we have a single instance of the game
 let gameInstance = null;
@@ -333,7 +334,45 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    // ===== END DIRECT PANEL BUTTONS FIX =====
+    // Initialize mobile navigation after game is loaded
+    if (gameInstance) {
+      initMobileNavigation(gameInstance);
+      
+      // Add resize event listener to handle mobile/desktop transitions
+      window.addEventListener('resize', () => {
+        const isMobile = window.innerWidth <= 768;
+        document.body.classList.toggle('mobile-view', isMobile);
+        
+        // Clear section view state when resizing to desktop
+        if (!isMobile && document.body.classList.contains('in-section')) {
+          document.body.classList.remove('in-section');
+        }
+      });
+      
+      // Initial check for mobile view
+      document.body.classList.toggle('mobile-view', window.innerWidth <= 768);
+      
+      // Add game loop callback to update mobile UI
+      const originalStartGameLoop = gameInstance.startGameLoop;
+      gameInstance.startGameLoop = function() {
+        originalStartGameLoop.call(this);
+        
+        // Add mobile UI update to the game loop
+        if (this._gameLoop) {
+          const originalGameLoop = this._gameLoop;
+          this._gameLoop = () => {
+            originalGameLoop();
+            updateMobileUI(this);
+          };
+        }
+      };
+      
+      // If game loop already started, restart it with the new callback
+      if (gameInstance._gameLoop) {
+        clearInterval(gameInstance._gameLoopInterval);
+        gameInstance.startGameLoop();
+      }
+    }
 
     console.log("Cookie Clicker initialization complete");
   } catch (e) {
