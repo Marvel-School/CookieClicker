@@ -66,20 +66,20 @@ export default class Game {
     this._lastAutoClickerCount = 0;
     this._lastFarmCount = 0;
 
-    // Initialize upgrades with descriptions
+    // Initialize upgrades with descriptions - REBALANCED
     this.upgrades = {
-      clickUpgrade: new ClickMultiplierUpgrade(15, 2.5, "Upgrade Click Power", "Doubles your click power"),
-      autoClicker: new IncrementUpgrade(60, 1.6, "Buy Auto Clicker", "Automatically clicks once per second"),
-      grandma: new IncrementUpgrade(120, 1.7, "Buy Grandma's Bakery", "Grandmas bake cookies for you", "updateGrandmasVisual"),
-      farm: new IncrementUpgrade(600, 1.8, "Buy Cookie Farm", "Farms produce cookies automatically"),
-      luckyClick: new LuckyUpgrade(25, 1.3, "Lucky Click", "Chance to earn a large number of cookies"),
+      clickUpgrade: new ClickMultiplierUpgrade(15, 1.8, "Upgrade Click Power", "Doubles your click power"),
+      autoClicker: new IncrementUpgrade(50, 1.15, "Buy Auto Clicker", "Automatically clicks once per second"),
+      grandma: new IncrementUpgrade(100, 1.15, "Buy Grandma's Bakery", "Each grandma produces 3 cookies per second", "updateGrandmasVisual"),
+      farm: new IncrementUpgrade(500, 1.15, "Buy Cookie Farm", "Each farm produces 8 cookies per second"),
+      luckyClick: new LuckyUpgrade(30, 1.2, "Lucky Click", "Chance to earn a bonus of cookies"),
     };
 
-    // Shop upgrades - BALANCED VALUES
+    // Shop upgrades - BALANCED PROGRESSION
     this.shopUpgrades = {
-      timeAccelerator: new ShopUpgrade(1000, 2.8, "Time Accelerator", "timeAccelerator", 1000),
-      cookieMultiplier: new ShopUpgrade(2500, 2.2, "Cookie Multiplier", "applyCookieMultiplier", 2500),
-      goldenCookieChance: new ShopUpgrade(3000, 1.9, "Golden Cookie Charm", "increaseGoldenCookieChance", 3000)
+      timeAccelerator: new ShopUpgrade(800, 2.0, "Time Accelerator", "timeAccelerator", 800),
+      cookieMultiplier: new ShopUpgrade(2000, 1.8, "Cookie Multiplier", "applyCookieMultiplier", 2000),
+      goldenCookieChance: new ShopUpgrade(2500, 1.5, "Golden Cookie Charm", "increaseGoldenCookieChance", 2500)
     };
 
     // Achievements system
@@ -824,27 +824,45 @@ export default class Game {
   }
 
   // Start the golden cookie timer
-  startGoldenCookieTimer() {
+  startGoldenCookieTimer(enforceMinCooldown = false) {
     // Clear any existing timer
     if (this.goldenCookieTimer) {
       clearTimeout(this.goldenCookieTimer);
     }
 
-    // Set a random time for the next golden cookie
-    // Base time is between 60-120 seconds, modified by goldenCookieChance
-    const baseMinTime = 60000; // 60 seconds
-    const baseMaxTime = 120000; // 120 seconds
-    const chanceModifier = 1 - (this.state.goldenCookieChance || 0.1); // Lower chance = longer wait
+    // Skip if a golden cookie is already active
+    if (this.state.goldenCookieActive) {
+      return;
+    }
 
-    const minTime = baseMinTime * chanceModifier;
-    const maxTime = baseMaxTime * chanceModifier;
-    const randomTime = minTime + Math.random() * (maxTime - minTime);
+    // Minimum and maximum time between golden cookies (in milliseconds)
+    const MIN_GOLDEN_COOKIE_TIME = 60000; // 60 seconds minimum
+    const MAX_GOLDEN_COOKIE_TIME = 180000; // 3 minutes maximum
 
-    this.log(`Next golden cookie in ${Math.round(randomTime / 1000)} seconds`);
+    // If we need to enforce a cooldown period (after purchase)
+    if (enforceMinCooldown) {
+      this.state.lastGoldenCookieTime = Date.now();
+    }
 
-    this.goldenCookieTimer = setTimeout(() => {
-      this.spawnGoldenCookie();
-    }, randomTime);
+    // Calculate time since last golden cookie
+    const timeSinceLastCookie = Date.now() - (this.state.lastGoldenCookieTime || 0);
+
+    // Calculate the spawn delay - chance affects the range but respects minimum time
+    let delay;
+    if (timeSinceLastCookie < MIN_GOLDEN_COOKIE_TIME) {
+      // Enforce minimum time between cookies by adding to the elapsed time
+      delay = MIN_GOLDEN_COOKIE_TIME - timeSinceLastCookie;
+    } else {
+      // Calculate random delay based on chance
+      const range = MAX_GOLDEN_COOKIE_TIME - MIN_GOLDEN_COOKIE_TIME;
+      // Higher chance = lower delay (but never below minimum)
+      const chanceModifier = 1 - Math.min(0.9, this.state.goldenCookieChance);
+      delay = MIN_GOLDEN_COOKIE_TIME + (range * chanceModifier * Math.random());
+    }
+
+    // Schedule next golden cookie spawn
+    this.log(`Next golden cookie in ${Math.round(delay / 1000)} seconds (chance: ${this.state.goldenCookieChance})`);
+    this.goldenCookieTimer = setTimeout(() => this.spawnGoldenCookie(), delay);
   }
 
   // Spawn a golden cookie
@@ -1512,15 +1530,159 @@ export default class Game {
    * @param {ShopUpgrade} upgrade - The golden cookie chance upgrade
    */
   increaseGoldenCookieChance(upgrade) {
-    // Increase golden cookie chance by 30%
-    this.state.goldenCookieChance = (this.state.goldenCookieChance || 0.1) * 1.3;
-    
-    // Show notification
-    this.showToast(`Golden cookie chance increased by 30%!`);
-    
-    // Restart golden cookie timer with new chance
+    // Reduce multiplier from 1.3x to 1.1x for better balance
+    const previousChance = this.state.goldenCookieChance;
+    this.state.goldenCookieChance = (this.state.goldenCookieChance || 0.1) * 1.1;
+
+    // Show notification with actual percentage
+    const previousPercent = Math.round(previousChance * 100);
+    const newPercent = Math.round(this.state.goldenCookieChance * 100);
+    this.showToast(`Golden cookie chance increased from ${previousPercent}% to ${newPercent}%!`);
+
+    // Restart golden cookie timer with new chance but ensure cooldown
     if (typeof this.startGoldenCookieTimer === 'function') {
-      this.startGoldenCookieTimer();
+      this.startGoldenCookieTimer(true); // Pass true to enforce cooldown
+    }
+  }
+
+  /**
+   * Reset the game to its initial state
+   */
+  resetGame() {
+    try {
+      // Confirm with the user before resetting
+      if (!confirm("Are you sure you want to reset the game? All progress will be lost!")) {
+        return false;
+      }
+      
+      this.log("Resetting game state...");
+      
+      // Reset game state to initial values
+      this.state = {
+        cookies: 0,
+        clickPower: 1,
+        grandmas: 0,
+        timeAcceleratorActive: false,
+        timeAcceleratorMultiplier: 1,
+        timeAcceleratorEndTime: 0,
+        luckyStreak: 0,
+        cookieMultiplier: 1,
+        goldenCookieChance: 0.1,
+        goldenCookieActive: false,
+        lastGoldenCookieTime: 0,
+        personalization: this.state.personalization, // Keep personalization settings
+        activeGoldenCookieBonuses: {
+          clickPower: {
+            active: false,
+            originalValue: 1,
+            bonusValue: 0,
+            endTime: 0
+          },
+          production: {
+            active: false,
+            originalValue: 1,
+            bonusValue: 0,
+            endTime: 0
+          }
+        }
+      };
+      
+      // Reset upgrade counts and costs
+      for (const key in this.upgrades) {
+        this.upgrades[key].count = 0;
+        // Use the resetToBaseValues method if available, otherwise fall back to basic reset
+        if (typeof this.upgrades[key].resetToBaseValues === 'function') {
+          this.upgrades[key].resetToBaseValues();
+        } else {
+          // Fallback if method doesn't exist
+          this.upgrades[key].cost = this.upgrades[key].baseCost || this.upgrades[key].cost;
+        }
+      }
+      
+      // Reset shop upgrades
+      for (const key in this.shopUpgrades) {
+        // Use the resetToBaseValues method if available, otherwise fall back to basic reset
+        if (typeof this.shopUpgrades[key].resetToBaseValues === 'function') {
+          this.shopUpgrades[key].resetToBaseValues();
+        } else {
+          // Fallback if method doesn't exist
+          this.shopUpgrades[key].cost = this.shopUpgrades[key].baseCost || this.shopUpgrades[key].baseCost || this.shopUpgrades[key].cost;
+        }
+      }
+      
+      // Reset achievements
+      for (const achievement of this.achievements) {
+        achievement.earned = false;
+      }
+      
+      // Clear any active bonuses
+      this.removeBonusIndicator('time-accelerator-boost');
+      this.removeBonusIndicator('click-power-boost');
+      this.removeBonusIndicator('production-boost');
+      
+      // Update tracking variables
+      this._lastGrandmaCount = 0;
+      this._lastAutoClickerCount = 0;
+      this._lastFarmCount = 0;
+      
+      // Update all visuals
+      this.updateDisplay();
+      this.updateGrandmasVisual();
+      this.updateAutoClickersVisual();
+      this.updateFarmsVisual();
+      this.updateAchievements();
+      
+      // Show notification
+      this.showToast("Game reset successfully!");
+      
+      // Save the reset state
+      this.saveGame(true);
+      
+      return true;
+    } catch (error) {
+      console.error("Error resetting game:", error);
+      this.showToast("Error resetting game!");
+      return false;
+    }
+  }
+
+  /**
+   * Purchase a standard upgrade by key
+   * @param {string} upgradeKey - Key of the upgrade to purchase
+   * @returns {boolean} - Whether the purchase was successful
+   */
+  purchaseStandardUpgrade(upgradeKey) {
+    try {
+      // Get the upgrade object
+      const upgrade = this.upgrades[upgradeKey];
+      
+      if (!upgrade) {
+        console.error(`Upgrade ${upgradeKey} not found`);
+        return false;
+      }
+      
+      // Log attempt
+      this.log(`Attempting to purchase upgrade: ${upgradeKey}`);
+      
+      // Call the upgrade's purchase method
+      const success = upgrade.purchase(this);
+      
+      if (success) {
+        // Play purchase sound
+        if (this.soundOn) {
+          const purchaseSound = new Audio("sounds/purchase.mp3");
+          purchaseSound.volume = 0.3;
+          this.safePlaySound(purchaseSound);
+        }
+        
+        // Check for achievements
+        this.checkAchievements();
+      }
+      
+      return success;
+    } catch (error) {
+      console.error(`Error purchasing upgrade ${upgradeKey}:`, error);
+      return false;
     }
   }
 }

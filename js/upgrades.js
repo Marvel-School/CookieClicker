@@ -6,6 +6,7 @@
 export class Upgrade {
   constructor(cost, multiplier, displayPrefix, description = '', extra = null) {
     this.cost = cost;
+    this.baseCost = cost; // Store the original cost for resets
     this.multiplier = multiplier;
     this.displayPrefix = displayPrefix;
     this.description = description;
@@ -46,6 +47,11 @@ export class Upgrade {
   // To be overridden in subclasses
   executePurchase(game) {
     // Default implementation does nothing
+  }
+
+  // Add method to reset cost to original value
+  resetToBaseValues() {
+    this.cost = this.baseCost;
   }
 }
 
@@ -90,13 +96,17 @@ export class LuckyUpgrade extends Upgrade {
   }
   
   executePurchase(game) {
-    // Random chance for different rewards
+    // Random chance for different rewards - REBALANCED
     const rand = Math.random();
     
-    // 10% chance for jackpot (50-200x cost)
-    if (rand < 0.1) {
-      const multiplier = 50 + Math.floor(Math.random() * 151); // 50-200
-      const bonus = this.cost * multiplier;
+    // Get the player's current CPS to scale rewards appropriately
+    const cps = this.calculateCPS(game);
+    const baseReward = Math.max(this.cost, cps * 10); // Base reward is either the cost or 10 seconds of production
+    
+    // 5% chance for jackpot (30-60x base)
+    if (rand < 0.05) {
+      const multiplier = 30 + Math.floor(Math.random() * 31); // 30-60
+      const bonus = baseReward * multiplier;
       game.state.cookies += bonus;
       game.showFloatingNumber(bonus, true);
       game.showToast(`JACKPOT! ${multiplier}x bonus!`);
@@ -120,26 +130,26 @@ export class LuckyUpgrade extends Upgrade {
       // Animation and cleanup
       setTimeout(() => message.remove(), 2000);
     } 
-    // 20% chance for good reward (10-50x cost)
-    else if (rand < 0.3) {
-      const multiplier = 10 + Math.floor(Math.random() * 41); // 10-50
-      const bonus = this.cost * multiplier;
+    // 15% chance for good reward (10-30x base)
+    else if (rand < 0.20) {
+      const multiplier = 10 + Math.floor(Math.random() * 21); // 10-30
+      const bonus = baseReward * multiplier;
       game.state.cookies += bonus;
       game.showFloatingNumber(bonus, true);
       game.showToast(`Lucky! ${multiplier}x bonus!`);
     } 
-    // 30% chance for moderate reward (3-10x cost)
-    else if (rand < 0.6) {
+    // 30% chance for moderate reward (3-10x base)
+    else if (rand < 0.50) {
       const multiplier = 3 + Math.floor(Math.random() * 8); // 3-10
-      const bonus = this.cost * multiplier;
+      const bonus = baseReward * multiplier;
       game.state.cookies += bonus;
       game.showFloatingNumber(bonus, true);
       game.showToast(`${multiplier}x bonus!`);
     } 
-    // 20% chance for small reward (1-3x cost)
-    else if (rand < 0.8) {
+    // 30% chance for small reward (1-3x base)
+    else if (rand < 0.80) {
       const multiplier = 1 + Math.floor(Math.random() * 3); // 1-3
-      const bonus = this.cost * multiplier;
+      const bonus = baseReward * multiplier;
       game.state.cookies += bonus;
       game.showFloatingNumber(bonus, true);
       game.showToast(`${multiplier}x bonus.`);
@@ -152,6 +162,28 @@ export class LuckyUpgrade extends Upgrade {
     
     // Track lucky streak
     game.state.luckyStreak = (game.state.luckyStreak || 0) + 1;
+  }
+
+  // Helper function to calculate current CPS
+  calculateCPS(game) {
+    try {
+      const autoClickers = game.upgrades.autoClicker.count || 0;
+      const grandmas = game.upgrades.grandma.count || 0;
+      const farms = game.upgrades.farm.count || 0;
+      
+      // Each building's production value
+      let cps = (autoClickers * 1) + (grandmas * 3) + (farms * 8);
+      
+      // Apply multiplier
+      if (game.state.cookieMultiplier && typeof game.state.cookieMultiplier === 'number') {
+        cps *= game.state.cookieMultiplier;
+      }
+      
+      return Math.max(1, cps); // Ensure at least 1 CPS
+    } catch (e) {
+      console.error("Error calculating CPS:", e);
+      return 1; // Fallback to 1 CPS
+    }
   }
 }
 

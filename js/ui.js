@@ -339,11 +339,11 @@ function updateTimeAccelerator(game) {
 
 function updateProgressionVisuals(game) {
   try {
-    // Update cookies per second display
+    // Update cookies per second display - REBALANCED PRODUCTION VALUES
     const autoClickers = game.upgrades?.autoClicker?.count || 0;
     const grandmas = game.upgrades?.grandma?.count || 0;
     const farms = game.upgrades?.farm?.count || 0;
-    let cps = autoClickers * 1 + grandmas * 5 + farms * 10;
+    let cps = autoClickers * 1 + grandmas * 3 + farms * 8; // Updated production values
     
     // Apply cookie multiplier (protect against NaN)
     if (typeof game.state.cookieMultiplier === 'number' && !isNaN(game.state.cookieMultiplier)) {
