@@ -1,24 +1,18 @@
-# Theme and Skin Images
+# Cookie Clicker Themes Directory
 
-This directory will contain images for themes and skins for the Cookie Clicker game.
+This directory contains assets for the personalization system.
 
-## Expected Images:
+## Structure:
+- `/cookies/` - Alternative cookie images
+- `/cursors/` - Alternative cursor images
+- `/backgrounds/` - Background patterns and images
+- `/previews/` - Theme preview thumbnails
 
-### Theme Previews:
-- classic-preview.png
-- dark-preview.png
-- neon-preview.png
-- pastel-preview.png
-- coffee-preview.png
-
-### Cookie Skins:
-- chocolate-cookie.png
-- rainbow-cookie.png
-- golden-cookie.png
-- donut.png
-
-### Cursor Skins:
-- golden-hand.png
-- robot-hand.png
-
-To fully use the personalization system, add these images to this directory.
+## Adding New Themes:
+1. Create a new folder with your theme name
+2. Add required assets:
+   - cookie.png (250x250px recommended)
+   - cursor.png (40x40px recommended)
+   - background.png (optional tile pattern)
+   - preview.png (200x100px theme preview)
+3. Update the THEMES object in personalization.js

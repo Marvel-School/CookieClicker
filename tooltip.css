@@ -1,98 +1,21 @@
-/* Tooltip Reset Styles - Completely Detached From Parent */
+/* TOOLTIPS COMPLETELY REMOVED */
+/* This file is kept for compatibility but all tooltip functionality is now removed */
 
-/* Simplified tooltip styles - no hover behavior */
-
-/* Apply these styles to both original tooltips and detached tooltips */
+/* Ensure no tooltips exist anywhere */
+.item-desc,
+.tooltip,
+[data-tooltip],
 .shop-item .item-desc,
-body > .item-desc {
-  display: none !important; /* Always hidden by default */
-}
-
-/* Make sure only detached tooltips are visible */
-body > .item-desc.item-desc-tooltip {
-  display: block !important; 
-  visibility: visible !important;
-}
-
-/* Base tooltip in shop - always hidden */
-.shop-item .item-desc {
-  display: none !important; /* Always hidden by default */
-}
-
-/* Detached tooltip styling (when moved to body) */
-body > .item-desc {
-  /* Positioning */
-  position: fixed !important;
-  z-index: 100000000 !important;
-  
-  /* Base appearance */
-  background: rgba(0, 0, 0, 0.9) !important;
-  border: 3px solid #2980b9 !important;
-  border-radius: 8px !important;
-  padding: 12px !important;
-  width: auto !important;
-  max-width: 220px !important;
-  
-  /* Text styling */
-  font-family: Arial, sans-serif !important;
-  font-size: 14px !important;
-  line-height: 1.5 !important;
-  text-align: center !important;
-  color: white !important;
-  
-  /* Effects */
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.8) !important;
-  pointer-events: none !important;
-}
-
-/* Unified white background container for all text */
-body > .item-desc .text-container {
-  background-color: #ffffff !important;
-  color: #000000 !important;
-  padding: 8px 12px !important;
-  margin: 0 !important;
-  border-radius: 5px !important;
-  font-weight: bold !important;
-  font-size: 14px !important;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.5) !important;
-  text-align: center !important;
-  display: block !important;
-  line-height: 1.4 !important;
-}
-
-/* Reset individual highlight styling */
-body > .item-desc .text-highlight {
-  background-color: transparent !important; /* Remove individual backgrounds */
-  color: inherit !important;
-  padding: 0 !important;
-  margin: 0 !important;
-  box-shadow: none !important;
-  display: inline !important;
-  border-radius: 0 !important;
-}
-
-/* Arrow pointer for tooltip above item (default) */
-body > .item-desc::after {
-  content: "" !important;
+.item-desc-tooltip,
+body > .item-desc,
+body > .item-desc-tooltip {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
   position: absolute !important;
-  bottom: -15px !important;
-  left: 50% !important;
-  transform: translateX(-50%) !important;
-  border: 8px solid transparent !important;
-  border-top-color: #2980b9 !important;
-}
-
-/* Arrow pointer for tooltip below item (when near top of viewport) */
-body > .item-desc.position-below::after {
-  bottom: auto !important;
-  top: -15px !important;
-  border-width: 0 8px 8px 8px !important;
-  border-color: transparent transparent #2980b9 transparent !important;
-}
-
-/* Line breaks inside the white background container */
-body > .item-desc .text-container br {
-  content: "" !important;
-  display: block !important;
-  margin-bottom: 4px !important;
+  left: -9999px !important;
+  top: -9999px !important;
+  width: 0 !important;
+  height: 0 !important;
+  overflow: hidden !important;
 }

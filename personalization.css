@@ -11,6 +11,162 @@
   --particle-intensity: 1;
 }
 
+/* CSS Variables and theme definition */
+:root {
+  /* Default theme properties (Classic) */
+  --background: radial-gradient(#333, #000);
+  --text-color: #333;
+  --primary-color: #2980b9;
+  --secondary-color: #3498db;
+  --accent-color: #ff8c42;
+  --panel-color: rgba(255, 255, 255, 0.95);
+  
+  /* Animation settings */
+  --particle-intensity: 1.0;
+}
+
+/* Theme Definitions */
+.theme-classic {
+  --background: radial-gradient(#333, #000);
+  --text-color: #333;
+  --primary-color: #2980b9;
+  --secondary-color: #3498db;
+  --accent-color: #ff8c42;
+  --panel-color: rgba(255, 255, 255, 0.95);
+}
+
+.theme-dark {
+  --background: radial-gradient(#111, #000);
+  --text-color: #ffffff; /* Brighter text for better contrast */
+  --primary-color: #444;
+  --secondary-color: #555;
+  --accent-color: #8e44ad;
+  --panel-color: rgba(25, 25, 30, 0.95); /* Darker panels for better contrast */
+}
+
+.theme-neon {
+  --background: radial-gradient(#111, #000);
+  --text-color: #fff;
+  --primary-color: #ff00ff;
+  --secondary-color: #00ffff;
+  --accent-color: #ffff00;
+  --panel-color: rgba(20, 20, 40, 0.9);
+}
+
+/* Animation Classes */
+.animations-standard {
+  --particle-intensity: 1.0;
+}
+
+.animations-reduced {
+  --particle-intensity: 0.4; /* More noticeably reduced */
+}
+
+.animations-minimal {
+  --particle-intensity: 0.1; /* Very minimal */
+}
+
+.animations-none {
+  --particle-intensity: 0;
+}
+
+/* Apply theme colors to elements */
+body.theme-dark {
+  background: var(--background);
+  color: var(--text-color);
+}
+
+/* Make sure stats text is visible in dark theme */
+body.theme-dark .stats {
+  background: rgba(40, 40, 45, 0.92);
+  color: white;
+  border: 1px solid #444;
+}
+
+body.theme-dark .stats h1,
+body.theme-dark .stats-metric .value,
+body.theme-dark #cookieCount,
+body.theme-dark #clickPower,
+body.theme-dark #cps {
+  color: white;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+body.theme-dark .stats-metric .label {
+  color: #aaa;
+}
+
+/* Fix dark theme panels */
+body.theme-dark #settingsMenu,
+body.theme-dark #shopContainer,
+body.theme-dark #achievementsContainer,
+body.theme-dark .panel-container {
+  background: rgba(35, 35, 40, 0.95);
+  color: white;
+  border: 1px solid #444;
+}
+
+/* Fix dark theme buttons */
+body.theme-dark .theme-button,
+body.theme-dark .animation-button {
+  background: linear-gradient(145deg, #555, #444);
+  color: white;
+}
+
+body.theme-dark .theme-button:hover,
+body.theme-dark .animation-button:hover {
+  background: linear-gradient(145deg, #666, #555);
+}
+
+body.theme-dark .theme-button.active,
+body.theme-dark .animation-button.active {
+  background: linear-gradient(145deg, #8e44ad, #9b59b6);
+  color: white;
+}
+
+body.theme-neon {
+  background: var(--background);
+  color: var(--text-color);
+}
+
+.theme-dark .stats, 
+.theme-dark #settingsMenu, 
+.theme-dark #shopContainer,
+.theme-dark #achievementsContainer,
+.theme-dark .panel-container {
+  background: var(--panel-color);
+  color: var(--text-color);
+}
+
+.theme-dark .left button, 
+.theme-dark #settingsMenu button,
+.theme-dark .setting-btn,
+.theme-dark .upgrade {
+  background: linear-gradient(145deg, var(--primary-color), var(--secondary-color));
+}
+
+.theme-dark .upgrade-progress-bar {
+  background-color: var(--accent-color);
+}
+
+/* Neon Theme */
+.theme-neon .left button, 
+.theme-neon #settingsMenu button,
+.theme-neon .setting-btn,
+.theme-neon .upgrade {
+  background: linear-gradient(145deg, var(--primary-color), var(--secondary-color));
+  box-shadow: 0 0 10px var(--accent-color);
+}
+
+.theme-neon .stats, 
+.theme-neon #settingsMenu,
+.theme-neon #shopContainer,
+.theme-neon #achievementsContainer,
+.theme-neon .panel-container {
+  border: 1px solid var(--accent-color);
+  box-shadow: 0 0 15px var(--accent-color);
+}
+
 /* Personalization Container */
 #personalizationContainer {
   display: none;
@@ -21,7 +177,8 @@
   width: 700px;
   max-width: 90vw;
   max-height: 90vh;
-  background: linear-gradient(to bottom, #fffaf0, #f8f8ff);
+  background: var(--panel-color); /* Use theme variable instead of fixed gradient */
+  color: var(--text-color); /* Use theme variable for text */
   border-radius: 15px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3),
               inset 0 1px 3px rgba(255, 255, 255, 0.8);
@@ -112,8 +269,8 @@
 
 .tab-pane h3 {
   margin-top: 0;
-  color: #333;
-  border-bottom: 1px solid #eee;
+  color: var(--text-color); /* Use theme variable */
+  border-bottom: 1px solid rgba(128, 128, 128, 0.3); /* Semi-transparent border works in all themes */
   padding-bottom: 10px;
   margin-bottom: 20px;
 }
@@ -367,4 +524,405 @@
 @keyframes shimmerEffect {
   0% { transform: translateX(-100%); }
   100% { transform: translateX(100%); }
+}
+
+/* Visual indicators for animation levels */
+body:after {
+  content: "";
+  position: fixed;
+  bottom: 10px;
+  left: 10px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  z-index: 9999;
+  opacity: 0.8;
+}
+
+body.animations-standard:after {
+  background-color: #4CAF50; /* Green */
+  box-shadow: 0 0 10px #4CAF50;
+  animation: pulse 2s infinite;
+}
+
+body.animations-reduced:after {
+  background-color: #FFC107; /* Yellow */
+  box-shadow: 0 0 5px #FFC107;
+  animation: pulse 3s infinite;
+}
+
+body.animations-minimal:after {
+  background-color: #F44336; /* Red */
+  box-shadow: 0 0 3px #F44336;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 0.7; }
+  50% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(1); opacity: 0.7; }
+}
+
+/* Fix Personalization Container to respect themes */
+#personalizationContainer {
+  background: var(--panel-color); /* Use theme variable instead of fixed gradient */
+  color: var(--text-color); /* Use theme variable for text */
+}
+
+/* Ensure panel header is properly themed */
+.panel-header {
+  background: linear-gradient(145deg, var(--primary-color), var(--secondary-color));
+  color: white; /* Always white text on colored header for best contrast */
+}
+
+/* Theme-specific overrides for the personalization panel */
+body.theme-dark #personalizationContainer {
+  background: rgba(35, 35, 40, 0.95);
+  color: white;
+  border-color: #444;
+}
+
+body.theme-dark #personalizationContainer .section h3 {
+  color: #ffffff;
+  border-color: #444;
+}
+
+body.theme-dark #personalizationContainer .close-btn {
+  color: white;
+}
+
+body.theme-neon #personalizationContainer {
+  background: rgba(20, 20, 40, 0.9);
+  color: white;
+  border-color: var(--accent-color);
+  box-shadow: 0 0 15px var(--accent-color);
+}
+
+body.theme-neon #personalizationContainer .section h3 {
+  color: #ffffff;
+  border-color: var(--accent-color);
+}
+
+/* Fix button visibility in dark mode */
+body.theme-dark .theme-button,
+body.theme-dark .animation-button {
+  background: linear-gradient(145deg, #555, #444);
+  color: white;
+}
+
+body.theme-dark .theme-button.active,
+body.theme-dark .animation-button.active {
+  background: linear-gradient(145deg, #8e44ad, #9b59b6);
+  color: white;
+  border: 1px solid white;
+}
+
+/* Fix button visibility in neon mode */
+body.theme-neon .theme-button,
+body.theme-neon .animation-button {
+  background: linear-gradient(145deg, var(--primary-color), var(--secondary-color));
+  color: white;
+  text-shadow: 0 0 5px white;
+}
+
+body.theme-neon .theme-button.active,
+body.theme-neon .animation-button.active {
+  box-shadow: 0 0 10px var(--accent-color);
+  border: 1px solid var(--accent-color);
+}
+
+/* Update tab content text styling for better readability */
+.tab-pane h3 {
+  margin-top: 0;
+  color: var(--text-color); /* Use theme variable */
+  border-bottom: 1px solid rgba(128, 128, 128, 0.3); /* Semi-transparent border works in all themes */
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+}
+
+/* Make sure all transitions are fast enough to notice immediately */
+body * {
+  transition: background 0.2s ease, 
+              background-color 0.2s ease, 
+              color 0.2s ease, 
+              border-color 0.2s ease,
+              box-shadow 0.2s ease;
+}
+
+/* We need to ensure that both html and body elements have the theme class
+   This allows any descendant to use either :root or body as a parent selector */
+html.theme-dark,
+body.theme-dark {
+  --background: radial-gradient(#111, #000);
+  --text-color: #ffffff;
+  --primary-color: #444;
+  --secondary-color: #555;
+  --accent-color: #8e44ad;
+  --panel-color: rgba(40, 40, 40, 0.95);
+}
+
+html.theme-neon,
+body.theme-neon {
+  --background: radial-gradient(#111, #000);
+  --text-color: #fff;
+  --primary-color: #ff00ff;
+  --secondary-color: #00ffff;
+  --accent-color: #ffff00;
+  --panel-color: rgba(20, 20, 40, 0.9);
+}
+
+/* Force-mark important theme components with specificity high enough
+   to ensure they always receive theme styles */
+html[data-theme="dark"] .stats,
+html[data-theme="dark"] #shopContainer,
+html[data-theme="dark"] #achievementsContainer,
+html[data-theme="dark"] #settingsMenu,
+html[data-theme="dark"] .panel-container,
+body.theme-dark .stats,
+body.theme-dark #shopContainer,
+body.theme-dark #achievementsContainer,
+body.theme-dark #settingsMenu,
+body.theme-dark .panel-container {
+  background-color: rgba(35, 35, 40, 0.95) !important;
+  color: white !important;
+  border-color: #444 !important;
+}
+
+html[data-theme="dark"] .shop-item,
+body.theme-dark .shop-item {
+  border-bottom-color: #444 !important;
+}
+
+html[data-theme="dark"] .shop-item .item-name,
+html[data-theme="dark"] .shop-item .item-cost,
+body.theme-dark .shop-item .item-name,
+body.theme-dark .shop-item .item-cost {
+  color: white !important;
+}
+
+/* Similar high-specificity rules for neon theme */
+html[data-theme="neon"] .stats,
+html[data-theme="neon"] #shopContainer,
+html[data-theme="neon"] #achievementsContainer,
+html[data-theme="neon"] #settingsMenu,
+html[data-theme="neon"] .panel-container,
+body.theme-neon .stats,
+body.theme-neon #shopContainer,
+body.theme-neon #achievementsContainer,
+body.theme-neon #settingsMenu,
+body.theme-neon .panel-container {
+  background-color: rgba(20, 20, 40, 0.9) !important;
+  color: white !important;
+  border-color: var(--accent-color) !important;
+  box-shadow: 0 0 15px var(--accent-color) !important;
+}
+
+/* Fix specific elements like stats with theme-specific styles */
+html[data-theme="dark"] .stats h1, 
+html[data-theme="dark"] .stats-metric .value, 
+html[data-theme="dark"] #cookieCount, 
+html[data-theme="dark"] #clickPower, 
+html[data-theme="dark"] #cps,
+body.theme-dark .stats h1, 
+body.theme-dark .stats-metric .value, 
+body.theme-dark #cookieCount, 
+body.theme-dark #clickPower, 
+body.theme-dark #cps {
+  color: white !important;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8) !important;
+}
+
+html[data-theme="dark"] .stats-metric .label,
+body.theme-dark .stats-metric .label {
+  color: #aaa !important;
+}
+
+/* Adding more specific selectors for headers to ensure they get themed */
+html[data-theme="dark"] #achievementsContainer .achievements-header,
+html[data-theme="dark"] #shopContainer .shop-header,
+body.theme-dark #achievementsContainer .achievements-header,
+body.theme-dark #shopContainer .shop-header,
+html[data-theme="dark"] .panel-header,
+body.theme-dark .panel-header {
+  background: linear-gradient(145deg, var(--primary-color), var(--secondary-color)) !important;
+  color: white !important;
+}
+
+/* Theme switching notification */
+.theme-switch-notification {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  z-index: 10000;
+  opacity: 0;
+  animation: fadeInOut 3s ease;
+}
+
+/* Theme System Rewrite */
+
+/* Make sure theme colors don't persist inappropriately */
+
+/* Reset all theme classes on body */
+body {
+  /* Reset all theme-related properties to defaults */
+  --background: initial;
+  --text-color: initial;
+  --primary-color: initial;
+  --secondary-color: initial;
+  --accent-color: initial;
+  --panel-color: initial;
+}
+
+/* CLASSIC THEME - Base theme */
+:root,
+html.theme-classic,
+body.theme-classic {
+  --background: radial-gradient(#333, #000);
+  --text-color: #333;
+  --primary-color: #2980b9;
+  --secondary-color: #3498db;
+  --accent-color: #ff8c42;
+  --panel-color: rgba(255, 255, 255, 0.95);
+}
+
+/* DARK THEME - Always override classic */
+html.theme-dark,
+body.theme-dark {
+  --background: radial-gradient(#111, #000) !important;
+  --text-color: #ffffff !important;
+  --primary-color: #444 !important;
+  --secondary-color: #555 !important;
+  --accent-color: #8e44ad !important;
+  --panel-color: rgba(40, 40, 40, 0.95) !important;
+}
+
+/* NEON THEME - Always override both classic and dark */
+html.theme-neon,
+body.theme-neon {
+  --background: radial-gradient(#111, #000) !important;
+  --text-color: #fff !important;
+  --primary-color: #ff00ff !important;
+  --secondary-color: #00ffff !important;
+  --accent-color: #ffff00 !important;
+  --panel-color: rgba(20, 20, 40, 0.9) !important;
+}
+
+/* Ensure we detect theme changes quickly by keeping transitions short */
+body * {
+  transition: background 0.1s ease, 
+              background-color 0.1s ease, 
+              color 0.1s ease, 
+              border-color 0.1s ease,
+              box-shadow 0.1s ease;
+}
+
+/* Make sure panels use the correct theme variables */
+.stats, 
+#settingsMenu, 
+#shopContainer,
+#achievementsContainer,
+.panel-container {
+  background-color: var(--panel-color) !important;
+  color: var(--text-color) !important;
+}
+
+/* Apply theme-specific styles to headers */
+.panel-header,
+.achievements-header,
+.shop-header,
+.personalization-header {
+  background: linear-gradient(145deg, var(--primary-color), var(--secondary-color)) !important;
+  color: white !important;
+}
+
+/* DEBUG TOOL - Uncomment to see current theme variables */
+/*
+body::after {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  background: rgba(0,0,0,0.8);
+  color: white;
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 12px;
+  z-index: 9999;
+  content: "Theme: " attr(class) "\A --primary: " var(--primary-color) "\A --secondary: " var(--secondary-color) "\A --accent: " var(--accent-color);
+  white-space: pre;
+}
+*/
+
+/* Theme-specific styling for personalization panel */
+
+/* Highlight active theme/animation buttons */
+.theme-button.active,
+.animation-button.active {
+  background: linear-gradient(145deg, #2980b9, #3498db) !important;
+  color: white !important;
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2) !important;
+  position: relative;
+  transform: translateY(1px);
+}
+
+.theme-button.active::after,
+.animation-button.active::after {
+  content: "✓";
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 14px;
+}
+
+/* Theme previews */
+#theme-classic {
+  border-left: 4px solid #f5c542;
+}
+
+#theme-dark {
+  border-left: 4px solid #2c3e50;
+  background: linear-gradient(145deg, #34495e, #2c3e50);
+  color: #eee;
+}
+
+#theme-neon {
+  border-left: 4px solid #ff00ff;
+  background: linear-gradient(145deg, #4a148c, #311b92);
+  color: #00ffff;
+  text-shadow: 0 0 5px #00ffff;
+}
+
+/* Animation level indicators */
+#animations-standard::before {
+  content: "●●●";
+  margin-right: 5px;
+  color: #2ecc71;
+  font-size: 10px;
+}
+
+#animations-reduced::before {
+  content: "●●○";
+  margin-right: 5px;
+  color: #f39c12;
+  font-size: 10px;
+}
+
+#animations-minimal::before {
+  content: "●○○";
+  margin-right: 5px;
+  color: #e74c3c;
+  font-size: 10px;
+}
+
+/* Slider color variations */
+#particle-intensity::-webkit-slider-thumb {
+  background: linear-gradient(145deg, #2980b9, #3498db);
+}
+
+#particle-intensity::-moz-range-thumb {
+  background: linear-gradient(145deg, #2980b9, #3498db);
 }

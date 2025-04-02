@@ -1,5 +1,8 @@
-// Contains the Achievement class and achievement setup
+// Contains achievement system code
 
+/**
+ * Achievement class definition
+ */
 export class Achievement {
   constructor(id, name, description, condition, rarity = 'common', category = 'general', icon = '🍪') {
     this.id = id;
@@ -13,7 +16,9 @@ export class Achievement {
   }
 }
 
-// This function will be called by the Game class to set up the achievements
+/**
+ * Setup all achievements for the game
+ */
 export function setupAchievements(game) {
   // Cookie production achievements
   game.registerAchievement(new Achievement(
@@ -118,9 +123,107 @@ export function setupAchievements(game) {
     '🤖'
   ));
   
-  // ...more achievements (adding just a few here for brevity)
+  game.registerAchievement(new Achievement(
+    'autoclicker_50',
+    'Army of Clickers',
+    'Own 50 Auto Clickers.',
+    (game) => (game.upgrades.autoClicker.count || 0) >= 50,
+    'rare',
+    'collection',
+    '⚙️'
+  ));
+  
+  game.registerAchievement(new Achievement(
+    'grandma_5',
+    'Family Baker',
+    'Recruit 5 Grandmas for your bakery.',
+    (game) => (game.upgrades.grandma.count || 0) >= 5,
+    'common',
+    'collection',
+    '👵'
+  ));
+  
+  game.registerAchievement(new Achievement(
+    'grandma_25',
+    'Grandma Commune',
+    'Recruit 25 Grandmas for your bakery.',
+    (game) => (game.upgrades.grandma.count || 0) >= 25,
+    'uncommon',
+    'collection',
+    '👵'
+  ));
+  
+  game.registerAchievement(new Achievement(
+    'grandma_50',
+    'Grandmapocalypse',
+    'Control an army of 50 Grandmas.',
+    (game) => (game.upgrades.grandma.count || 0) >= 50,
+    'epic',
+    'collection',
+    '👵'
+  ));
+  
+  game.registerAchievement(new Achievement(
+    'farm_5',
+    'Cookie Farmer',
+    'Own 5 Cookie Farms.',
+    (game) => (game.upgrades.farm.count || 0) >= 5,
+    'common',
+    'collection',
+    '🌱'
+  ));
+  
+  game.registerAchievement(new Achievement(
+    'farm_25',
+    'Agribusiness',
+    'Own 25 Cookie Farms.',
+    (game) => (game.upgrades.farm.count || 0) >= 25,
+    'uncommon',
+    'collection', 
+    '🌾'
+  ));
+  
+  game.registerAchievement(new Achievement(
+    'farm_50',
+    'Cookie Plantation Empire',
+    'Own 50 Cookie Farms across the land.',
+    (game) => (game.upgrades.farm.count || 0) >= 50,
+    'rare',
+    'collection',
+    '🚜'
+  ));
   
   // Special achievements
+  game.registerAchievement(new Achievement(
+    'cps_100',
+    'Industrial Revolution',
+    'Reach 100 cookies per second.',
+    (game) => {
+      const autoClickers = game.upgrades.autoClicker.count || 0;
+      const grandmas = game.upgrades.grandma.count || 0;
+      const farms = game.upgrades.farm.count || 0;
+      return (autoClickers * 1 + grandmas * 3 + farms * 6) >= 100;
+    },
+    'uncommon',
+    'special',
+    '⚡'
+  ));
+  
+  game.registerAchievement(new Achievement(
+    'cps_500',
+    'Cookie Factory',
+    'Reach 500 cookies per second.',
+    (game) => {
+      const autoClickers = game.upgrades.autoClicker.count || 0;
+      const grandmas = game.upgrades.grandma.count || 0;
+      const farms = game.upgrades.farm.count || 0;
+      return (autoClickers * 1 + grandmas * 3 + farms * 6) >= 500;
+    },
+    'rare',
+    'special',
+    '🏭'
+  ));
+  
   game.registerAchievement(new Achievement(
     'balanced_force',
     'Balanced Force',

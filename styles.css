@@ -5,6 +5,9 @@ body {
   margin: 0;
   padding: 0;
   color: #333;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
 }
 
 /* LEFT Section: Upgrade Buttons */
@@ -16,11 +19,13 @@ body {
   gap: 20px;
   transform: translateY(-60%);
   width: 220px;
-  background: rgba(255, 255, 255, 0.95);
+  /* Remove the white background */
+  background: transparent;
   padding: 20px;
   margin-top: 50px;
   border-radius: 12px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  /* Remove box-shadow completely */
+  box-shadow: none;
   overflow-y: auto;
   max-height: 90%;
   display: flex;
@@ -33,6 +38,10 @@ body {
   display: inline-block;
   padding: 0;
   margin: 0;
+  margin-bottom: 10px;
+  width: 100%;
+  /* Add better text wrapping */
+  overflow: hidden;
 }
 
 .left button:disabled {
@@ -47,14 +56,33 @@ body {
 .left button {
   background: linear-gradient(145deg, #2980b9, #3498db);
   color: #fff;
-  font-size: 18px;     /* reduced font size */
-  padding: 10px;        /* reduced padding */
-  width: auto;         /* removed full width */
+  font-size: 16px;     /* adjusted font size */
+  padding: 12px 15px;   /* adjusted padding */
+  width: 100%;         /* make button fill container */
   border: none;
   border-radius: 12px;
   cursor: pointer;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  /* Improve button text display */
+  white-space: normal; /* Allow text to wrap */
+  height: auto;        /* Auto height for content */
+  min-height: 45px;    /* Set minimum height */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;    /* Prevent text overflow */
+  text-align: center;  /* Center text */
+}
+
+.left button .button_top {
+  /* Add text wrapping for long button names */
+  width: 100%;
+  text-align: center;
+  word-wrap: break-word;
+  overflow-wrap: break-word; /* Better word wrapping */
+  hyphens: auto;        /* Allow hyphenation */
 }
 
 .left button:hover {
@@ -67,18 +95,147 @@ body {
   box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.25);
 }
 
-/* TOP Section: Stats */
+/* TOP Section: Stats - REDESIGNED */
 .stats {
   position: fixed;
   top: 20px;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(255, 255, 255, 0.9);
-  padding: 15px 20px;
+  background: rgba(255, 255, 255, 0.92);
   border-radius: 12px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   z-index: 200;
   text-align: center;
+  padding: 12px 15px;
+  width: auto;
+  min-width: 220px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  visibility: visible !important;
+  opacity: 1 !important;
+  display: block !important;
+}
+
+/* New cookie count styling */
+.stats h1 {
+  font-size: 1.6em;
+  margin: 0 0 8px 0;
+  color: #333;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.stats h1 .cookie-icon {
+  font-size: 0.9em;
+  animation: cookieSpin 3s infinite linear;
+  display: inline-block;
+}
+
+.stats h1 #cookieCount {
+  color: #8b4513; /* Cookie brown */
+  font-weight: 700;
+  transition: text-shadow 0.3s, color 0.3s;
+}
+
+.stats h1 #cookieCount.updating {
+  text-shadow: 0 0 8px rgba(139, 69, 19, 0.7);
+}
+
+/* Stats metrics section */
+.stats-metrics {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  font-size: 0.9em;
+  margin-top: 3px;
+  padding-top: 6px;
+  border-top: 1px dashed rgba(0, 0, 0, 0.1);
+}
+
+.stats-metric {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stats-metric .label {
+  font-size: 0.75em;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #777;
+  margin-bottom: 2px;
+}
+
+.stats-metric .value {
+  font-weight: 600;
+  color: #333;
+  font-size: 1.1em;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.stats-metric .icon {
+  opacity: 0.7;
+  font-size: 0.9em;
+}
+
+.stats-metric #clickPower, 
+.stats-metric #cps {
+  transition: color 0.3s, text-shadow 0.3s;
+}
+
+.stats-metric #cps.boosted {
+  color: #ffaa00;
+  text-shadow: 0 0 5px rgba(255, 170, 0, 0.3);
+}
+
+.stats-metric #clickPower.boosted {
+  color: #ff6600;
+  text-shadow: 0 0 5px rgba(255, 102, 0, 0.3);
+}
+
+@keyframes cookieSpin {
+  0% { transform: rotate(0deg); }
+  25% { transform: rotate(0deg); }
+  35% { transform: rotate(10deg); }
+  45% { transform: rotate(-10deg); }
+  55% { transform: rotate(5deg); }
+  65% { transform: rotate(-5deg); }
+  75% { transform: rotate(0deg); }
+  100% { transform: rotate(0deg); }
+}
+
+/* Cookie gain animation */
+@keyframes cookieGain {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+
+.cookie-gain {
+  animation: cookieGain 0.4s ease-in-out;
+}
+
+/* New Position for Boost Indicators */
+#production-boost-indicator,
+#click-boost-indicator,
+#frenzy-indicator {
+  margin-top: 5px;
+  font-size: 0.8em;
+  padding: 3px 6px;
+  border-radius: 10px;
+  display: inline-block;
+}
+
+#multiplierDisplay {
+  margin: 0;
+  font-size: 0.85em;
+  color: #777;
 }
 
 /* ACHIEVEMENTS Container - Redesigned Trophy Case Look */
@@ -569,6 +726,9 @@ section .set div:nth-child(25) {
   transition: transform 0.1s ease;
   will-change: transform;
   transform: translateZ(0);
+  visibility: visible !important;
+  opacity: 1 !important;
+  display: block !important;
 }
 #cookie:hover {
   transform: scale(1.05);
@@ -584,10 +744,12 @@ section .set div:nth-child(25) {
   right: 20px;
   transform: translateY(-60%);
   width: 220px;
-  background: rgba(255, 255, 255, 0.95);
+  /* Remove the white background */
+  background: transparent;
   padding: 20px;
   border-radius: 12px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  /* Remove box-shadow completely */
+  box-shadow: none;
   overflow-y: auto;
   overflow-x: hidden;
   max-height: 90%;
@@ -649,7 +811,7 @@ section .set div:nth-child(25) {
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2),
               inset 0 1px 3px rgba(255, 255, 255, 0.8);
   z-index: 210;
-  overflow: hidden;
+  overflow: hidden; /* For the header styling */
   border: 1px solid rgba(210, 210, 210, 0.8);
 }
 
@@ -808,68 +970,278 @@ section .set div:nth-child(25) {
   }
 }
 
-/* Floating Numbers */
+/* Floating Numbers - Reduced size further */
 .floating-number {
   position: absolute;
-  color: red;
-  font-size: 20px;
-  animation: floatUp 1s ease-out;
+  font-size: 12px; /* Reduced from 16px */
+  font-weight: bold;
+  text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.7), -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+  background: transparent;
+  border: none;
+  box-shadow: none;
   pointer-events: none;
+  white-space: nowrap;
+  z-index: 9000;
+  user-select: none;
+  will-change: transform, opacity;
+  animation: floatUpAndFade 2s ease-out forwards;
 }
-@keyframes floatUp {
+
+/* Color variations based on value - sizes reduced further */
+.floating-number.small {
+  color: #ffffff;
+  font-size: 10px; /* Reduced from 14px */
+}
+
+.floating-number.medium {
+  color: #ffdd00;
+  font-size: 14px; /* Reduced from 18px */
+}
+
+.floating-number.large {
+  color: #ff6600;
+  font-size: 16px; /* Reduced from 22px */
+}
+
+.floating-number.huge {
+  color: #ff0000;
+  font-size: 18px; /* Reduced from 24px */
+  font-weight: 900;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9), -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+}
+
+.floating-number.bonus {
+  color: #00ffff;
+  font-size: 15px; /* Reduced from 20px */
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9), -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+}
+
+/* Color variations based on value - all sizes reduced */
+.floating-number.small {
+  color: #ffffff;
+  font-size: 14px; /* Reduced from 18px */
+}
+
+.floating-number.medium {
+  color: #ffdd00;
+  font-size: 18px; /* Reduced from 22px */
+}
+
+.floating-number.large {
+  color: #ff6600;
+  font-size: 22px; /* Reduced from 26px */
+}
+
+.floating-number.huge {
+  color: #ff0000;
+  font-size: 24px; /* Reduced from 30px */
+  font-weight: 900;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9), -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+}
+
+.floating-number.bonus {
+  color: #00ffff;
+  font-size: 20px; /* Reduced from 24px */
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9), -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+}
+
+@keyframes floatUpAndFade {
   0% {
-    transform: translateY(0);
     opacity: 1;
+    transform: translate(0, 0) scale(1);
+  }
+  20% {
+    opacity: 1;
+    transform: translate(var(--x-offset, 0), -20px) scale(1.2);
   }
   100% {
-    transform: translateY(-50px);
     opacity: 0;
+    transform: translate(var(--x-offset, 0), -80px) scale(0.8);
   }
 }
 
-/* Upgrade Visualization Boxes */
-.upgrade-box {
-  background-color: #fff;
-  border-radius: 10px;
-  padding: 10px;
-  width: 200px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+.upgrade-box:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15),
+              inset 0 1px 1px rgba(255, 255, 255, 0.8);
 }
+
 .upgrade-progress {
-  width: 100px;
-  height: 10px;
-  background-color: #e0e0e0;
-  border-radius: 5px;
+  width: 100%;
+  height: 14px;
+  background: repeating-linear-gradient(
+    45deg,
+    #f0f0f0,
+    #f0f0f0 10px,
+    #e6e6e6 10px,
+    #e6e6e6 20px
+  );
+  border-radius: 7px;
   overflow: hidden;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+  position: relative;
 }
+
+.upgrade-progress::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.1),
+    rgba(255, 255, 255, 0.05) 50%,
+    transparent 51%,
+    rgba(0, 0, 0, 0.05)
+  );
+  pointer-events: none;
+}
+
+/* Different colored bars for each upgrade type */
+#autoClickersBox .upgrade-progress-bar {
+  background: linear-gradient(90deg, #3498db, #2980b9);
+}
+
+#grandmasBox .upgrade-progress-bar {
+  background: linear-gradient(90deg, #e74c3c, #c0392b);
+}
+
+#farmsBox .upgrade-progress-bar {
+  background: linear-gradient(90deg, #2ecc71, #27ae60);
+}
+
 .upgrade-progress-bar {
   height: 100%;
-  background-color: #ff8c42;
   width: 0;
-  transition: width 0.3s ease;
+  border-radius: 7px;
+  transition: width 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+  box-shadow: 0 0 10px rgba(255, 140, 66, 0.5);
+  position: relative;
+  overflow: hidden;
 }
+
+.upgrade-progress-bar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg, 
+    rgba(255, 255, 255, 0) 0%, 
+    rgba(255, 255, 255, 0.4) 50%, 
+    rgba(255, 255, 255, 0) 100%
+  );
+  animation: shine 3s infinite;
+}
+
+@keyframes shine {
+  0% { left: -100%; }
+  20% { left: 100%; }
+  100% { left: 100%; }
+}
+
 .upgrade-counter {
   display: flex;
   align-items: center;
-  gap: 5px;
+  justify-content: space-between;
+  margin-top: 5px;
 }
+
 .upgrade-image {
-  width: 30px;
-  animation: bounce 1s infinite;
+  width: 42px;
+  height: 42px;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.2));
+  animation: bounce 2s infinite;
   will-change: transform;
   transform: translateZ(0);
+  transition: filter 0.3s ease, transform 0.3s ease;
 }
+
+.upgrade-image:hover {
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3));
+  transform: scale(1.1) translateZ(0);
+}
+
+.upgrade-counter span {
+  font-size: 22px;
+  font-weight: bold;
+  color: #333;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.8);
+  background: linear-gradient(to bottom, #333, #555);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  position: relative;
+  padding: 0 8px;
+}
+
+.upgrade-counter span::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: -3px;
+  right: -3px;
+  bottom: -1px;
+  background: white;
+  border-radius: 4px;
+  z-index: -1;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Different themes for each upgrade type */
+#autoClickersBox .upgrade-counter span::before {
+  background: linear-gradient(to bottom, #e1f5fe, #b3e5fc);
+}
+
+#grandmasBox .upgrade-counter span::before {
+  background: linear-gradient(to bottom, #ffebee, #ffcdd2);
+}
+
+#farmsBox .upgrade-counter span::before {
+  background: linear-gradient(to bottom, #e8f5e9, #c8e6c9);
+}
+
 @keyframes bounce {
   0%, 100% { transform: translateY(0) translateZ(0); }
   50% { transform: translateY(-5px) translateZ(0); }
 }
-.upgrade-counter span {
-  font-size: 18px;
+
+/* Custom title for each upgrade box */
+.upgrade-box::before {
+  content: attr(data-title);
+  position: absolute;
+  top: -10px;
+  left: 15px;
+  background: #fff;
+  padding: 2px 10px;
+  border-radius: 10px;
+  font-size: 12px;
   font-weight: bold;
-  color: #333;
+  color: #555;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  z-index: 10; /* Higher z-index to ensure visibility */
+  white-space: nowrap; /* Ensure text doesn't wrap */
+}
+
+#autoClickersBox::before {
+  content: "Auto Clickers";
+  background: #e1f5fe;
+  color: #0288d1;
+}
+
+#grandmasBox::before {
+  content: "Grandmas";
+  background: #ffebee;
+  color: #c62828;
+}
+
+#farmsBox::before {
+  content: "Farms";
+  background: #e8f5e9;
+  color: #2e7d32;
 }
 
 /* Toast Notification */
@@ -1023,7 +1395,7 @@ button.upgrade:disabled .button_top {
   pointer-events: none !important;
 }
 
-/* Remove any duplicate or extra disabled rules below */
+/* Remove all other duplicate disabled styling rules */
 
 /* ...existing code... */
 .upgrade {
@@ -1568,106 +1940,448 @@ button.upgrade:disabled .button_top {
 
 .golden-cookie {
   position: absolute;
-  width: 60px;
-  height: 60px;
+  width: 80px; /* Larger size for better visibility */
+  height: 80px;
   background-image: url('image/goldencookie.png');
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
   cursor: pointer;
-  pointer-events: auto;
+  pointer-events: auto; /* Make it clickable */
   z-index: 10001;
   animation: goldenCookiePulse 1.5s infinite alternate;
-  filter: drop-shadow(0 0 10px gold);
+  filter: drop-shadow(0 0 15px gold);
+  transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
 @keyframes goldenCookiePulse {
   0% {
     transform: scale(0.9);
     opacity: 0.8;
+    filter: drop-shadow(0 0 10px gold);
   }
   100% {
     transform: scale(1.1);
     opacity: 1;
+    filter: drop-shadow(0 0 20px gold);
   }
 }
 
-/* Indicator for applied multiplier */
-.multiplier-indicator {
-  position: absolute;
-  top: -10px;
-  right: -10px;
-  background: gold;
-  color: #333;
-  border-radius: 50%;
-  width: 24px;
-  height: 24px;
-  text-align: center;
-  line-height: 24px;
-  font-size: 12px;
-  font-weight: bold;
-  box-shadow: 0 0 8px rgba(255, 215, 0, 0.8);
+/* Golden cookie animation when clicked */
+.golden-cookie-clicked {
+  animation: zoom-out 0.5s forwards;
+  filter: brightness(1.5);
 }
 
-/* Update shop content layout for 3 items */
-#shopContainer .shop-content {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  padding: 10px;
-  max-height: 400px; /* Increased to accommodate more items */
+/* Golden cookie fade animation */
+.golden-cookie-fade {
+  animation: fade-out 1s forwards;
 }
 
-/* ...existing code... */
-
-/* Toast Notification Container */
-.toast-container {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 10000;
-  display: flex;
-  flex-direction: column-reverse;
-  align-items: center;
-  gap: 10px;
-  pointer-events: none;
-  width: auto;
-}
-
-/* Toast Notification Item */
-.auto-save-notification {
-  position: relative; /* Changed from fixed to relative */
-  background: rgba(0, 0, 0, 0.7);
-  color: white;
-  padding: 10px 20px;
-  border-radius: 5px;
-  font-size: 14px;
-  opacity: 0;
-  animation: fadeInOut 3s forwards;
-  white-space: nowrap;
-  pointer-events: none;
-  margin-bottom: 5px; /* Add margin between toasts */
-  width: 100%;
-  text-align: center;
-}
-
-@keyframes fadeInOut {
+@keyframes zoom-out {
   0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(2);
     opacity: 0;
-    transform: translateY(20px);
   }
-  10% {
+}
+
+@keyframes fade-out {
+  0% {
     opacity: 1;
-    transform: translateY(0);
-  }
-  90% {
-    opacity: 1;
-    transform: translateY(0);
   }
   100% {
     opacity: 0;
-    transform: translateY(-20px);
+  }
+}
+
+/* Active Bonuses Section */
+.active-bonuses {
+  margin-top: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 5px;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.bonus-indicator {
+  padding: 4px 8px;
+  border-radius: 12px;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: white;
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+  animation: pulse 2s infinite alternate;
+}
+
+.bonus-icon {
+  margin-right: 4px;
+  font-size: 16px;
+}
+
+.bonus-text {
+  margin-right: 4px;
+  font-weight: bold;
+}
+
+.bonus-timer {
+  background-color: rgba(255, 255, 255, 0.2);
+  padding: 0 4px;
+  border-radius: 8px;
+  font-size: 12px;
+}
+
+/* Specific styles for different bonus types */
+.time-accelerator-bonus {
+  background-color: rgba(255, 69, 0, 0.7);
+}
+
+.production-boost-bonus {
+  background-color: rgba(255, 170, 0, 0.7);
+}
+
+.click-boost-bonus {
+  background-color: rgba(255, 102, 0, 0.7);
+}
+
+.cookie-multiplier-bonus {
+  background-color: rgba(101, 67, 33, 0.7);
+}
+
+.click-frenzy-bonus {
+  background-color: rgba(220, 20, 60, 0.7);
+  animation: frenzy-pulse 0.5s infinite alternate;
+}
+
+/* Animations for bonus indicators */
+@keyframes bonus-appear {
+  0% {
+    transform: translateY(-10px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes bonus-disappear {
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-10px);
+    opacity: 0;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+  }
+  100% {
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+  }
+}
+
+@keyframes frenzy-pulse {
+  0% {
+    box-shadow: 0 0 5px rgba(255, 0, 0, 0.5);
+    transform: scale(1);
+  }
+  100% {
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.8);
+    transform: scale(1.05);
+  }
+}
+
+/* Click power boosted cookie animation */
+#cookie.click-boosted {
+  animation: click-pulse 0.8s infinite alternate;
+  filter: brightness(1.2) drop-shadow(0 0 10px orange);
+}
+
+@keyframes click-pulse {
+  0% {
+    transform: scale(1.02);
+  }
+  100% {
+    transform: scale(1.08);
+    filter: brightness(1.4) drop-shadow(0 0 15px orange);
+  }
+}
+
+/* Frenzy boosted cookie animation */
+#cookie.frenzy-boosted {
+  animation: frenzy 0.5s infinite alternate;
+  filter: brightness(1.5) saturate(1.5) drop-shadow(0 0 20px crimson);
+}
+
+@keyframes frenzy {
+  0% {
+    transform: scale(1.05) rotate(-1deg);
+  }
+  100% {
+    transform: scale(1.15) rotate(1deg);
+    filter: brightness(1.8) saturate(1.5) drop-shadow(0 0 20px crimson);
+  }
+}
+
+/* Time accelerator cookie animation */
+#cookie.accelerated {
+  animation: accelerated 1s infinite alternate;
+}
+
+@keyframes accelerated {
+  0% {
+    filter: brightness(1.2) drop-shadow(0 0 10px gold);
+    transform: scale(1.03);
+  }
+  100% {
+    filter: brightness(1.4) drop-shadow(0 0 15px gold);
+    transform: scale(1.07);
+  }
+}
+
+/* Tooltip improvements */
+.item-desc {
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0.85);
+  color: white;
+  padding: 10px 15px;
+  border-radius: 8px;
+  z-index: 100000;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+  max-width: 250px;
+  opacity: 0;
+  transform: translateY(10px);
+  animation: tooltip-appear 0.2s forwards;
+}
+
+.item-desc.position-below {
+  transform-origin: top center;
+}
+
+.text-container {
+  text-align: center;
+}
+
+.text-highlight {
+  color: #ffcc00;
+  font-weight: bold;
+  display: inline-block;
+}
+
+@keyframes tooltip-appear {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Improved Personalization Panel Styling */
+#personalizationContainer {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 380px;
+  max-width: 90%;
+  background: linear-gradient(to bottom, #fffaf0, #f8f8ff);
+  border-radius: 15px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3), 
+              inset 0 1px 3px rgba(255, 255, 255, 0.8);
+  z-index: 999;
+  overflow: hidden;
+  border: 1px solid rgba(210, 210, 210, 0.8);
+  display: none;
+}
+
+.panel-header {
+  position: relative;
+  background: linear-gradient(145deg, #2980b9, #3498db);
+  color: white;
+  padding: 15px 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+}
+
+.panel-header h2 {
+  margin: 0;
+  font-size: 20px;
+  flex-grow: 1;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.panel-header .panel-icon {
+  font-size: 24px;
+}
+
+.panel-header .close-btn {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 28px;
+  height: 28px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 22px;
+  font-weight: bold;
+  transition: all 0.2s ease;
+}
+
+.panel-header .close-btn:hover {
+  background: rgba(255, 255, 255, 0.4);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.panel-content {
+  padding: 20px;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+/* Personalization Panel Specific Styling */
+#personalizationContainer .section {
+  margin-bottom: 24px;
+}
+
+#personalizationContainer .section:last-child {
+  margin-bottom: 0;
+}
+
+#personalizationContainer .section h3 {
+  font-size: 18px;
+  margin: 0 0 12px 0;
+  color: #333;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 8px;
+}
+
+#personalizationContainer .theme-options,
+#personalizationContainer .animation-options {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 10px;
+}
+
+#personalizationContainer .theme-button,
+#personalizationContainer .animation-button {
+  background: linear-gradient(145deg, #f5f5f5, #e6e6e6);
+  color: #333;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+#personalizationContainer .theme-button:hover,
+#personalizationContainer .animation-button:hover {
+  background: linear-gradient(145deg, #e6e6e6, #d9d9d9);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+#personalizationContainer .theme-button.active,
+#personalizationContainer .animation-button.active {
+  background: linear-gradient(145deg, #2980b9, #3498db);
+  color: white;
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* Slider styling */
+#personalizationContainer .slider-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 15px;
+}
+
+#personalizationContainer .slider-container label {
+  font-size: 14px;
+  color: #666;
+}
+
+#personalizationContainer .slider-controls {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+#personalizationContainer input[type="range"] {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 8px;
+  border-radius: 4px;
+  background: #e0e0e0;
+  outline: none;
+}
+
+#personalizationContainer input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #3498db;
+  cursor: pointer;
+  border: 2px solid white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+#personalizationContainer input[type="range"]::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #3498db;
+  cursor: pointer;
+  border: 2px solid white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+#personalizationContainer #intensity-value {
+  min-width: 40px;
+  text-align: center;
+  font-weight: bold;
+  color: #333;
+  background: #f5f5f5;
+  padding: 4px 8px;
+  border-radius: 4px;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive tweaks */
+@media (max-width: 480px) {
+  #personalizationContainer {
+    width: 90%;
+    max-height: 80vh;
+  }
+  
+  #personalizationContainer .theme-options,
+  #personalizationContainer .animation-options {
+    grid-template-columns: 1fr;
   }
 }
 

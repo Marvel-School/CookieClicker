@@ -1,10 +1,14 @@
-// Contains all upgrade-related classes
+// Contains all upgrade class definitions
 
+/**
+ * Base class for all upgrades
+ */
 export class Upgrade {
-  constructor(cost, multiplier, displayPrefix, extra = null) {
+  constructor(cost, multiplier, displayPrefix, description = '', extra = null) {
     this.cost = cost;
     this.multiplier = multiplier;
     this.displayPrefix = displayPrefix;
+    this.description = description;
     this.extra = extra;
   }
   
@@ -22,29 +26,35 @@ export class Upgrade {
   
   purchase(game) {
     if (!this.canPurchase(game)) {
-      game.log(
-        `Not enough cookies for ${this.constructor.name}. Cost: ${this.cost}, have: ${game.state.cookies}`
-      );
-      return;
+      game.log(`Not enough cookies for ${this.constructor.name}. Cost: ${this.cost}, have: ${game.state.cookies}`);
+      game.showToast(`Not enough cookies for ${this.displayPrefix}`);
+      return false;
     }
+    
     game.state.cookies -= this.cost;
     this.executePurchase(game);
     this.updateCost();
+    
     if (this.extra && typeof game[this.extra] === "function") {
       game[this.extra]();
     }
+    
     game.updateDisplay();
+    return true;
   }
   
-  // To be defined in subclasses
+  // To be overridden in subclasses
   executePurchase(game) {
-    // ...override in subclass...
+    // Default implementation does nothing
   }
 }
 
+/**
+ * Upgrade that multiplies click power by 2
+ */
 export class ClickMultiplierUpgrade extends Upgrade {
-  constructor(cost, multiplier, displayPrefix) {
-    super(cost, multiplier, displayPrefix);
+  constructor(cost, multiplier, displayPrefix, description = 'Doubles your click power') {
+    super(cost, multiplier, displayPrefix, description);
   }
   
   executePurchase(game) {
@@ -52,116 +62,126 @@ export class ClickMultiplierUpgrade extends Upgrade {
   }
 }
 
+/**
+ * Upgrade that increments a counter (buildings)
+ */
 export class IncrementUpgrade extends Upgrade {
-  constructor(cost, multiplier, displayPrefix, extra = null) {
-    super(cost, multiplier, displayPrefix, extra);
+  constructor(cost, multiplier, displayPrefix, description = '', extra = null) {
+    super(cost, multiplier, displayPrefix, description, extra);
     this.count = 0;
   }
   
   executePurchase(game) {
     this.count++;
   }
+  
+  getDisplayText() {
+    // Remove the count from the button display text
+    return `${this.displayPrefix} (Cost: ${this.cost})`;
+  }
 }
 
+/**
+ * Special lucky upgrade with random bonuses
+ */
 export class LuckyUpgrade extends Upgrade {
-  constructor(cost, multiplier, displayPrefix) {
-    super(cost, multiplier, displayPrefix);
+  constructor(cost, multiplier, displayPrefix, description = 'Try your luck for a random bonus') {
+    super(cost, multiplier, displayPrefix, description);
   }
   
   executePurchase(game) {
-    const bonus = Math.floor(Math.random() * 10) + 1;
-    game.state.cookies += bonus;
-    game.showFloatingNumber(bonus, true);
+    // Random chance for different rewards
+    const rand = Math.random();
+    
+    // 10% chance for jackpot (50-200x cost)
+    if (rand < 0.1) {
+      const multiplier = 50 + Math.floor(Math.random() * 151); // 50-200
+      const bonus = this.cost * multiplier;
+      game.state.cookies += bonus;
+      game.showFloatingNumber(bonus, true);
+      game.showToast(`JACKPOT! ${multiplier}x bonus!`);
+      
+      // Create a special message for jackpot
+      const message = document.createElement("div");
+      message.textContent = `💰 JACKPOT! ${multiplier}x BONUS! 💰`;
+      message.style.position = "fixed";
+      message.style.top = "50%";
+      message.style.left = "50%";
+      message.style.transform = "translate(-50%, -50%)";
+      message.style.fontSize = "28px";
+      message.style.color = "gold";
+      message.style.fontWeight = "bold";
+      message.style.textShadow = "2px 2px 4px #000";
+      message.style.zIndex = "1000";
+      message.style.textAlign = "center";
+      message.style.pointerEvents = "none";
+      document.body.appendChild(message);
+      
+      // Animation and cleanup
+      setTimeout(() => message.remove(), 2000);
+    } 
+    // 20% chance for good reward (10-50x cost)
+    else if (rand < 0.3) {
+      const multiplier = 10 + Math.floor(Math.random() * 41); // 10-50
+      const bonus = this.cost * multiplier;
+      game.state.cookies += bonus;
+      game.showFloatingNumber(bonus, true);
+      game.showToast(`Lucky! ${multiplier}x bonus!`);
+    } 
+    // 30% chance for moderate reward (3-10x cost)
+    else if (rand < 0.6) {
+      const multiplier = 3 + Math.floor(Math.random() * 8); // 3-10
+      const bonus = this.cost * multiplier;
+      game.state.cookies += bonus;
+      game.showFloatingNumber(bonus, true);
+      game.showToast(`${multiplier}x bonus!`);
+    } 
+    // 20% chance for small reward (1-3x cost)
+    else if (rand < 0.8) {
+      const multiplier = 1 + Math.floor(Math.random() * 3); // 1-3
+      const bonus = this.cost * multiplier;
+      game.state.cookies += bonus;
+      game.showFloatingNumber(bonus, true);
+      game.showToast(`${multiplier}x bonus.`);
+    } 
+    // 20% chance to get nothing
+    else {
+      game.showToast("No luck this time.");
+      game.showFloatingNumber(0, false);
+    }
+    
+    // Track lucky streak
+    game.state.luckyStreak = (game.state.luckyStreak || 0) + 1;
   }
 }
 
+/**
+ * Shop upgrades with custom purchase behavior
+ */
 export class ShopUpgrade extends Upgrade {
-  constructor(cost, multiplier, displayPrefix, extra = null, baseCost) {
-    super(cost, multiplier, displayPrefix, extra);
-    this.baseCost = baseCost;
-    // Store the name that will be used in data-upgrade attributes
-    this.key = '';
+  constructor(cost, multiplier, displayPrefix, extra = null, baseCost = null) {
+    super(cost, multiplier, displayPrefix, '', extra);
+    this.baseCost = baseCost || cost;
   }
-  
-  // Override purchase entirely (different cost update)
+
   purchase(game) {
-    // Ensure cookies is a number and not NaN
-    if (isNaN(game.state.cookies)) {
-      console.error("Cookie count is NaN, fixing...");
-      game.state.cookies = 0;
-    }
-    
     if (!this.canPurchase(game)) {
-      console.log(`Not enough cookies for ${this.displayPrefix}. Cost: ${this.cost}, have: ${game.state.cookies}`);
-      
-      try {
-        // Use direct import function if game.showToast fails
-        if (typeof game.showToast === 'function') {
-          game.showToast(`Not enough cookies for ${this.displayPrefix}`);
-        } else {
-          const { showToast } = require('./utils.js');
-          showToast(`Not enough cookies for ${this.displayPrefix}`);
-        }
-      } catch (e) {
-        console.error("Could not show toast notification:", e);
-        // Fallback to alert for critical errors
-        alert(`Not enough cookies for ${this.displayPrefix}`);
-      }
-      return;
+      game.log(`Not enough cookies for ${this.displayPrefix}. Cost: ${this.cost}, have: ${game.state.cookies}`);
+      game.showToast(`Not enough cookies for ${this.displayPrefix}`);
+      return false;
     }
     
-    // Deduct cookies from player's total
     game.state.cookies -= this.cost;
     
-    // Call the appropriate method based on the upgrade type
-    if (typeof game[this.extra] === 'function') {
-      try {
-        game[this.extra](this);
-        console.log(`Successfully executed ${this.extra} method`);
-      } catch (e) {
-        console.error(`Error executing method ${this.extra}:`, e);
-      }
-    } else {
-      console.error(`Method ${this.extra} not found in game object`);
+    // Call the appropriate method on the game object
+    if (this.extra && typeof game[this.extra] === 'function') {
+      game[this.extra](this);
     }
     
-    // Update the cost for next purchase
-    this.cost = Math.floor(this.cost * this.multiplier);
-    
-    // Find the key of this upgrade in the shopUpgrades object
-    let upgradeKey = '';
-    for (const key in game.shopUpgrades) {
-      if (game.shopUpgrades[key] === this) {
-        upgradeKey = key;
-        break;
-      }
-    }
-    
-    // Update the cost display in the UI using the upgrade key
-    if (upgradeKey) {
-      const upgradeElement = document.querySelector(`[data-upgrade="${upgradeKey}"] .item-cost span`);
-      if (upgradeElement) {
-        upgradeElement.textContent = this.cost;
-      }
-    }
-    
-    // Update game display
+    // Update cost after purchase
+    this.updateCost();
     game.updateDisplay();
     
-    try {
-      // Use direct import function if game.showToast fails
-      if (typeof game.showToast === 'function') {
-        game.showToast(`${this.displayPrefix} purchased!`);
-      } else {
-        // Try to import it directly
-        import('./utils.js').then(utils => {
-          utils.showToast(`${this.displayPrefix} purchased!`);
-        }).catch(e => {
-          console.error("Could not import showToast:", e);
-        });
-      }
-    } catch (e) {
-      console.error("Could not show toast notification:", e);
-    }
+    return true;
   }
 }

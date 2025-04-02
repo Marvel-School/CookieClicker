@@ -93,387 +93,163 @@ export const ANIMATION_SETS = {
 export class PersonalizationManager {
   constructor(game) {
     this.game = game;
-    
-    // Set default personalization settings
-    this.settings = {
-      theme: THEMES.CLASSIC.id,
-      cookieSkin: COOKIE_SKINS.CLASSIC.id,
-      cursorSkin: CURSOR_SKINS.CLASSIC.id,
-      animations: ANIMATION_SETS.STANDARD.id,
-      particleIntensity: 1.0
-    };
+    this.initialized = false;
   }
-  
-  // Apply current theme to the page
-  applyTheme() {
-    const theme = this.getCurrentTheme();
-    document.documentElement.dataset.theme = theme.id;
-    
-    // Apply color variables to the root element
-    const root = document.documentElement;
-    root.style.setProperty('--background', theme.colors.background);
-    root.style.setProperty('--text-color', theme.colors.text);
-    root.style.setProperty('--primary-color', theme.colors.primary);
-    root.style.setProperty('--secondary-color', theme.colors.secondary);
-    root.style.setProperty('--accent-color', theme.colors.accent);
-    root.style.setProperty('--panel-color', theme.colors.panels);
-    
-    // Update background element
-    const background = document.querySelector('.background');
-    if (background) {
-      background.style.background = theme.colors.background;
+
+  init() {
+    // Apply saved personalization settings from game state
+    this.initialized = true;
+
+    if (this.game.state.personalization) {
+      // Apply saved theme if available
+      const theme = this.game.state.personalization.theme || 'classic';
+      this.setTheme(theme, false);
+
+      // Apply saved animation setting if available
+      const animations = this.game.state.personalization.animations || 'standard';
+      this.setAnimations(animations, false);
+
+      // Apply saved particle intensity if available
+      const intensity = this.game.state.personalization.particleIntensity || 1.0;
+      this.setParticleIntensity(intensity, false);
     }
-    
-    // Apply button styling
-    this.updateButtonStyles(theme);
-    
-    // Save to game state
-    if (this.game && this.game.state) {
-      this.game.state.personalization = this.settings;
-    }
-    
-    return theme;
+
+    console.log('Personalization system initialized with:', this.game.state.personalization);
   }
-  
-  // Update cookie skin
-  applyCookieSkin() {
-    const cookieSkin = this.getCurrentCookieSkin();
-    const cookieElement = this.game.cookie;
-    
-    if (cookieElement) {
-      cookieElement.src = cookieSkin.image;
-      cookieElement.alt = cookieSkin.name;
+
+  setTheme(theme, showNotification = true) {
+    if (!this.initialized) {
+      console.warn('Personalization manager not initialized');
+      return;
     }
+
+    // Store current theme for the event
+    const oldTheme = this.game.state.personalization.theme;
     
-    return cookieSkin;
-  }
-  
-  // Update cursor skin
-  applyCursorSkin() {
-    const cursorSkin = this.getCurrentCursorSkin();
+    // Update game state
+    this.game.state.personalization.theme = theme;
+
+    // Remove any existing theme classes from body
+    document.body.classList.remove('theme-classic', 'theme-dark', 'theme-neon');
     
-    // Update auto clicker images
-    const autoClickerImages = document.querySelectorAll('.upgrade-image[alt="Auto Clicker"]');
-    autoClickerImages.forEach(img => {
-      img.src = cursorSkin.image;
+    // Add new theme class to body
+    document.body.classList.add(`theme-${theme}`);
+
+    // Also set data attribute for more specific CSS selectors
+    document.body.setAttribute('data-theme', theme);
+    document.documentElement.setAttribute('data-theme', theme);
+
+    if (showNotification) {
+      this.showThemeChangedNotification(theme);
+    }
+
+    // Dispatch a theme change event for other components to react
+    const themeChangeEvent = new CustomEvent('themechange', {
+      detail: {
+        oldTheme,
+        newTheme: theme
+      }
     });
-    
-    return cursorSkin;
+    document.dispatchEvent(themeChangeEvent);
+
+    console.log(`Theme changed to: ${theme}`);
   }
-  
-  // Update animation settings
-  applyAnimationSettings() {
-    const animationSet = this.getCurrentAnimationSet();
-    document.documentElement.dataset.animations = animationSet.id;
+
+  // Add the missing setAnimations function
+  setAnimations(animationLevel, showNotification = true) {
+    if (!this.initialized) {
+      console.warn('Personalization manager not initialized');
+      return;
+    }
+
+    // Store current animation level for the event
+    const oldAnimationLevel = this.game.state.personalization.animations;
     
-    // Adjust particle settings based on intensity
-    const intensity = this.settings.particleIntensity;
+    // Update game state
+    this.game.state.personalization.animations = animationLevel;
+
+    // Remove any existing animation classes from body
+    document.body.classList.remove('animations-standard', 'animations-reduced', 'animations-minimal');
+    
+    // Add new animation class to body
+    document.body.classList.add(`animations-${animationLevel}`);
+
+    // Also set data attribute for more specific CSS selectors
+    document.body.setAttribute('data-animations', animationLevel);
+    document.documentElement.setAttribute('data-animations', animationLevel);
+
+    if (showNotification) {
+      this.showNotification(`Animations set to ${animationLevel} mode`);
+    }
+
+    // Dispatch an animation change event for other components to react
+    const animationChangeEvent = new CustomEvent('animationchange', {
+      detail: {
+        oldLevel: oldAnimationLevel,
+        newLevel: animationLevel
+      }
+    });
+    document.dispatchEvent(animationChangeEvent);
+
+    console.log(`Animation level changed to: ${animationLevel}`);
+  }
+
+  setParticleIntensity(intensity, showNotification = true) {
+    if (!this.initialized) {
+      console.warn('Personalization manager not initialized');
+      return;
+    }
+
+    // Update game state
+    this.game.state.personalization.particleIntensity = intensity;
+
+    // Set CSS variable for particle intensity
     document.documentElement.style.setProperty('--particle-intensity', intensity);
-    
-    return animationSet;
-  }
-  
-  // Apply all personalization settings
-  applyAllSettings() {
-    this.applyTheme();
-    this.applyCookieSkin();
-    this.applyCursorSkin();
-    this.applyAnimationSettings();
-  }
-  
-  // Set theme by ID
-  setTheme(themeId) {
-    // Only set valid theme IDs
-    for (const key in THEMES) {
-      if (THEMES[key].id === themeId) {
-        this.settings.theme = themeId;
-        this.applyTheme();
-        return THEMES[key];
-      }
+
+    if (showNotification) {
+      this.showNotification(`Particle intensity set to ${intensity}`);
     }
-    
-    // If theme doesn't exist, use classic theme
-    this.settings.theme = THEMES.CLASSIC.id;
-    this.applyTheme();
-    return THEMES.CLASSIC;
+
+    console.log(`Particle intensity changed to: ${intensity}`);
   }
-  
-  // Set cookie skin by ID
-  setCookieSkin(skinId) {
-    // Only set valid skin IDs
-    for (const key in COOKIE_SKINS) {
-      if (COOKIE_SKINS[key].id === skinId) {
-        this.settings.cookieSkin = skinId;
-        this.applyCookieSkin();
-        return COOKIE_SKINS[key];
-      }
-    }
-    
-    // If skin doesn't exist, use classic skin
-    this.settings.cookieSkin = COOKIE_SKINS.CLASSIC.id;
-    this.applyCookieSkin();
-    return COOKIE_SKINS.CLASSIC;
+
+  showThemeChangedNotification(theme) {
+    const themeNames = {
+      'classic': 'Classic',
+      'dark': 'Dark Mode',
+      'neon': 'Neon'
+    };
+
+    this.showNotification(`Theme changed to ${themeNames[theme] || theme}`);
   }
-  
-  // Set cursor skin by ID
-  setCursorSkin(skinId) {
-    // Only set valid skin IDs
-    for (const key in CURSOR_SKINS) {
-      if (CURSOR_SKINS[key].id === skinId) {
-        this.settings.cursorSkin = skinId;
-        this.applyCursorSkin();
-        return CURSOR_SKINS[key];
+
+  showNotification(message) {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = 'theme-switch-notification';
+    notification.textContent = message;
+
+    // Add to page
+    document.body.appendChild(notification);
+
+    // Remove after animation
+    setTimeout(() => {
+      if (notification.parentNode === document.body) {
+        document.body.removeChild(notification);
       }
-    }
-    
-    // If skin doesn't exist, use classic skin
-    this.settings.cursorSkin = CURSOR_SKINS.CLASSIC.id;
-    this.applyCursorSkin();
-    return CURSOR_SKINS.CLASSIC;
-  }
-  
-  // Set animation set by ID
-  setAnimationSet(animationSetId) {
-    // Only set valid animation set IDs
-    for (const key in ANIMATION_SETS) {
-      if (ANIMATION_SETS[key].id === animationSetId) {
-        this.settings.animations = animationSetId;
-        this.applyAnimationSettings();
-        return ANIMATION_SETS[key];
-      }
-    }
-    
-    // If animation set doesn't exist, use standard set
-    this.settings.animations = ANIMATION_SETS.STANDARD.id;
-    this.applyAnimationSettings();
-    return ANIMATION_SETS.STANDARD;
-  }
-  
-  // Set particle intensity (0.0 to 2.0)
-  setParticleIntensity(intensity) {
-    // Clamp intensity between 0 and 2
-    this.settings.particleIntensity = Math.max(0, Math.min(2, intensity));
-    this.applyAnimationSettings();
-    return this.settings.particleIntensity;
-  }
-  
-  // Get current theme object
-  getCurrentTheme() {
-    for (const key in THEMES) {
-      if (THEMES[key].id === this.settings.theme) {
-        return THEMES[key];
-      }
-    }
-    return THEMES.CLASSIC;
-  }
-  
-  // Get current cookie skin object
-  getCurrentCookieSkin() {
-    for (const key in COOKIE_SKINS) {
-      if (COOKIE_SKINS[key].id === this.settings.cookieSkin) {
-        return COOKIE_SKINS[key];
-      }
-    }
-    return COOKIE_SKINS.CLASSIC;
-  }
-  
-  // Get current cursor skin object
-  getCurrentCursorSkin() {
-    for (const key in CURSOR_SKINS) {
-      if (CURSOR_SKINS[key].id === this.settings.cursorSkin) {
-        return CURSOR_SKINS[key];
-      }
-    }
-    return CURSOR_SKINS.CLASSIC;
-  }
-  
-  // Get current animation set object
-  getCurrentAnimationSet() {
-    for (const key in ANIMATION_SETS) {
-      if (ANIMATION_SETS[key].id === this.settings.animations) {
-        return ANIMATION_SETS[key];
-      }
-    }
-    return ANIMATION_SETS.STANDARD;
-  }
-  
-  // Update button styles based on theme
-  updateButtonStyles(theme) {
-    // Create a style element for dynamic styles
-    let styleEl = document.getElementById('theme-dynamic-styles');
-    
-    if (!styleEl) {
-      styleEl = document.createElement('style');
-      styleEl.id = 'theme-dynamic-styles';
-      document.head.appendChild(styleEl);
-    }
-    
-    // Update button styles based on theme colors
-    styleEl.textContent = `
-      .left button, 
-      #settingsMenu button,
-      .setting-btn,
-      .upgrade {
-        background: linear-gradient(145deg, ${theme.colors.primary}, ${theme.colors.secondary});
-      }
-      
-      .upgrade .button_top {
-        color: ${theme.colors.primary};
-      }
-      
-      .upgrade-progress-bar {
-        background-color: ${theme.colors.accent};
-      }
-      
-      #achievementsContainer .achievements-header,
-      #shopContainer .shop-header {
-        background: linear-gradient(145deg, ${theme.colors.primary}, ${theme.colors.secondary});
-      }
-    `;
-  }
-  
-  // Load personalization settings from game state
-  loadFromGameState() {
-    if (this.game && this.game.state && this.game.state.personalization) {
-      this.settings = { ...this.settings, ...this.game.state.personalization };
-    }
-    this.applyAllSettings();
+    }, 3000);
   }
 }
 
-// Create a simplified personalization UI for now
-export function createPersonalizationUI(game, personalizer) {
-  const container = document.createElement('div');
-  container.id = 'personalizationContainer';
-  container.className = 'personalization-container';
-  container.style.display = 'none';
-  
-  // Create header
-  const header = document.createElement('div');
-  header.className = 'personalization-header';
-  header.innerHTML = `
-    <span class="personalization-icon">🎨</span>
-    <h2>Personalization</h2>
-  `;
-  container.appendChild(header);
-  
-  // Create simplified content for now
-  const content = document.createElement('div');
-  content.className = 'personalization-content';
-  content.style.padding = '20px';
-  content.innerHTML = `
-    <p style="text-align: center; font-size: 18px;">
-      Choose a theme below to change the game's appearance:
-    </p>
-    <div style="display: flex; justify-content: center; gap: 20px; margin: 30px 0;">
-      <button id="theme-classic" class="theme-button">Classic Theme</button>
-      <button id="theme-dark" class="theme-button">Dark Theme</button>
-      <button id="theme-neon" class="theme-button">Neon Theme</button>
-    </div>
-    <p style="text-align: center; margin-top: 30px;">
-      More personalization options will be available in a future update!
-    </p>
-  `;
-  
-  // Add button styling
-  const style = document.createElement('style');
-  style.textContent = `
-    .theme-button {
-      padding: 10px 20px;
-      background: linear-gradient(145deg, #2980b9, #3498db);
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      cursor: pointer;
-      transition: transform 0.2s ease;
-    }
-    .theme-button:hover {
-      transform: scale(1.05);
-    }
-  `;
-  document.head.appendChild(style);
-  
-  container.appendChild(content);
-  
-  // Add event listeners to theme buttons
-  setTimeout(() => {
-    document.getElementById('theme-classic')?.addEventListener('click', () => {
-      personalizer.setTheme('classic');
-      showToast('Classic theme applied!');
-      container.style.display = 'none';
-    });
-    
-    document.getElementById('theme-dark')?.addEventListener('click', () => {
-      personalizer.setTheme('dark');
-      showToast('Dark theme applied!');
-      container.style.display = 'none';
-    });
-    
-    document.getElementById('theme-neon')?.addEventListener('click', () => {
-      personalizer.setTheme('neon');
-      showToast('Neon theme applied!');
-      container.style.display = 'none';
-    });
-  }, 100);
-  
-  // Add footer with close button
-  const footer = document.createElement('div');
-  footer.className = 'personalization-footer';
-  footer.style.padding = '15px';
-  footer.style.textAlign = 'right';
-  footer.style.borderTop = '1px solid #ddd';
-  
-  const closeButton = document.createElement('button');
-  closeButton.className = 'close-button';
-  closeButton.textContent = 'Close';
-  closeButton.style.background = '#e74c3c';
-  closeButton.style.color = 'white';
-  closeButton.style.border = 'none';
-  closeButton.style.borderRadius = '5px';
-  closeButton.style.padding = '8px 15px';
-  closeButton.style.cursor = 'pointer';
-  
-  closeButton.addEventListener('click', () => {
-    container.style.display = 'none';
-  });
-  
-  footer.appendChild(closeButton);
-  container.appendChild(footer);
-  
-  return container;
-}
-
-// Helper to initialize the personalization system
+// Initialize the personalization system
 export function initPersonalizationSystem(game) {
-  // Create personalization manager
-  const personalizer = new PersonalizationManager(game);
-  game.personalizer = personalizer;
-  
-  // Load settings from game state
-  personalizer.loadFromGameState();
-  
-  // Create UI
-  const ui = createPersonalizationUI(game, personalizer);
-  document.body.appendChild(ui);
-  
-  // Add personalization button to settings
-  const settingsMenu = document.getElementById('settingsMenu');
-  if (settingsMenu) {
-    const personalizationButton = document.createElement('button');
-    personalizationButton.id = 'personalizationButton';
-    personalizationButton.textContent = 'Personalization';
-    
-    personalizationButton.addEventListener('click', () => {
-      // Hide settings menu
-      settingsMenu.style.display = 'none';
-      
-      // Show personalization menu
-      ui.style.display = 'block';
-    });
-    
-    settingsMenu.appendChild(personalizationButton);
+  // Create the personalization manager if it doesn't exist
+  if (!game.personalizationManager) {
+    game.personalizationManager = new PersonalizationManager(game);
   }
-  
-  return personalizer;
+
+  // Initialize it
+  game.personalizationManager.init();
+
+  return game.personalizationManager;
 }
