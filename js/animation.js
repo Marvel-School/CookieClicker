@@ -188,14 +188,14 @@ export function dropCookieImage() {
   newImg.classList.add("falling");
 
   let screenWidth = window.innerWidth;
-  let centerStart = screenWidth * 0.4; // بداية منتصف الشاشة (40% من العرض)
-  let centerWidth = screenWidth * 0.3; // عرض منتصف الشاشة (20% من العرض)
+  let centerStart = screenWidth * 0.3; 
+  let centerWidth = screenWidth * 0.4; 
 
   let screenLength = window.innerHeight
   let topStart = screenLength * -0.6
-  let topWidth = screenLength * -0.6; // عرض منتصف الشاشة (20% من العرض)
+  let topWidth = screenLength * -0.6; 
   
-  // وضع الصورة في نطاق المنتصف
+  
   newImg.style.left = centerStart + Math.random() * centerWidth + "px";
   newImg.style.top = topStart + Math.random() * centerWidth + "px";
   document.body.appendChild(newImg);
