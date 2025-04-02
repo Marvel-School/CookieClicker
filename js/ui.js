@@ -3,186 +3,168 @@
 export function setupEventListeners(game) {
   // Add event listeners to upgrade buttons
   document.querySelectorAll("button.upgrade").forEach((btn) => {
+    const upgradeKey = btn.id;
     btn.addEventListener("click", () => {
-      game.log("Upgrade button clicked:", btn.id);
-      game.purchaseStandardUpgrade(btn.id);
+      game.purchaseStandardUpgrade(upgradeKey);
+    });
+
+    // Add hover sound
+    btn.addEventListener("mouseover", () => {
+      game.playHoverSound();
     });
   });
 
-  // Add hover sound to upgrade buttons
-  const upgradeButtons = [
-    game.clickUpgradeButton,
-    game.autoClickerButton,
-    game.grandmaButton,
-    game.farmButton,
-    game.luckyClickButton,
-  ];
-  
-  upgradeButtons.forEach((btn) =>
-    btn.addEventListener("mouseover", () => game.playHoverSound())
-  );
+  // Shop Items: Purchase functionality only
+  document.querySelectorAll(".shop-item").forEach((item) => {
+    const upgradeKey = item.dataset.upgrade;
+    if (!upgradeKey) return;
 
-  // Shop icon click handler
-  if (game.shopIcon && game.shopContainer) {
-    game.shopIcon.addEventListener("click", (e) => {
-      e.stopPropagation(); 
-      const isVisible = game.shopContainer.style.display === "block";
-      game.shopContainer.style.display = isVisible ? "none" : "block";
+    // Make the whole item clickable
+    item.style.cursor = 'pointer';
+
+    item.addEventListener("click", () => {
+      game.purchaseShopUpgrade(upgradeKey);
     });
-    
-    // Prevent clicks inside the shop container from closing it
-    game.shopContainer.addEventListener("click", (e) => {
-      e.stopPropagation();
+
+    // Add hover sound
+    item.addEventListener("mouseover", () => {
+      game.playHoverSound();
     });
-    
-    // Close shop panel when clicking elsewhere
-    document.addEventListener("click", () => {
-      if (game.shopContainer.style.display === "block") {
-        game.shopContainer.style.display = "none";
-      }
+  });
+
+  // Cookie click handler - keep this
+  if (game.cookie) {
+    console.log("Setting up cookie click event listener");
+    game.cookie.addEventListener("click", (e) => {
+      console.log("Cookie click event triggered");
+      game.handleCookieClick(e);
     });
+
+    // Also add direct DOM event as a fallback
+    document.getElementById('cookie')?.addEventListener("click", (e) => {
+      console.log("Backup cookie click handler triggered");
+      game.handleCookieClick(e);
+    });
+  } else {
+    console.error("CRITICAL ERROR: game.cookie element not found when setting up event listeners");
   }
 
-  // Settings Panel
-  setupSettingsPanel(game);
-  
-  // Achievements icon handler
-  setupAchievementsPanel(game);
-  
-  // Cookie click handler
-  game.cookie.addEventListener("click", (e) => game.handleCookieClick(e));
-
-  // Set up shop item tooltips
+  // Set up tooltips
   setupTooltips(game);
 
   // Update upgrade descriptions on load
   game.uiManager.updateUpgradeDescriptions();
 }
 
+// Unified tooltip system
 function setupTooltips(game) {
-  console.log("Setting up shop item click handlers - tooltips completely removed");
+  // Clean up any existing tooltips
+  document.querySelectorAll('body > .item-desc').forEach(t => t.remove());
   
-  // Get all shop items first to see if they exist
-  const shopItems = document.querySelectorAll('.shop-item');
-  console.log(`Found ${shopItems.length} shop items to set up`);
-  
-  shopItems.forEach((item, index) => {
-    // Create a clean replacement without any tooltip elements
-    const upgradeKey = item.getAttribute("data-upgrade");
-    console.log(`Shop item ${index + 1} has data-upgrade="${upgradeKey}"`);
+  // Set up tooltips for shop items
+  document.querySelectorAll('.shop-item').forEach(item => {
+    const tooltip = item.querySelector('.item-desc');
+    if (!tooltip) return;
     
-    // Create a completely new element without tooltips
-    const cleanItem = document.createElement('div');
-    cleanItem.className = item.className;
-    cleanItem.setAttribute('data-upgrade', upgradeKey);
+    // Store original content
+    const originalContent = tooltip.innerHTML;
+    tooltip.style.display = 'none'; // Hide original
     
-    // Only copy essential child elements, excluding tooltips
-    const essentialSelectors = ['img.shop-item-image', '.item-name', '.item-cost', '.time-accelerator-timer'];
-    essentialSelectors.forEach(selector => {
-      const element = item.querySelector(selector);
-      if (element) {
-        cleanItem.appendChild(element.cloneNode(true));
-      }
-    });
-    
-    // Replace the original item with our clean version
-    item.parentNode.replaceChild(cleanItem, item);
-    
-    // Add click handler to the entire shop item
-    cleanItem.addEventListener('click', (e) => {
-      e.stopPropagation(); // Prevent bubbling
-      console.log(`Shop item clicked with key: ${upgradeKey}`);
+    // Add mouse events
+    item.addEventListener('mouseenter', (e) => {
+      // Remove any existing tooltips
+      document.querySelectorAll('body > .item-desc').forEach(t => t.remove());
       
-      if (upgradeKey && game.shopUpgrades[upgradeKey]) {
-        console.log(`Found matching upgrade for ${upgradeKey} attempting purchase`);
-        try {
-          game.purchaseShopUpgrade(upgradeKey);
-        } catch (error) {
-          console.error(`Error purchasing ${upgradeKey}:`, error);
-        }
-      } else {
-        console.error(`Shop upgrade not found in game.shopUpgrades: ${upgradeKey}`);
-        console.log("Available upgrades:", Object.keys(game.shopUpgrades));
-      }
+      // Create fresh tooltip element
+      const newTooltip = document.createElement('div');
+      newTooltip.className = 'item-desc';
+      newTooltip.innerHTML = `<div class="text-container">${originalContent}</div>`;
+      document.body.appendChild(newTooltip);
+      
+      // Position tooltip
+      positionTooltip(newTooltip, item);
+    });
+    
+    item.addEventListener('mouseleave', (e) => {
+      // Clean up tooltips when mouse leaves
+      document.querySelectorAll('body > .item-desc').forEach(t => t.remove());
+    });
+  });
+  
+  // Set up tooltips for upgrade buttons
+  document.querySelectorAll('button.upgrade').forEach(button => {
+    // Get the upgrade key from the button id
+    const upgradeKey = button.id;
+    if (!upgradeKey || !game.upgrades[upgradeKey]) return;
+    
+    const upgrade = game.upgrades[upgradeKey];
+    if (!upgrade.description) return;
+    
+    button.addEventListener('mouseenter', (e) => {
+      // Remove any existing tooltips
+      document.querySelectorAll('body > .item-desc').forEach(t => t.remove());
+      
+      // Create tooltip with the upgrade description
+      const newTooltip = document.createElement('div');
+      newTooltip.className = 'item-desc';
+      newTooltip.innerHTML = `<div class="text-container">${upgrade.description}</div>`;
+      document.body.appendChild(newTooltip);
+      
+      // Position tooltip
+      positionTooltip(newTooltip, button);
+    });
+    
+    button.addEventListener('mouseleave', (e) => {
+      // Clean up tooltips when mouse leaves
+      document.querySelectorAll('body > .item-desc').forEach(t => t.remove());
     });
   });
 }
 
-function setupSettingsPanel(game) {
-  // Settings Panel: Toggle display on settings icon click
-  game.settingsIcon.addEventListener("click", (e) => {
-    e.stopPropagation(); 
-    game.settingsMenu.style.display = 
-      game.settingsMenu.style.display === "block" ? "none" : "block";
-  });
+// Helper function to position tooltips with boundary checking
+function positionTooltip(tooltip, target) {
+  // Get positioning information
+  const rect = target.getBoundingClientRect();
   
-  // Prevent clicks inside the settings menu from closing it
-  game.settingsMenu.addEventListener("click", (e) => {
-    e.stopPropagation();
-  });
-  
-  // Close settings menu when clicking elsewhere
-  document.addEventListener("click", () => {
-    if (game.settingsMenu.style.display === "block") {
-      game.settingsMenu.style.display = "none";
+  // Wait for the tooltip to be rendered to get its dimensions
+  setTimeout(() => {
+    const tooltipHeight = tooltip.offsetHeight || 100;
+    const tooltipWidth = tooltip.offsetWidth || 200;
+    const minPadding = 10;
+    
+    // Check if tooltip would be cut off at top
+    const positionAbove = rect.top - tooltipHeight - 15;
+    if (positionAbove < minPadding) {
+      // Position below instead
+      tooltip.style.top = (rect.bottom + 15) + 'px';
+      tooltip.classList.add('position-below');
+    } else {
+      // Position above (standard)
+      tooltip.style.top = positionAbove + 'px';
     }
-  });
-
-  // Settings control buttons
-  const settingsButtons = [
-    game.saveGameButton,
-    game.loadGameButton,
-    game.resetGameButton,
-    game.toggleSoundButton,
-  ];
-  
-  settingsButtons.forEach((btn) =>
-    btn.addEventListener("mouseover", () => game.playHoverSound())
-  );
-  
-  game.saveGameButton.addEventListener("click", () => game.saveGame());
-  game.loadGameButton.addEventListener("click", () => game.loadGame());
-  game.resetGameButton.addEventListener("click", () => game.resetGame());
-  game.toggleSoundButton.addEventListener("click", () => {
-    game.soundOn = !game.soundOn;
-    alert(`Sound is now ${game.soundOn ? "ON" : "OFF"}.`);
-    game.log("Sound toggled:", game.soundOn);
-  });
-  
-  // Remove the temporary golden cookie spawn button listener
-}
-
-function setupAchievementsPanel(game) {
-  const achievementsIcon = document.getElementById("achievementsIcon");
-  const achievementsContainer = document.getElementById("achievementsContainer");
-  
-  if (achievementsIcon && achievementsContainer) {
-    // Toggle visibility
-    achievementsIcon.addEventListener("click", (e) => {
-      e.stopPropagation(); 
-      const isVisible = achievementsContainer.style.display === "block";
-      achievementsContainer.style.display = isVisible ? "none" : "block";
-    });
     
-    // Prevent clicks inside the achievements container from closing it
-    achievementsContainer.addEventListener("click", (e) => {
-      e.stopPropagation();
-    });
+    // Handle horizontal positioning
+    let leftPos = rect.left + (rect.width / 2) - (tooltipWidth / 2);
+    if (leftPos < minPadding) {
+      leftPos = minPadding;
+    } else if (leftPos + tooltipWidth > window.innerWidth - minPadding) {
+      leftPos = window.innerWidth - tooltipWidth - minPadding;
+    }
+    tooltip.style.left = leftPos + 'px';
     
-    // Close achievements panel when clicking elsewhere
-    document.addEventListener("click", () => {
-      if (achievementsContainer.style.display === "block") {
-        achievementsContainer.style.display = "none";
-      }
-    });
-  }
+    // Ensure visibility
+    tooltip.style.zIndex = '100000';
+  }, 0);
 }
 
 export function updateGameDisplay(game) {
   try {
-    // Protect against NaN in cookie count
-    if (isNaN(game.state.cookies)) {
-      console.error("Cookie count is NaN, fixing...");
+    // Sanitize game state before updating display
+    game.sanitizeGameState();
+    
+    // Protect against NaN in cookie count with thorough validation
+    if (typeof game.state.cookies !== 'number' || isNaN(game.state.cookies)) {
+      console.error("Cookie count is invalid, fixing...", game.state.cookies);
       game.state.cookies = 0;
     }
     
@@ -191,14 +173,21 @@ export function updateGameDisplay(game) {
     // Update text displays using formatted numbers for better readability
     if (game.cookieCount) game.cookieCount.textContent = formatNumber(cookies);
     
-    // Limit click power display to 1 decimal place with fallback
+    // Limit click power display to 1 decimal place with improved fallback
     if (game.clickPowerDisplay) {
       try {
-        game.clickPowerDisplay.textContent = formatNumberWithDecimals(game.state.clickPower);
+        const clickPower = game.state.clickPower;
+        if (typeof clickPower !== 'number' || isNaN(clickPower)) {
+          console.error("Click power is invalid:", clickPower);
+          game.state.clickPower = 1; // Reset
+          game.clickPowerDisplay.textContent = "1";
+        } else {
+          game.clickPowerDisplay.textContent = formatNumberWithDecimals(clickPower);
+        }
       } catch (e) {
         console.error("Error formatting click power:", e);
-        // Fallback to simple display
-        game.clickPowerDisplay.textContent = game.state.clickPower;
+        // Safe fallback display
+        game.clickPowerDisplay.textContent = "1";
       }
     }
     
@@ -234,32 +223,54 @@ export function updateGameDisplay(game) {
 
 // Helper function to format large numbers
 function formatNumber(num) {
-  if (num === undefined || num === null) return "0";
-  if (isNaN(num)) return "0";
-  if (num < 1000) return Math.floor(num);
-  if (num < 1000000) return (num / 1000).toFixed(1) + 'K';
-  if (num < 1000000000) return (num / 1000000).toFixed(1) + 'M';
-  return (num / 1000000000).toFixed(1) + 'B';
+  // Complete validation
+  if (typeof num !== 'number' || isNaN(num) || !isFinite(num)) {
+    console.error("Invalid number in formatNumber:", num);
+    return "0";
+  }
+  
+  // Ensure it's a number type and not a string
+  num = Number(num);
+  
+  try {
+    if (num < 1000) return Math.floor(num).toString();
+    if (num < 1000000) return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
+    if (num < 1000000000) return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+    return (num / 1000000000).toFixed(1).replace(/\.0$/, '') + 'B';
+  } catch (e) {
+    console.error("Error in formatNumber:", e);
+    return "0"; // Safe fallback
+  }
 }
 
 // New helper function to format numbers with limited decimal places
 function formatNumberWithDecimals(num) {
-  // Safety checks
-  if (num === undefined || num === null) return "0";
-  if (isNaN(num)) return "0";
-  
-  // First check if it's an integer
-  if (Number.isInteger(num)) {
-    return num;
+  // Complete validation
+  if (typeof num !== 'number' || isNaN(num) || !isFinite(num)) {
+    console.error("Invalid number in formatNumberWithDecimals:", num);
+    return "0";
   }
   
-  // If it's less than 1000, format with 1 decimal place
-  if (num < 1000) {
-    return parseFloat(num.toFixed(1));
-  }
+  // Ensure it's a number type
+  num = Number(num);
   
-  // For larger numbers, use the regular formatter
-  return formatNumber(num);
+  try {
+    // First check if it's an integer
+    if (Number.isInteger(num)) {
+      return num.toString();
+    }
+    
+    // If it's less than 1000, format with 1 decimal place
+    if (num < 1000) {
+      return num.toFixed(1).replace(/\.0$/, '');
+    }
+    
+    // For larger numbers, use the regular formatter
+    return formatNumber(num);
+  } catch (e) {
+    console.error("Error in formatNumberWithDecimals:", e);
+    return "0"; // Safe fallback
+  }
 }
 
 function updateButtonStates(game, cookies) {

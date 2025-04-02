@@ -15,6 +15,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // Create a new game instance
     gameInstance = new Game();
     window.gameInstance = gameInstance; // Make accessible for debugging
+
+    // CRITICAL FIX: Call the init method to set up DOM elements and event listeners
+    gameInstance.init();
+    
+    // CRITICAL FIX: Auto-load saved game if it exists
+    if (localStorage.getItem("cookieGameSave")) {
+      gameInstance.loadGame();
+      console.log("Auto-loaded saved game");
+    }
     
     // Ensure the cookie is visible with proper dimensions
     const cookieElement = document.getElementById('cookie');
@@ -208,6 +217,124 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
     
+    // ===== DIRECT PANEL BUTTONS FIX =====
+    // These handlers will work regardless of component initialization
+    
+    // 1. SHOP BUTTON - Direct handler
+    const shopIcon = document.getElementById('shopIcon');
+    const shopContainer = document.getElementById('shopContainer');
+    
+    if (shopIcon && shopContainer) {
+      console.log("Setting up direct shop button handler");
+      
+      shopIcon.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        shopContainer.style.display = shopContainer.style.display === 'block' ? 'none' : 'block';
+        console.log("Shop button clicked, display:", shopContainer.style.display);
+      });
+      
+      // Prevent clicks inside the panel from closing it
+      shopContainer.addEventListener('click', function(e) {
+        e.stopPropagation();
+      });
+    }
+    
+    // 2. ACHIEVEMENTS BUTTON - Direct handler
+    const achievementsIcon = document.getElementById('achievementsIcon');
+    const achievementsContainer = document.getElementById('achievementsContainer');
+    
+    if (achievementsIcon && achievementsContainer) {
+      console.log("Setting up direct achievements button handler");
+      
+      achievementsIcon.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        achievementsContainer.style.display = achievementsContainer.style.display === 'block' ? 'none' : 'block';
+        console.log("Achievements button clicked, display:", achievementsContainer.style.display);
+      });
+      
+      // Prevent clicks inside the panel from closing it
+      achievementsContainer.addEventListener('click', function(e) {
+        e.stopPropagation();
+      });
+    }
+    
+    // 3. SETTINGS BUTTON - Direct handler
+    const settingsIcon = document.getElementById('settingsIcon');
+    
+    if (settingsIcon && settingsMenu) {
+      console.log("Setting up direct settings button handler");
+      
+      // Remove existing listeners to avoid conflicts
+      settingsIcon.replaceWith(settingsIcon.cloneNode(true));
+      const newSettingsIcon = document.getElementById('settingsIcon');
+      
+      // Add fresh event listener
+      newSettingsIcon.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        settingsMenu.style.display = settingsMenu.style.display === 'block' ? 'none' : 'block';
+        console.log("Settings button clicked, display:", settingsMenu.style.display);
+      });
+      
+      // Prevent clicks inside the menu from closing it
+      settingsMenu.addEventListener('click', function(e) {
+        e.stopPropagation();
+      });
+      
+      // Setup the settings buttons directly
+      const saveBtn = document.getElementById('saveGame');
+      const loadBtn = document.getElementById('loadGame');
+      const resetBtn = document.getElementById('resetGame');
+      const soundBtn = document.getElementById('toggleSound');
+      
+      if (saveBtn) saveBtn.addEventListener('click', () => gameInstance.saveGame());
+      if (loadBtn) loadBtn.addEventListener('click', () => gameInstance.loadGame());
+      if (resetBtn) resetBtn.addEventListener('click', () => gameInstance.resetGame());
+      if (soundBtn) soundBtn.addEventListener('click', () => {
+        gameInstance.soundOn = !gameInstance.soundOn;
+        alert(`Sound is now ${gameInstance.soundOn ? "ON" : "OFF"}.`);
+      });
+    }
+    
+    // Global document click to close any open panel
+    document.addEventListener('click', function() {
+      if (shopContainer) shopContainer.style.display = 'none';
+      if (achievementsContainer) achievementsContainer.style.display = 'none';
+      if (settingsMenu) settingsMenu.style.display = 'none';
+      if (personalizationContainer) personalizationContainer.style.display = 'none';
+    });
+
+    // ADD THIS: Direct handler for personalization button
+    if (personalizationBtn && personalizationContainer) {
+      console.log("Setting up direct personalization button handler");
+      
+      personalizationBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        personalizationContainer.style.display = personalizationContainer.style.display === 'block' ? 'none' : 'block';
+        console.log("Personalization button clicked, display:", personalizationContainer.style.display);
+      });
+      
+      // Prevent clicks inside the panel from closing it
+      personalizationContainer.addEventListener('click', function(e) {
+        e.stopPropagation();
+      });
+      
+      // Setup close button explicitly
+      const closeBtn = document.getElementById('closePersonalization');
+      if (closeBtn) {
+        closeBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          personalizationContainer.style.display = 'none';
+          console.log("Personalization panel closed");
+        });
+      }
+    }
+
+    // ===== END DIRECT PANEL BUTTONS FIX =====
+
     console.log("Cookie Clicker initialization complete");
   } catch (e) {
     console.error("CRITICAL ERROR initializing Cookie Clicker:", e);

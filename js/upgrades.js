@@ -13,7 +13,7 @@ export class Upgrade {
   }
   
   getDisplayText() {
-    return `${this.displayPrefix} (Cost: ${this.cost}) - ${this.description}`;
+    return `${this.displayPrefix} (Cost: ${this.cost})`;
   }
   
   canPurchase(game) {
@@ -26,9 +26,8 @@ export class Upgrade {
   
   purchase(game) {
     if (!this.canPurchase(game)) {
-      game.log(
-        `Not enough cookies for ${this.constructor.name}. Cost: ${this.cost}, have: ${game.state.cookies}`
-      );
+      game.log(`Not enough cookies for ${this.constructor.name}. Cost: ${this.cost}, have: ${game.state.cookies}`);
+      game.showToast(`Not enough cookies for ${this.displayPrefix}`);
       return false;
     }
     
@@ -77,7 +76,8 @@ export class IncrementUpgrade extends Upgrade {
   }
   
   getDisplayText() {
-    return `${this.displayPrefix} (Cost: ${this.cost})${this.count > 0 ? ' - ' + this.count : ''}`;
+    // Remove the count from the button display text
+    return `${this.displayPrefix} (Cost: ${this.cost})`;
   }
 }
 
@@ -85,116 +85,72 @@ export class IncrementUpgrade extends Upgrade {
  * Special lucky upgrade with random bonuses
  */
 export class LuckyUpgrade extends Upgrade {
-  constructor(cost, multiplier, displayPrefix, description = 'Try your luck for bonuses!') {
+  constructor(cost, multiplier, displayPrefix, description = 'Try your luck for a random bonus') {
     super(cost, multiplier, displayPrefix, description);
   }
   
   executePurchase(game) {
-    // Get production values
-    const autoClickers = game.upgrades.autoClicker.count || 0;
-    const grandmas = game.upgrades.grandma.count || 0;
-    const farms = game.upgrades.farm.count || 0;
+    // Random chance for different rewards
+    const rand = Math.random();
     
-    // Calculate CPS (cookies per second)
-    const baseCps = autoClickers * 1 + grandmas * 3 + farms * 6; // Using rebalanced production values
-    
-    // Apply multipliers if present
-    const cps = baseCps * (game.state.cookieMultiplier || 1);
-    
-    // Base reward is 30-90 seconds of production
-    const productionSeconds = 30 + Math.floor(Math.random() * 60);
-    
-    // Minimum reward is 100 cookies
-    const baseBonus = Math.max(100, cps * productionSeconds);
-    
-    // Cap the bonus relative to game progress
-    const gameProgress = game.state.cookies / 500;
-    const adaptiveCap = Math.max(1000, 2000 + gameProgress * 2);
-    const cappedBonus = Math.min(baseBonus, adaptiveCap);
-
-    // Determine if this is a critical hit (30% chance)
-    let bonus = 0;
-    let effectMessage = "";
-    let isCritical = false;
-    
-    if (Math.random() < 0.3) {
-      // Critical hit: 2.5-3.5x bonus
-      const critMultiplier = 2.5 + Math.random();
-      bonus = Math.floor(cappedBonus * critMultiplier);
-      isCritical = true;
-      effectMessage = "CRITICAL LUCKY HIT! 💥";
-    } else {
-      // Regular hit: 80-140% of base bonus
-      const randomFactor = 0.8 + (Math.random() * 0.6);
-      bonus = Math.floor(cappedBonus * randomFactor);
-    }
-    
-    // Add cookies to player's total
-    game.state.cookies += bonus;
-    
-    // Show floating number animation
-    if (typeof game.showFloatingNumber === 'function') {
+    // 10% chance for jackpot (50-200x cost)
+    if (rand < 0.1) {
+      const multiplier = 50 + Math.floor(Math.random() * 151); // 50-200
+      const bonus = this.cost * multiplier;
+      game.state.cookies += bonus;
       game.showFloatingNumber(bonus, true);
-    }
-    
-    // Random special effects (15% chance if not critical)
-    if (!isCritical && Math.random() < 0.15) {
-      const effect = Math.floor(Math.random() * 4);
+      game.showToast(`JACKPOT! ${multiplier}x bonus!`);
       
-      switch(effect) {
-        case 0: // Temporary click power boost
-          game.state.clickPowerBoostActive = true;
-          game.state.clickPowerBoostMultiplier = 3;
-          game.state.clickPowerBoostEndTime = Date.now() + 40000;
-          effectMessage = "Click Power x3 for 40s! 👆";
-          
-          setTimeout(() => {
-            game.state.clickPowerBoostActive = false;
-            game.state.clickPowerBoostMultiplier = 1;
-          }, 40000);
-          break;
-          
-        case 1: // Permanent CPS boost
-          game.state.cookieMultiplier = (game.state.cookieMultiplier || 1) * 1.08;
-          effectMessage = "Production +8% Permanently! 📈";
-          break;
-          
-        case 2: // Free auto-clickers
-          if (game.upgrades.autoClicker) {
-            game.upgrades.autoClicker.count = (game.upgrades.autoClicker.count || 0) + 2;
-            effectMessage = "Free 2 Auto-Clickers! 🤖🤖";
-            game.updateDisplay();
-          }
-          break;
-          
-        case 3: // Temporary CPS boost
-          const tempMultiplier = 2;
-          const duration = 60; // seconds
-          
-          const originalMultiplier = game.state.cookieMultiplier || 1;
-          game.state.cookieMultiplier *= tempMultiplier;
-          game.state.cpsBoostActive = true;
-          game.state.cpsBoostEndTime = Date.now() + (duration * 1000);
-          
-          effectMessage = "Cookie Production x2 for 60s! 🚀";
-          
-          setTimeout(() => {
-            if (game.state.cpsBoostActive && game.state.cpsBoostEndTime <= Date.now()) {
-              game.state.cookieMultiplier = originalMultiplier;
-              game.state.cpsBoostActive = false;
-              game.updateDisplay();
-            }
-          }, duration * 1000);
-          break;
-      }
+      // Create a special message for jackpot
+      const message = document.createElement("div");
+      message.textContent = `💰 JACKPOT! ${multiplier}x BONUS! 💰`;
+      message.style.position = "fixed";
+      message.style.top = "50%";
+      message.style.left = "50%";
+      message.style.transform = "translate(-50%, -50%)";
+      message.style.fontSize = "28px";
+      message.style.color = "gold";
+      message.style.fontWeight = "bold";
+      message.style.textShadow = "2px 2px 4px #000";
+      message.style.zIndex = "1000";
+      message.style.textAlign = "center";
+      message.style.pointerEvents = "none";
+      document.body.appendChild(message);
+      
+      // Animation and cleanup
+      setTimeout(() => message.remove(), 2000);
+    } 
+    // 20% chance for good reward (10-50x cost)
+    else if (rand < 0.3) {
+      const multiplier = 10 + Math.floor(Math.random() * 41); // 10-50
+      const bonus = this.cost * multiplier;
+      game.state.cookies += bonus;
+      game.showFloatingNumber(bonus, true);
+      game.showToast(`Lucky! ${multiplier}x bonus!`);
+    } 
+    // 30% chance for moderate reward (3-10x cost)
+    else if (rand < 0.6) {
+      const multiplier = 3 + Math.floor(Math.random() * 8); // 3-10
+      const bonus = this.cost * multiplier;
+      game.state.cookies += bonus;
+      game.showFloatingNumber(bonus, true);
+      game.showToast(`${multiplier}x bonus!`);
+    } 
+    // 20% chance for small reward (1-3x cost)
+    else if (rand < 0.8) {
+      const multiplier = 1 + Math.floor(Math.random() * 3); // 1-3
+      const bonus = this.cost * multiplier;
+      game.state.cookies += bonus;
+      game.showFloatingNumber(bonus, true);
+      game.showToast(`${multiplier}x bonus.`);
+    } 
+    // 20% chance to get nothing
+    else {
+      game.showToast("No luck this time.");
+      game.showFloatingNumber(0, false);
     }
     
-    // Show effect message if there is one
-    if (effectMessage && typeof game.showToast === 'function') {
-      game.showToast(effectMessage);
-    }
-    
-    // Track lucky streak for achievements
+    // Track lucky streak
     game.state.luckyStreak = (game.state.luckyStreak || 0) + 1;
   }
 }
@@ -203,34 +159,28 @@ export class LuckyUpgrade extends Upgrade {
  * Shop upgrades with custom purchase behavior
  */
 export class ShopUpgrade extends Upgrade {
-  constructor(cost, multiplier, displayPrefix, extra = null, baseCost) {
+  constructor(cost, multiplier, displayPrefix, extra = null, baseCost = null) {
     super(cost, multiplier, displayPrefix, '', extra);
     this.baseCost = baseCost || cost;
   }
-  
+
   purchase(game) {
     if (!this.canPurchase(game)) {
-      game.log(
-        `Not enough cookies for ${this.extra || this.displayPrefix}. Cost: ${this.cost}, have: ${game.state.cookies}`
-      );
-      if (typeof game.showToast === 'function') {
-        game.showToast(`Not enough cookies for ${this.extra || this.displayPrefix}`);
-      }
+      game.log(`Not enough cookies for ${this.displayPrefix}. Cost: ${this.cost}, have: ${game.state.cookies}`);
+      game.showToast(`Not enough cookies for ${this.displayPrefix}`);
       return false;
     }
     
     game.state.cookies -= this.cost;
     
+    // Call the appropriate method on the game object
     if (this.extra && typeof game[this.extra] === 'function') {
       game[this.extra](this);
     }
     
-    this.cost = Math.floor(this.cost * this.multiplier);
+    // Update cost after purchase
+    this.updateCost();
     game.updateDisplay();
-    
-    if (typeof game.showToast === 'function') {
-      game.showToast(`${this.extra || this.displayPrefix} purchased!`);
-    }
     
     return true;
   }

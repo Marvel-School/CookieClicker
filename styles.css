@@ -970,25 +970,94 @@ section .set div:nth-child(25) {
   }
 }
 
-/* Floating Numbers */
+/* Floating Numbers - Reduced size further */
 .floating-number {
   position: absolute;
-  color: red;
-  font-size: 20px;
-  width: 220px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1), 
-              inset 0 1px 1px rgba(255, 255, 255, 0.6);
-  border: 1px solid rgba(230, 230, 230, 0.8);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  position: relative;
-  overflow: visible; /* Changed from hidden to visible so title can appear outside box */
-  margin-top: 15px; /* Added margin to ensure space for the title */
-  visibility: visible !important;
-  opacity: 1 !important;
-  display: block !important;
+  font-size: 12px; /* Reduced from 16px */
+  font-weight: bold;
+  text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.7), -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 9000;
+  user-select: none;
+  will-change: transform, opacity;
+  animation: floatUpAndFade 2s ease-out forwards;
+}
+
+/* Color variations based on value - sizes reduced further */
+.floating-number.small {
+  color: #ffffff;
+  font-size: 10px; /* Reduced from 14px */
+}
+
+.floating-number.medium {
+  color: #ffdd00;
+  font-size: 14px; /* Reduced from 18px */
+}
+
+.floating-number.large {
+  color: #ff6600;
+  font-size: 16px; /* Reduced from 22px */
+}
+
+.floating-number.huge {
+  color: #ff0000;
+  font-size: 18px; /* Reduced from 24px */
+  font-weight: 900;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9), -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+}
+
+.floating-number.bonus {
+  color: #00ffff;
+  font-size: 15px; /* Reduced from 20px */
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9), -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+}
+
+/* Color variations based on value - all sizes reduced */
+.floating-number.small {
+  color: #ffffff;
+  font-size: 14px; /* Reduced from 18px */
+}
+
+.floating-number.medium {
+  color: #ffdd00;
+  font-size: 18px; /* Reduced from 22px */
+}
+
+.floating-number.large {
+  color: #ff6600;
+  font-size: 22px; /* Reduced from 26px */
+}
+
+.floating-number.huge {
+  color: #ff0000;
+  font-size: 24px; /* Reduced from 30px */
+  font-weight: 900;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9), -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+}
+
+.floating-number.bonus {
+  color: #00ffff;
+  font-size: 20px; /* Reduced from 24px */
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9), -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+}
+
+@keyframes floatUpAndFade {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) scale(1);
+  }
+  20% {
+    opacity: 1;
+    transform: translate(var(--x-offset, 0), -20px) scale(1.2);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--x-offset, 0), -80px) scale(0.8);
+  }
 }
 
 .upgrade-box:hover {
@@ -1871,124 +1940,6 @@ button.upgrade:disabled .button_top {
 
 .golden-cookie {
   position: absolute;
-  width: 60px;
-  height: 60px;
-  background-image: url('image/goldencookie.png');
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
-  cursor: pointer;
-  pointer-events: auto;
-  z-index: 10001;
-  animation: goldenCookiePulse 1.5s infinite alternate;
-  filter: drop-shadow(0 0 10px gold);
-}
-
-@keyframes goldenCookiePulse {
-  0% {
-    transform: scale(0.9);
-    opacity: 0.8;
-  }
-  100% {
-    transform: scale(1.1);
-    opacity: 1;
-  }
-}
-
-/* Indicator for applied multiplier */
-.multiplier-indicator {
-  position: absolute;
-  top: -10px;
-  right: -10px;
-  background: gold;
-  color: #333;
-  border-radius: 50%;
-  width: 24px;
-  height: 24px;
-  text-align: center;
-  line-height: 24px;
-  font-size: 12px;
-  font-weight: bold;
-  box-shadow: 0 0 8px rgba(255, 215, 0, 0.8);
-}
-
-/* Update shop content layout for 3 items */
-#shopContainer .shop-content {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  padding: 10px;
-  max-height: 400px; /* Increased to accommodate more items */
-}
-
-/* ...existing code... */
-
-/* Toast Notification Container */
-.toast-container {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 10000;
-  display: flex;
-  flex-direction: column-reverse;
-  align-items: center;
-  gap: 10px;
-  pointer-events: none;
-  width: auto;
-}
-
-/* Toast Notification Item */
-.auto-save-notification {
-  position: relative; /* Changed from fixed to relative */
-  background: rgba(0, 0, 0, 0.7);
-  color: white;
-  padding: 10px 20px;
-  border-radius: 5px;
-  font-size: 14px;
-  opacity: 0;
-  animation: fadeInOut 3s forwards;
-  white-space: nowrap;
-  pointer-events: none;
-  margin-bottom: 5px; /* Add margin between toasts */
-  width: 100%;
-  text-align: center;
-}
-
-@keyframes fadeInOut {
-  0% {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  10% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  90% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-}
-
-/* ...existing code... */
-
-/* Golden Cookie styling - enhanced visibility */
-#goldenCookieContainer {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 10000; /* Very high z-index to be above everything */
-}
-
-.golden-cookie {
-  position: absolute;
   width: 80px; /* Larger size for better visibility */
   height: 80px;
   background-image: url('image/goldencookie.png');
@@ -2000,30 +1951,31 @@ button.upgrade:disabled .button_top {
   z-index: 10001;
   animation: goldenCookiePulse 1.5s infinite alternate;
   filter: drop-shadow(0 0 15px gold);
-  
-  /* Debugging outline and background */
-  outline: 2px solid gold;
-  background-color: rgba(255, 215, 0, 0.2);
-  border-radius: 50%;
+  transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
 @keyframes goldenCookiePulse {
   0% {
     transform: scale(0.9);
     opacity: 0.8;
+    filter: drop-shadow(0 0 10px gold);
   }
   100% {
     transform: scale(1.1);
     opacity: 1;
+    filter: drop-shadow(0 0 20px gold);
   }
 }
-
-/* ...existing code... */
 
 /* Golden cookie animation when clicked */
 .golden-cookie-clicked {
   animation: zoom-out 0.5s forwards;
   filter: brightness(1.5);
+}
+
+/* Golden cookie fade animation */
+.golden-cookie-fade {
+  animation: fade-out 1s forwards;
 }
 
 @keyframes zoom-out {
@@ -2037,67 +1989,14 @@ button.upgrade:disabled .button_top {
   }
 }
 
-/* Pulse animation for bonus indicators */
-@keyframes pulse {
+@keyframes fade-out {
   0% {
-    opacity: 0.8;
-  }
-  100% {
     opacity: 1;
   }
-}
-
-/* Click power boosted cookie animation */
-#cookie.click-boosted {
-  animation: click-pulse 0.8s infinite alternate;
-  filter: brightness(1.2) drop-shadow(0 0 10px orange);
-}
-
-@keyframes click-pulse {
-  0% {
-    transform: scale(1.02);
-  }
   100% {
-    transform: scale(1.08);
-    filter: brightness(1.4) drop-shadow(0 0 15px orange);
+    opacity: 0;
   }
 }
-
-/* New Frenzy animation for clicking frenzy */
-#cookie.frenzy-boosted {
-  animation: frenzy-pulse 0.4s infinite alternate;
-  filter: brightness(1.5) drop-shadow(0 0 15px crimson);
-}
-
-@keyframes frenzy-pulse {
-  0% {
-    transform: scale(1.1) rotate(-2deg);
-  }
-  100% {
-    transform: scale(1.2) rotate(2deg);
-    filter: brightness(1.8) saturate(1.5) drop-shadow(0 0 20px crimson);
-  }
-}
-
-/* ...existing code... */
-
-/* Click power boosted cookie animation */
-#cookie.click-boosted {
-  animation: click-pulse 0.8s infinite alternate;
-  filter: brightness(1.2) drop-shadow(0 0 10px orange);
-}
-
-@keyframes click-pulse {
-  0% {
-    transform: scale(1.02);
-  }
-  100% {
-    transform: scale(1.08);
-    filter: brightness(1.4) drop-shadow(0 0 15px orange);
-  }
-}
-
-/* ...existing code... */
 
 /* Active Bonuses Section */
 .active-bonuses {
@@ -2113,104 +2012,209 @@ button.upgrade:disabled .button_top {
 .bonus-indicator {
   padding: 4px 8px;
   border-radius: 12px;
-  font-size: 0.75em;
-  font-weight: bold;
+  background-color: rgba(0, 0, 0, 0.6);
   color: white;
   display: flex;
   align-items: center;
-  gap: 4px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  animation: pulse-glow 1.5s infinite alternate;
-  white-space: nowrap;
+  font-size: 14px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+  animation: pulse 2s infinite alternate;
 }
 
-.bonus-indicator .bonus-icon {
-  font-size: 1.2em;
+.bonus-icon {
+  margin-right: 4px;
+  font-size: 16px;
 }
 
-.bonus-indicator .bonus-timer {
-  margin-left: 2px;
-  font-size: 0.9em;
+.bonus-text {
+  margin-right: 4px;
+  font-weight: bold;
 }
 
-.bonus-indicator.time-accelerator {
-  background: linear-gradient(135deg, #ff4500, #ff8c00);
+.bonus-timer {
+  background-color: rgba(255, 255, 255, 0.2);
+  padding: 0 4px;
+  border-radius: 8px;
+  font-size: 12px;
 }
 
-.bonus-indicator.production-boost {
-  background: linear-gradient(135deg, #ffaa00, #ffcc00);
+/* Specific styles for different bonus types */
+.time-accelerator-bonus {
+  background-color: rgba(255, 69, 0, 0.7);
 }
 
-.bonus-indicator.click-boost {
-  background: linear-gradient(135deg, #ff6600, #ff9966);
+.production-boost-bonus {
+  background-color: rgba(255, 170, 0, 0.7);
 }
 
-.bonus-indicator.frenzy {
-  background: linear-gradient(135deg, #cc0000, #ff0000);
+.click-boost-bonus {
+  background-color: rgba(255, 102, 0, 0.7);
 }
 
-.bonus-indicator.cookie-multiplier {
-  background: linear-gradient(135deg, #9932cc, #ba55d3);
+.cookie-multiplier-bonus {
+  background-color: rgba(101, 67, 33, 0.7);
 }
 
-@keyframes pulse-glow {
+.click-frenzy-bonus {
+  background-color: rgba(220, 20, 60, 0.7);
+  animation: frenzy-pulse 0.5s infinite alternate;
+}
+
+/* Animations for bonus indicators */
+@keyframes bonus-appear {
+  0% {
+    transform: translateY(-10px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes bonus-disappear {
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-10px);
+    opacity: 0;
+  }
+}
+
+@keyframes pulse {
   0% {
     box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+  }
+  100% {
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+  }
+}
+
+@keyframes frenzy-pulse {
+  0% {
+    box-shadow: 0 0 5px rgba(255, 0, 0, 0.5);
     transform: scale(1);
   }
   100% {
-    box-shadow: 0 0 12px rgba(255, 255, 255, 0.8);
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.8);
     transform: scale(1.05);
   }
 }
 
-/* Remove old boost indicators - they're replaced with the new system */
-#production-boost-indicator,
-#click-boost-indicator,
-#frenzy-indicator {
-  display: none;
+/* Click power boosted cookie animation */
+#cookie.click-boosted {
+  animation: click-pulse 0.8s infinite alternate;
+  filter: brightness(1.2) drop-shadow(0 0 10px orange);
 }
 
-/* ...existing code... */
-
-/* Fix duplicate tooltips by hiding the original static tooltips */
-.shop-item > .item-desc {
-  display: none !important; /* Hide the original tooltips that are direct children of shop-item */
-  visibility: hidden !important;
-  opacity: 0 !important;
+@keyframes click-pulse {
+  0% {
+    transform: scale(1.02);
+  }
+  100% {
+    transform: scale(1.08);
+    filter: brightness(1.4) drop-shadow(0 0 15px orange);
+  }
 }
 
-/* Ensure only dynamically created tooltips are visible */
-body > .item-desc.item-desc-tooltip {
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  z-index: 9999999;
+/* Frenzy boosted cookie animation */
+#cookie.frenzy-boosted {
+  animation: frenzy 0.5s infinite alternate;
+  filter: brightness(1.5) saturate(1.5) drop-shadow(0 0 20px crimson);
+}
+
+@keyframes frenzy {
+  0% {
+    transform: scale(1.05) rotate(-1deg);
+  }
+  100% {
+    transform: scale(1.15) rotate(1deg);
+    filter: brightness(1.8) saturate(1.5) drop-shadow(0 0 20px crimson);
+  }
+}
+
+/* Time accelerator cookie animation */
+#cookie.accelerated {
+  animation: accelerated 1s infinite alternate;
+}
+
+@keyframes accelerated {
+  0% {
+    filter: brightness(1.2) drop-shadow(0 0 10px gold);
+    transform: scale(1.03);
+  }
+  100% {
+    filter: brightness(1.4) drop-shadow(0 0 15px gold);
+    transform: scale(1.07);
+  }
+}
+
+/* Tooltip improvements */
+.item-desc {
   position: absolute;
+  background-color: rgba(0, 0, 0, 0.85);
+  color: white;
+  padding: 10px 15px;
+  border-radius: 8px;
+  z-index: 100000;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+  max-width: 250px;
+  opacity: 0;
+  transform: translateY(10px);
+  animation: tooltip-appear 0.2s forwards;
 }
 
-/* ...existing code... */
+.item-desc.position-below {
+  transform-origin: top center;
+}
 
-/* Personalization Panel */
-.panel-container {
+.text-container {
+  text-align: center;
+}
+
+.text-highlight {
+  color: #ffcc00;
+  font-weight: bold;
+  display: inline-block;
+}
+
+@keyframes tooltip-appear {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Improved Personalization Panel Styling */
+#personalizationContainer {
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 360px;
+  width: 380px;
+  max-width: 90%;
   background: linear-gradient(to bottom, #fffaf0, #f8f8ff);
-  padding: 0;
   border-radius: 15px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-  z-index: 9999;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3), 
+              inset 0 1px 3px rgba(255, 255, 255, 0.8);
+  z-index: 999;
   overflow: hidden;
   border: 1px solid rgba(210, 210, 210, 0.8);
+  display: none;
 }
 
 .panel-header {
+  position: relative;
   background: linear-gradient(145deg, #2980b9, #3498db);
   color: white;
-  padding: 12px 15px;
+  padding: 15px 20px;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -2224,361 +2228,161 @@ body > .item-desc.item-desc-tooltip {
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
 }
 
-.panel-icon {
+.panel-header .panel-icon {
   font-size: 24px;
-  text-shadow: 0 0 5px rgba(255,255,255,0.7);
 }
 
-.close-btn {
-  font-size: 24px;
+.panel-header .close-btn {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 28px;
+  height: 28px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-  padding: 0 5px;
+  font-size: 22px;
+  font-weight: bold;
+  transition: all 0.2s ease;
 }
 
-.close-btn:hover {
-  color: #ffcc00;
+.panel-header .close-btn:hover {
+  background: rgba(255, 255, 255, 0.4);
+  transform: translateY(-50%) scale(1.1);
 }
 
 .panel-content {
-  padding: 15px;
-  max-height: 400px;
+  padding: 20px;
+  max-height: 70vh;
   overflow-y: auto;
 }
 
-.section {
-  margin-bottom: 20px;
+/* Personalization Panel Specific Styling */
+#personalizationContainer .section {
+  margin-bottom: 24px;
 }
 
-.section h3 {
-  margin-top: 0;
+#personalizationContainer .section:last-child {
+  margin-bottom: 0;
+}
+
+#personalizationContainer .section h3 {
+  font-size: 18px;
+  margin: 0 0 12px 0;
+  color: #333;
   border-bottom: 1px solid #eee;
   padding-bottom: 8px;
 }
 
-.theme-options, .animation-options {
-  display: flex;
+#personalizationContainer .theme-options,
+#personalizationContainer .animation-options {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: 10px;
-  justify-content: space-around;
+  margin-top: 10px;
+}
+
+#personalizationContainer .theme-button,
+#personalizationContainer .animation-button {
+  background: linear-gradient(145deg, #f5f5f5, #e6e6e6);
+  color: #333;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+#personalizationContainer .theme-button:hover,
+#personalizationContainer .animation-button:hover {
+  background: linear-gradient(145deg, #e6e6e6, #d9d9d9);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+#personalizationContainer .theme-button.active,
+#personalizationContainer .animation-button.active {
+  background: linear-gradient(145deg, #2980b9, #3498db);
+  color: white;
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* Slider styling */
+#personalizationContainer .slider-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
   margin-top: 15px;
 }
 
-.theme-button, .animation-button {
-  background: linear-gradient(145deg, #2980b9, #3498db);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 8px 15px;
-  cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.theme-button:hover, .animation-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-}
-
-.theme-button.active, .animation-button.active {
-  background: linear-gradient(145deg, #27ae60, #2ecc71);
-  box-shadow: 0 0 0 2px rgba(46, 204, 113, 0.5);
-}
-
-/* Enhanced Lucky Click Effects */
-.floating-effect {
-  position: absolute;
-  animation: floatUpSpecial 2s ease-out;
-  pointer-events: none;
-  font-weight: bold;
-}
-
-@keyframes floatUpSpecial {
-  0% { transform: translateY(0) scale(1); opacity: 1; }
-  50% { transform: translateY(-50px) scale(1.2); opacity: 1; }
-  100% { transform: translateY(-100px) scale(1); opacity: 0; }
-}
-
-/* Boosted Click Power Display */
-#clickPower.boosted {
-  color: #ff6600 !important;
-  text-shadow: 0 0 5px rgba(255, 102, 0, 0.5) !important;
-  animation: pulsate 1s infinite alternate;
-}
-
-@keyframes pulsate {
-  from { transform: scale(1); }
-  to { transform: scale(1.1); }
-}
-
-/* Click Power Boost Indicator */
-#click-boost-indicator {
-  background: linear-gradient(to right, #ff6600, #ff9933);
-  color: white;
-  padding: 4px 8px;
-  border-radius: 10px;
-  margin-top: 5px;
-  font-size: 0.8em;
-  font-weight: bold;
-  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
-  animation: pulseGlow 1.5s infinite alternate;
-  display: inline-block;
-}
-
-@keyframes pulseGlow {
-  from { box-shadow: 0 0 5px rgba(255, 102, 0, 0.5); }
-  to { box-shadow: 0 0 15px rgba(255, 102, 0, 0.8); }
-}
-
-/* ...existing code... */
-
-/* Hide all shop item tooltips */
-.shop-item .item-desc,
-.shop-item .item-desc-tooltip,
-.item-desc-tooltip {
-  display: none !important;
-  visibility: hidden !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
-}
-
-/* Also remove tooltip arrows */
-.shop-item .item-desc::after,
-.item-desc-tooltip::after {
-  display: none !important;
-}
-
-/* ...existing code... */
-
-/* COMPLETE REMOVAL OF ALL TOOLTIPS AND HOVER EFFECTS */
-/* This will forcefully hide any tooltip-like elements */
-.shop-item .item-desc,
-.item-desc,
-.item-desc-tooltip,
-body > .item-desc,
-.tooltip,
-[data-tooltip],
-[title],
-.shop-item *[title],
-.shop-item::after,
-.shop-item::before {
-  display: none !important;
-  visibility: hidden !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
-  content: none !important;
-}
-
-/* Prevent any hover styling on shop items */
-.shop-item:hover {
-  transform: none !important;
-  background: inherit !important;
-  box-shadow: none !important;
-}
-
-/* Make sure absolutely no pseudo-elements show on hover */
-.shop-item::after,
-.shop-item::before,
-.shop-item *::after,
-.shop-item *::before {
-  display: none !important;
-  content: none !important;
-}
-
-/* Remove any hover styling that might change appearance */
-.shop-item:hover,
-.shop-item:hover *,
-.shop-item *:hover {
-  border-color: inherit !important;
-  background: inherit !important;
-  color: inherit !important;
-  text-decoration: none !important;
-}
-
-/* ...existing code... */
-
-/* Remove all tooltip-related styles from the main CSS */
-/* These styles should be completely purged */
-
-/* Shop item styling - simplified without tooltips */
-.shop-item {
-  margin-bottom: 10px;
-  border-bottom: 1px solid #ddd;
-  padding-bottom: 10px;
-  position: relative;
-  cursor: pointer;
-  transition: transform 0.2s ease;
-}
-
-.shop-item:hover {
-  transform: translateY(-2px);
-}
-
-.shop-item:last-child {
-  border-bottom: none;
-}
-
-.shop-item .item-name {
-  font-weight: bold;
-  display: block;
-  margin-bottom: 4px;
-}
-
-.shop-item .item-cost {
-  display: block;
-  margin-bottom: 4px;
-}
-
-/* Shop Item Image: Reduced size */
-.shop-item img.shop-item-image {
-  display: block;
-  width: 40px;
-  height: 40px;
-  cursor: pointer;
-  margin-bottom: 4px;
-  transition: transform 0.2s ease;
-  will-change: transform;
-  transform: translateZ(0);
-}
-
-.shop-item img.shop-item-image:hover {
-  transform: scale(1.05);
-}
-
-/* ...existing code... */
-
-/* ...existing code... */
-
-.upgrade .description {
-  display: block;
-  font-size: 12px;
-  color: #777;
-  margin-top: 5px;
-}
-
-/* Golden Cookie feature */
-.golden-cookie {
-  position: absolute;
-  width: 80px;
-  height: 80px;
-  background-image: url('image/goldencookie.png');
-  background-size: contain;
-  background-repeat: no-repeat;
-  z-index: 1000;
-  cursor: pointer;
-  animation: pulse 1.5s infinite ease-in-out;
-  transition: transform 0.3s ease, opacity 0.3s ease;
-  filter: drop-shadow(0 0 15px gold);
-}
-
-.golden-cookie:hover {
-  transform: scale(1.1);
-}
-
-.golden-cookie-clicked {
-  animation: explode 0.5s forwards;
-}
-
-@keyframes pulse {
-  0%, 100% { transform: scale(1); opacity: 0.9; }
-  50% { transform: scale(1.1); opacity: 1; }
-}
-
-@keyframes explode {
-  0% { transform: scale(1.1); opacity: 1; }
-  80% { transform: scale(2); opacity: 0.5; }
-  100% { transform: scale(3); opacity: 0; }
-}
-
-/* Toast container */
-.toast-container {
-  position: fixed;
-  bottom: 30px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 1000;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-}
-
-/* Toast notification types */
-.auto-save-notification.toast-success {
-  background-color: rgba(76, 175, 80, 0.9);
-  border-left: 5px solid #2e7d32;
-}
-
-.auto-save-notification.toast-error {
-  background-color: rgba(244, 67, 54, 0.9);
-  border-left: 5px solid #c62828;
-}
-
-.auto-save-notification.toast-info {
-  background-color: rgba(33, 150, 243, 0.9);
-  border-left: 5px solid #1565c0;
-}
-
-/* Active bonuses display in stats */
-.active-bonuses {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-  margin-top: 10px;
-  min-height: 0;
-  transition: min-height 0.3s ease;
-}
-
-.bonus-indicator {
-  background: rgba(0, 0, 0, 0.7);
-  color: white;
-  padding: 5px 10px;
-  border-radius: 15px;
+#personalizationContainer .slider-container label {
   font-size: 14px;
+  color: #666;
+}
+
+#personalizationContainer .slider-controls {
   display: flex;
   align-items: center;
-  justify-content: center;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-  animation: fadeInScale 0.3s ease;
+  gap: 15px;
 }
 
-.bonus-indicator.click-boost {
-  background: linear-gradient(to right, #ff9a00, #ff6b00);
+#personalizationContainer input[type="range"] {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 8px;
+  border-radius: 4px;
+  background: #e0e0e0;
+  outline: none;
 }
 
-.bonus-indicator.production-boost {
-  background: linear-gradient(to right, #2196f3, #03a9f4);
+#personalizationContainer input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #3498db;
+  cursor: pointer;
+  border: 2px solid white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
-.bonus-indicator.frenzy {
-  background: linear-gradient(to right, #f44336, #e91e63);
+#personalizationContainer input[type="range"]::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #3498db;
+  cursor: pointer;
+  border: 2px solid white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+#personalizationContainer #intensity-value {
+  min-width: 40px;
+  text-align: center;
   font-weight: bold;
+  color: #333;
+  background: #f5f5f5;
+  padding: 4px 8px;
+  border-radius: 4px;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
-.bonus-timer {
-  margin-left: 5px;
-  font-weight: bold;
+/* Responsive tweaks */
+@media (max-width: 480px) {
+  #personalizationContainer {
+    width: 90%;
+    max-height: 80vh;
+  }
+  
+  #personalizationContainer .theme-options,
+  #personalizationContainer .animation-options {
+    grid-template-columns: 1fr;
+  }
 }
 
-@keyframes fadeInScale {
-  from { transform: scale(0.7); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
-}
-
-/* Visual effects for cookie during bonuses */
-.click-boosted {
-  filter: brightness(1.2) drop-shadow(0 0 10px orange) !important;
-  animation: clickBoost 0.5s infinite alternate !important;
-}
-
-.frenzy-boosted {
-  filter: brightness(1.4) drop-shadow(0 0 15px red) saturate(1.5) !important;
-  animation: frenzyBoost 0.3s infinite alternate !important;
-}
-
-@keyframes clickBoost {
-  from { transform: scale(1); }
-  to { transform: scale(1.03); }
-}
-
-@keyframes frenzyBoost {
-  from { transform: scale(1); }
-  to { transform: scale(1.05); }
-}
+/* ...existing code... */

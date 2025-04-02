@@ -1,113 +1,64 @@
 import { UIComponent } from './UIComponent.js';
 
-/**
- * Achievements Panel component to display player achievements
- */
 export class AchievementsPanel extends UIComponent {
-  /**
-   * Initialize the Achievements Panel
-   * @param {Game} game - Reference to the main game object
-   * @param {HTMLElement} element - The achievements panel element
-   * @param {HTMLElement} toggleButton - Button that toggles the panel
-   * @param {HTMLElement} achievementsList - Element to contain achievement items
-   */
-  constructor(game, element, toggleButton, achievementsList) {
-    super(game, element);
-    this.toggleButton = toggleButton;
-    this.achievementsList = achievementsList;
-    this.setupEventListeners();
-  }
-
-  /**
-   * Set up event listeners for the achievements panel
-   */
-  setupEventListeners() {
-    // Toggle panel when achievements icon is clicked
-    if (this.toggleButton) {
-      this.toggleButton.addEventListener('click', (e) => {
-        e.stopPropagation(); // Prevent closing when clicking the icon
-        this.toggle();
-      });
+  constructor(game, containerElement, toggleElement, listElement = null) {
+    super(game, containerElement, toggleElement);
+    
+    // Get the achievements list element
+    if (typeof listElement === 'string') {
+      this.listElement = document.getElementById(listElement);
+    } else {
+      this.listElement = listElement;
     }
     
-    // Prevent panel closing when clicking inside
-    if (this.element) {
-      this.element.addEventListener('click', (e) => {
-        e.stopPropagation();
-      });
-    }
-    
-    // Close panel when clicking elsewhere
-    document.addEventListener('click', () => {
-      if (this.isVisible) {
-        this.hide();
-      }
-    });
+    // Initialize after parent constructor is complete
+    this.initialize();
   }
 
-  /**
-   * Show the achievements panel with updated content
-   */
-  onShow() {
-    this.updateAchievements();
-  }
-
-  /**
-   * Update the achievements list display
-   */
-  updateAchievements() {
-    // Safety check for element
-    if (!this.achievementsList) return;
-
-    // Group achievements by category
-    const earnedAchievements = this.game.achievements.filter(a => a.earned);
-    
-    // Show placeholder if no achievements
-    if (earnedAchievements.length === 0) {
-      this.achievementsList.innerHTML = `
-        <div class="no-achievements">
-          <p>No achievements yet!</p>
-          <p>Keep baking cookies to unlock achievements.</p>
-        </div>
-      `;
+  initialize() {
+    if (!this.element) {
+      console.error('Achievements panel container not found');
       return;
     }
     
-    // Sort by rarity (legendary first)
-    const rarityOrder = {
-      'legendary': 0,
-      'epic': 1,
-      'rare': 2,
-      'uncommon': 3,
-      'common': 4
-    };
+    super.initialize();
     
-    earnedAchievements.sort((a, b) => 
-      rarityOrder[a.rarity] - rarityOrder[b.rarity]
-    );
-    
-    // Generate HTML for each achievement
-    const achievementItems = earnedAchievements.map((ach) => {
-      return `<li class="achievement-item ${ach.rarity}" data-category="${ach.category}">
-        <div class="achievement-icon">${ach.icon}</div>
-        <div class="achievement-content">
-          <h3>${ach.name}</h3>
-          <p>${ach.description}</p>
-          <span class="achievement-rarity ${ach.rarity}">${ach.rarity}</span>
-        </div>
-      </li>`;
-    }).join("");
-    
-    // Update the list content
-    this.achievementsList.innerHTML = achievementItems;
+    // Initial update
+    this.updateAchievements();
   }
   
-  /**
-   * Update the panel's content
-   */
-  update() {
-    if (this.isVisible) {
-      this.updateAchievements();
+  updateAchievements() {
+    if (!this.listElement || !this.game.achievements) return;
+    
+    try {
+      // Get earned achievements
+      const earnedAchievements = this.game.achievements.filter(a => a.earned);
+      
+      if (earnedAchievements.length === 0) {
+        this.listElement.innerHTML = `
+          <div class="no-achievements">
+            <p>No achievements yet!</p>
+            <p>Keep baking cookies to unlock achievements.</p>
+          </div>
+        `;
+        return;
+      }
+      
+      // Generate HTML for each achievement
+      const achievementItems = earnedAchievements.map(ach => {
+        return `<li class="achievement-item ${ach.rarity || 'common'}" data-category="${ach.category || ''}">
+          <div class="achievement-icon">${ach.icon || '🏆'}</div>
+          <div class="achievement-content">
+            <h3>${ach.name}</h3>
+            <p>${ach.description}</p>
+            <span class="achievement-rarity ${ach.rarity || 'common'}">${ach.rarity || 'common'}</span>
+          </div>
+        </li>`;
+      }).join("");
+      
+      this.listElement.innerHTML = achievementItems;
+    } catch (error) {
+      console.error('Error updating achievements panel:', error);
     }
   }
 }

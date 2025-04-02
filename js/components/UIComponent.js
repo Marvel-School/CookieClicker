@@ -1,132 +1,65 @@
 // Base class for UI components
 export class UIComponent {
-  /**
-   * Create a new UI component
-   * @param {Object} game - The game instance
-   * @param {HTMLElement} element - The DOM element for this component
-   */
-  constructor(game, element) {
+  constructor(game, element, toggleElement) {
     this.game = game;
+    
+    // Convert string IDs to DOM elements if needed
+    if (typeof element === 'string') {
+      element = document.getElementById(element);
+    }
+    if (typeof toggleElement === 'string') {
+      toggleElement = document.getElementById(toggleElement);
+    }
+    
     this.element = element;
-    this.visible = false;
-    this.initialized = false;
+    this.toggleElement = toggleElement;
     
-    // Initialize if element exists
-    if (this.element) {
-      this.initialize();
-    }
+    // Log component creation for debugging
+    console.log(`UIComponent created with element: ${element?.id || 'unknown'} and toggle: ${toggleElement?.id || 'unknown'}`);
+    
+    // Don't auto-initialize - let derived classes handle it
   }
   
-  /**
-   * Initialize the component
-   */
   initialize() {
-    if (this.initialized) return;
-    this.initialized = true;
-    
-    // Add click outside listener to document
-    document.addEventListener('click', this.handleDocumentClick.bind(this));
-  }
-  
-  /**
-   * Handle document click to close panel when clicking outside
-   * @param {Event} event - Click event
-   */
-  handleDocumentClick(event) {
-    if (!this.visible) return;
-    
-    // Check if click is outside the component
-    if (this.element && !this.element.contains(event.target)) {
-      // Don't close if clicking a toggle button
-      if (this.toggleButton && this.toggleButton.contains(event.target)) {
-        return;
-      }
-      
-      this.hide();
+    if (!this.element) {
+      console.error(`UI Component Error: Element not found`);
+      return false;
     }
-  }
-  
-  /**
-   * Add a toggle button to show/hide the component
-   * @param {HTMLElement} button - The button element
-   */
-  setToggleButton(button) {
-    this.toggleButton = button;
     
-    if (this.toggleButton) {
-      this.toggleButton.addEventListener('click', (e) => {
-        e.stopPropagation(); // Prevent document click
-        this.toggle();
-      });
-    }
+    // We won't set up toggle functionality here - direct handlers in main.js will handle this
+    console.log(`UIComponent ${this.element.id} initialized (not setting up toggle handlers)`);
+    
+    return true;
   }
   
-  /**
-   * Show the component
-   */
   show() {
     if (this.element) {
+      console.log(`Showing ${this.element.id}`);
       this.element.style.display = 'block';
-      this.visible = true;
-      
-      // Add active class to toggle button if exists
-      if (this.toggleButton) {
-        this.toggleButton.classList.add('active');
-      }
-      
-      this.onShow();
     }
   }
   
-  /**
-   * Hide the component
-   */
   hide() {
     if (this.element) {
+      console.log(`Hiding ${this.element.id}`);
       this.element.style.display = 'none';
-      this.visible = false;
-      
-      // Remove active class from toggle button if exists
-      if (this.toggleButton) {
-        this.toggleButton.classList.remove('active');
-      }
-      
-      this.onHide();
     }
   }
   
-  /**
-   * Toggle component visibility
-   */
   toggle() {
-    if (this.visible) {
+    if (!this.element) return;
+    
+    const currentDisplay = this.element.style.display;
+    if (currentDisplay === 'block') {
       this.hide();
     } else {
       this.show();
     }
+    console.log(`Toggled ${this.element.id} to ${this.element.style.display}`);
   }
   
-  /**
-   * Called when component is shown
-   * Override in child classes
-   */
-  onShow() {
-    // Override in child classes
-  }
-  
-  /**
-   * Called when component is hidden
-   * Override in child classes
-   */
-  onHide() {
-    // Override in child classes
-  }
-  
-  /**
-   * Update the component
-   * Override in child classes
-   */
-  update() {
-    // Override in child classes
+  // Additional helper function to detect if visible
+  isVisible() {
+    return this.element && this.element.style.display === 'block';
   }
 }

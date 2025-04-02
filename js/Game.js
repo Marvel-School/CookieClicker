@@ -1,9 +1,12 @@
 // Core Game class
 
+// Add this constant at the beginning of the file, before the Game class
+const AUTO_SAVE_INTERVAL = 60000; // Auto-save every minute
+
 import { ClickMultiplierUpgrade, IncrementUpgrade, LuckyUpgrade, ShopUpgrade } from './upgrades.js';
 import { setupAchievements } from './achievements.js';
 import { showFloatingNumber, createConfetti, applyTimeAcceleratorVisuals } from './animation.js';
-import { log, showToast, AUTO_SAVE_INTERVAL } from './utils.js';
+import { log, showToast } from './utils.js';
 import { setupEventListeners, updateGameDisplay, updateAchievementsList } from './ui.js';
 import { PersonalizationManager } from './personalization.js';
 import { UIManager } from './UIManager.js';
@@ -11,6 +14,7 @@ import { ShopPanel } from './components/ShopPanel.js';
 import { AchievementsPanel } from './components/AchievementsPanel.js';
 import { SettingsPanel } from './components/SettingsPanel.js';
 import { PersonalizationPanel } from './components/PersonalizationPanel.js';
+import { createConfetti as createConfettiEffect } from './animation.js';
 
 export default class Game {
   constructor() {
@@ -40,7 +44,7 @@ export default class Game {
         animations: 'standard',
         particleIntensity: 1.0
       },
-      // Add tracking for temporary bonuses
+      // Track for temporary bonuses
       activeGoldenCookieBonuses: {
         clickPower: {
           active: false,
@@ -57,95 +61,88 @@ export default class Game {
       }
     };
 
+    // Add tracking for visual updates
+    this._lastGrandmaCount = 0;
+    this._lastAutoClickerCount = 0;
+    this._lastFarmCount = 0;
+
     // Initialize upgrades with descriptions
     this.upgrades = {
-      clickUpgrade: new ClickMultiplierUpgrade(15, 2.5, "Upgrade Click Power", "Increases click power by 2x"),
-      autoClicker: new IncrementUpgrade(60, 1.6, "Buy Auto Clicker", "Automatically clicks for you"),
+      clickUpgrade: new ClickMultiplierUpgrade(15, 2.5, "Upgrade Click Power", "Doubles your click power"),
+      autoClicker: new IncrementUpgrade(60, 1.6, "Buy Auto Clicker", "Automatically clicks once per second"),
       grandma: new IncrementUpgrade(120, 1.7, "Buy Grandma's Bakery", "Grandmas bake cookies for you", "updateGrandmasVisual"),
-      farm: new IncrementUpgrade(600, 1.8, "Buy Cookie Farm", "Farms produce cookies"),
+      farm: new IncrementUpgrade(600, 1.8, "Buy Cookie Farm", "Farms produce cookies automatically"),
       luckyClick: new LuckyUpgrade(25, 1.3, "Lucky Click", "Chance to earn a large number of cookies"),
     };
 
-    // Shop upgrades - REBALANCED VALUES
+    // Shop upgrades - BALANCED VALUES
     this.shopUpgrades = {
-      timeAccelerator: new ShopUpgrade(1000, 2.8, "Time Accelerator", "timeAccelerator", 1000),  // Increased cost scaling from 2.5 to 2.8
-      cookieMultiplier: new ShopUpgrade(2500, 2.2, "Cookie Multiplier", "applyCookieMultiplier", 2500), // Increased base cost from 2000 to 2500
-      goldenCookieChance: new ShopUpgrade(3000, 1.9, "Golden Cookie Charm", "increaseGoldenCookieChance", 3000) // Slightly higher cost scaling (1.8 to 1.9)
+      timeAccelerator: new ShopUpgrade(1000, 2.8, "Time Accelerator", "timeAccelerator", 1000),
+      cookieMultiplier: new ShopUpgrade(2500, 2.2, "Cookie Multiplier", "applyCookieMultiplier", 2500),
+      goldenCookieChance: new ShopUpgrade(3000, 1.9, "Golden Cookie Charm", "increaseGoldenCookieChance", 3000)
     };
 
     // Achievements system
     this.achievements = [];
-    this.setupAchievements();
 
     // Sound settings
     this.soundOn = true;
     this.clickSound = new Audio("sounds/click.mp3");
     this.clickSound.volume = 0.2;
-    this.userHasInteracted = false; // Track if user has interacted with the page
-    
-    // For confetti animation
-    this.lastConfettiTime = 0;
 
-    // Initialize UI manager
+    // Add error handling for audio loading
+    this.clickSound.addEventListener('error', (e) => {
+      console.warn("Error loading click sound:", e);
+      // Continue initialization even if sounds fail to load
+    });
+
+    // Create UI manager
     this.uiManager = new UIManager(this);
 
     // Initialize personalization manager
-    this.personalization = new PersonalizationManager(this);
+    this.personalizationManager = new PersonalizationManager(this);
 
-    // Initialize the game
-    this.init();
-
-    // Auto-load saved game if exists
-    if (localStorage.getItem("cookieGameSave")) {
-      this.loadGame();
-      this.log("Auto-loaded saved game.");
-    } else {
-      // For new game, check achievements after a short delay
-      setTimeout(() => this.checkAchievements(), 500);
-    }
-
-    // Add user interaction detection
-    document.addEventListener('click', () => {
-      this.userHasInteracted = true;
-    }, { once: true });
-
-    // Load and apply personalization settings
-    this.initPersonalization();
+    // Initialize UI panels
+    this.shopPanel = null;
+    this.achievementsPanel = null;
+    this.settingsPanel = null;
+    this.personalizationPanel = null;
   }
 
   log(message, ...data) {
-    log(this.debug, message, ...data);
+    if (this.debug) {
+      console.log(`[Game] ${message}`, ...data);
+    }
   }
 
   // Add a safe play method that checks for user interaction first
   safePlaySound(audioElement) {
     if (!this.soundOn) return;
-    
-    if (this.userHasInteracted) {
-      try {
-        audioElement.currentTime = 0;
-        const playPromise = audioElement.play();
-        
-        // Handle play() promise to avoid uncaught rejection errors
-        if (playPromise !== undefined) {
-          playPromise.catch(error => {
-            console.log("Audio play failed:", error);
-          });
-        }
-      } catch (e) {
-        console.log("Error playing sound:", e);
+
+    try {
+      const playPromise = audioElement.play();
+
+      if (playPromise !== undefined) {
+        playPromise.catch(error => {
+          // Auto-play was prevented, we'll ignore this error
+          this.log("Audio playback was prevented:", error);
+        });
       }
+    } catch (e) {
+      this.log("Error playing sound:", e);
     }
   }
 
   playHoverSound() {
-    // Use the safe play method instead of directly playing
-    this.safePlaySound(this.clickSound);
+    if (this.soundOn) {
+      this.clickSound.currentTime = 0;
+      this.safePlaySound(this.clickSound);
+    }
   }
 
   init() {
     this.log("Initializing DOM elements...");
-    
+
     // Cache DOM elements
     this.cookie = document.getElementById("cookie");
     this.cookieCount = document.getElementById("cookieCount");
@@ -192,13 +189,22 @@ export default class Game {
     // Initialize the active bonuses container
     this.activeBonusesContainer = document.getElementById('activeBonuses');
 
+    // Initialize tracking variables for visual updates
+    this._lastGrandmaCount = this.upgrades.grandma.count || 0;
+    this._lastAutoClickerCount = this.upgrades.autoClicker.count || 0;
+    this._lastFarmCount = this.upgrades.farm.count || 0;
+
     // Set up event listeners
     setupEventListeners(this);
-    
+
     // Update initial display
     updateGameDisplay(this);
+
+    // Update all visuals after implementing the methods
     this.updateGrandmasVisual();
-    
+    this.updateAutoClickersVisual();
+    this.updateFarmsVisual();
+
     // Start game loop
     this.startGameLoop();
 
@@ -214,77 +220,97 @@ export default class Game {
 
     // Initialize UI Panels
     this.initPanels();
+
+    // Setup achievements during initialization
+    this.setupAchievements();
   }
 
   initPanels() {
-    // Shop Panel
-    this.shopPanel = new ShopPanel(
-      this,
-      document.getElementById("shopContainer"),
-      document.getElementById("shopIcon")
-    );
-    
-    // Achievements Panel
-    this.achievementsPanel = new AchievementsPanel(
-      this,
-      document.getElementById("achievementsContainer"),
-      document.getElementById("achievementsIcon"),
-      document.getElementById("achievementsList")
-    );
-    
-    // Settings Panel
-    this.settingsPanel = new SettingsPanel(
-      this,
-      document.getElementById("settingsMenu"),
-      document.getElementById("settingsIcon")
-    );
-    
-    // Personalization Panel
-    this.personalizationPanel = new PersonalizationPanel(
-      this,
-      document.getElementById("personalizationContainer")
-    );
-    
-    // Initialize the bonus indicators container
-    this.activeBonusesContainer = document.getElementById("activeBonuses");
+    try {
+      // Initialize UI panels using DOM elements directly instead of IDs
+      const shopContainer = document.getElementById('shopContainer');
+      const shopIcon = document.getElementById('shopIcon');
+      const achievementsContainer = document.getElementById('achievementsContainer');
+      const achievementsIcon = document.getElementById('achievementsIcon');
+      const achievementsList = document.getElementById('achievementsList');
+      const settingsMenu = document.getElementById('settingsMenu');
+      const settingsIcon = document.getElementById('settingsIcon');
+      const personalizationContainer = document.getElementById('personalizationContainer');
+      const personalizationBtn = document.getElementById('personalizationBtn');
+      
+      // Only create panels if the elements exist
+      if (shopContainer && shopIcon) {
+        this.shopPanel = new ShopPanel(this, shopContainer, shopIcon);
+      }
+      
+      if (achievementsContainer && achievementsIcon && achievementsList) {
+        this.achievementsPanel = new AchievementsPanel(this, achievementsContainer, achievementsIcon, achievementsList);
+      }
+      
+      if (settingsMenu && settingsIcon) {
+        this.settingsPanel = new SettingsPanel(this, settingsMenu, settingsIcon);
+      }
+      
+      if (personalizationContainer && personalizationBtn) {
+        this.personalizationPanel = new PersonalizationPanel(this, personalizationContainer, personalizationBtn);
+      }
+      
+      this.log("UI panels initialized");
+    } catch (error) {
+      console.error("Error initializing panels:", error);
+      // Game can continue without panels
+    }
+  }
+
+  // Update all shop prices
+  updateShopPrices() {
+    Object.keys(this.shopUpgrades).forEach(key => {
+      const upgrade = this.shopUpgrades[key];
+      const costElement = document.querySelector(`[data-upgrade="${key}"] .item-cost span`);
+      if (costElement) {
+        costElement.textContent = this.uiManager.formatNumber(upgrade.cost);
+      }
+    });
   }
 
   // Add a new method to create and manage bonus indicators
   addBonusIndicator(id, type, icon, text, duration = null) {
+    if (!this.activeBonusesContainer) return;
+
     // Remove any existing indicator with the same ID
     this.removeBonusIndicator(id);
-    
-    if (!this.activeBonusesContainer) {
-      this.activeBonusesContainer = document.getElementById('activeBonuses');
-      if (!this.activeBonusesContainer) {
-        console.error("Active bonuses container not found");
-        return;
-      }
-    }
-    
-    // Create the indicator element
+
+    // Create new indicator
     const indicator = document.createElement('div');
     indicator.id = id;
-    indicator.className = `bonus-indicator ${type}`;
-    
-    // Add icon and text
-    indicator.innerHTML = `
-      <span class="bonus-icon">${icon}</span>
-      <span class="bonus-text">${text}</span>
-      ${duration ? `<span class="bonus-timer">${duration}s</span>` : ''}
-    `;
-    
-    // Add to container
+    indicator.className = `bonus-indicator ${type}-bonus`;
+
+    let content = `<span class="bonus-icon">${icon}</span><span class="bonus-text">${text}</span>`;
+
+    if (duration) {
+      content += `<span class="bonus-timer">${duration}s</span>`;
+    }
+
+    indicator.innerHTML = content;
     this.activeBonusesContainer.appendChild(indicator);
-    
-    return indicator;
+
+    // Add animation
+    indicator.style.animation = 'bonus-appear 0.3s forwards';
   }
 
   // Remove a bonus indicator by ID
   removeBonusIndicator(id) {
-    const indicator = document.getElementById(id);
-    if (indicator && indicator.parentNode) {
-      indicator.parentNode.removeChild(indicator);
+    const existing = document.getElementById(id);
+    if (existing) {
+      // Add exit animation
+      existing.style.animation = 'bonus-disappear 0.3s forwards';
+
+      // Remove after animation completes
+      setTimeout(() => {
+        if (existing.parentNode) {
+          existing.parentNode.removeChild(existing);
+        }
+      }, 300);
     }
   }
 
@@ -292,19 +318,16 @@ export default class Game {
   updateBonusIndicator(id, newText = null, newDuration = null) {
     const indicator = document.getElementById(id);
     if (!indicator) return;
-    
+
     if (newText) {
       const textElement = indicator.querySelector('.bonus-text');
-      if (textElement) textElement.textContent = newText;
-    }
-    
-    if (newDuration !== null) {
-      let timerElement = indicator.querySelector('.bonus-timer');
-      if (!timerElement && newDuration) {
-        timerElement = document.createElement('span');
-        timerElement.className = 'bonus-timer';
-        indicator.appendChild(timerElement);
+      if (textElement) {
+        textElement.textContent = newText;
       }
+    }
+
+    if (newDuration !== null) {
+      const timerElement = indicator.querySelector('.bonus-timer');
       if (timerElement) {
         timerElement.textContent = `${newDuration}s`;
       }
@@ -312,1246 +335,1192 @@ export default class Game {
   }
 
   handleCookieClick(e) {
-    // Set user interaction flag on first click
-    this.userHasInteracted = true;
-    
+    console.log("Cookie clicked!"); // Add debugging output
+
     if (this.soundOn) {
-      this.safePlaySound(this.clickSound);
+      try {
+        this.clickSound.currentTime = 0;
+        this.safePlaySound(this.clickSound);
+      } catch (error) {
+        console.warn("Sound error:", error);
+        // Continue with click handling anyway
+      }
+    }
+
+    // Ensure state values are valid numbers - comprehensive validation
+    if (typeof this.state.clickPower !== 'number' || isNaN(this.state.clickPower)) {
+      console.error("Invalid click power detected:", this.state.clickPower);
+      this.state.clickPower = 1; // Reset to default
     }
     
-    // Apply click power boost if active
-    let clickPower = this.state.clickPower;
-    if (this.state.clickPowerBoostActive && this.state.clickPowerBoostEndTime > Date.now()) {
-      clickPower *= this.state.clickPowerBoostMultiplier;
+    if (typeof this.state.cookieMultiplier !== 'number' || isNaN(this.state.cookieMultiplier)) {
+      console.error("Invalid cookie multiplier detected:", this.state.cookieMultiplier);
+      this.state.cookieMultiplier = 1; // Reset to default
     }
     
-    this.state.cookies += clickPower;
+    // Calculate click amount with sanitized values 
+    let clickAmount = this.state.clickPower;
+    
+    // Apply any active bonuses with validation
+    if (this.state.activeGoldenCookieBonuses && 
+        this.state.activeGoldenCookieBonuses.clickPower && 
+        this.state.activeGoldenCookieBonuses.clickPower.active) {
+      
+      // Ensure we have a valid bonus value
+      const bonusValue = this.state.activeGoldenCookieBonuses.clickPower.bonusValue;
+      if (typeof bonusValue === 'number' && !isNaN(bonusValue)) {
+        clickAmount += bonusValue;
+      }
+    }
+    
+    // Final validation before adding to cookies
+    if (typeof clickAmount !== 'number' || isNaN(clickAmount)) {
+      console.error("Final click amount is invalid:", clickAmount);
+      clickAmount = 1; // Use safe default
+    }
+    
+    // Update cookies count
+    const oldCookies = this.state.cookies || 0;
+    this.state.cookies = oldCookies + clickAmount;
+    
+    // Validate cookies after addition
+    if (typeof this.state.cookies !== 'number' || isNaN(this.state.cookies)) {
+      console.error("Cookies value became invalid after addition:", this.state.cookies);
+      this.state.cookies = oldCookies + 1; // Use safe fallback
+    }
+    
     this.log("Cookie clicked. New cookies:", this.state.cookies);
-    
-    showFloatingNumber(this.cookie, this.state.clickPower);
-    this.lastConfettiTime = createConfetti(e.clientX, e.clientY, this.lastConfettiTime);
-    
-    // Add animation to the cookie count
-    if (this.cookieCount) {
-      this.cookieCount.classList.add('updating');
-      this.cookieCount.classList.add('cookie-gain');
-      setTimeout(() => {
-        this.cookieCount.classList.remove('updating');
-        this.cookieCount.classList.remove('cookie-gain');
-      }, 300);
+    this.showFloatingNumber(clickAmount);
+    this.createConfetti(e.clientX, e.clientY);
+    this.checkAchievements();
+    this.updateDisplay();
+  }
+
+  showFloatingNumber(amount, isBonus = false) {
+    // Validate amount is a number with complete sanitization
+    if (typeof amount !== 'number' || isNaN(amount) || !isFinite(amount)) {
+      console.error("Invalid amount for floating number:", amount);
+      amount = 1; // Default to 1 if not a valid number
     }
     
-    this.checkAchievements();
-    updateGameDisplay(this);
+    // Ensure amount is a reasonable number (prevent extremely large values)
+    if (amount > 1e12) { // Cap at trillion
+      console.warn("Extremely large floating number capped:", amount);
+      amount = 1e12;
+    }
+    
+    // Check if cookie element exists
+    if (!this.cookie) {
+      console.error("Cookie element not found when showing floating number");
+      return;
+    }
+
+    // Import and call the floating number function with validated parameters
+    showFloatingNumber(this.cookie, amount, isBonus);
   }
 
-  purchaseStandardUpgrade(upgradeKey) {
-    const upgrade = this.upgrades[upgradeKey];
-    if (!upgrade) return;
+  sanitizeGameState() {
+    const numericProperties = [
+      'cookies',
+      'clickPower',
+      'timeAcceleratorMultiplier',
+      'cookieMultiplier',
+      'goldenCookieChance'
+    ];
     
-    upgrade.purchase(this);
-    this.lastUpgradePurchased = upgradeKey;
-    this.checkAchievements();
+    // Default values for properties if they are missing or invalid
+    const defaultValues = {
+      'cookies': 0,
+      'clickPower': 1,
+      'timeAcceleratorMultiplier': 1,
+      'cookieMultiplier': 1,
+      'goldenCookieChance': 0.1
+    };
+    
+    if (!this.state) {
+      console.error("State object is missing, creating a new one");
+      this.state = {}; // Create empty state if missing
+    }
+    
+    // Ensure all numeric properties are valid numbers
+    numericProperties.forEach(prop => {
+      if (typeof this.state[prop] !== 'number' || isNaN(this.state[prop])) {
+        console.error(`Invalid ${prop} found in game state:`, this.state[prop]);
+        
+        // Fix the property with the default value
+        this.state[prop] = defaultValues[prop];
+      }
+    });
+    
+    // Validate active bonuses
+    if (this.state.activeGoldenCookieBonuses) {
+      const bonusTypes = ['clickPower', 'production'];
+      bonusTypes.forEach(type => {
+        if (this.state.activeGoldenCookieBonuses[type]) {
+          const bonus = this.state.activeGoldenCookieBonuses[type];
+          if (typeof bonus.bonusValue !== 'number' || isNaN(bonus.bonusValue)) {
+            bonus.bonusValue = 0;
+          }
+          if (typeof bonus.originalValue !== 'number' || isNaN(bonus.originalValue)) {
+            bonus.originalValue = 1;
+          }
+        }
+      });
+    } else {
+      // Initialize active bonus state if missing
+      this.state.activeGoldenCookieBonuses = {
+        clickPower: { active: false, originalValue: 1, bonusValue: 0, endTime: 0 },
+        production: { active: false, originalValue: 1, bonusValue: 0, endTime: 0 }
+      };
+    }
+    
+    // Ensure personalization is present
+    if (!this.state.personalization) {
+      this.state.personalization = {
+        theme: 'classic',
+        cookieSkin: 'classic',
+        cursorSkin: 'classic',
+        animations: 'standard',
+        particleIntensity: 1.0
+      };
+    }
+    
+    return this.state; // Return sanitized state
   }
 
-  purchaseShopUpgrade(upgradeKey) {
-    console.log(`Attempting to purchase shop upgrade: ${upgradeKey}`);
-    console.log("Available shop upgrades:", Object.keys(this.shopUpgrades));
+  loadGame() {
+    try {
+      const savedGame = localStorage.getItem("cookieGameSave");
+      if (savedGame) {
+        const parsedState = JSON.parse(savedGame);
+        
+        // Ensure we have valid default values before replacing state
+        const defaultState = {
+          cookies: 0,
+          clickPower: 1,
+          grandmas: 0,
+          timeAcceleratorActive: false,
+          timeAcceleratorMultiplier: 1,
+          timeAcceleratorEndTime: 0,
+          luckyStreak: 0,
+          cookieMultiplier: 1,
+          goldenCookieChance: 0.1,
+          goldenCookieActive: false,
+          lastGoldenCookieTime: 0,
+          personalization: {
+            theme: 'classic',
+            cookieSkin: 'classic',
+            cursorSkin: 'classic',
+            animations: 'standard',
+            particleIntensity: 1.0
+          },
+          activeGoldenCookieBonuses: {
+            clickPower: {
+              active: false,
+              originalValue: 1,
+              bonusValue: 0,
+              endTime: 0
+            },
+            production: {
+              active: false,
+              originalValue: 1,
+              bonusValue: 0,
+              endTime: 0
+            }
+          }
+        };
+        
+        // Create a new state merging defaults with saved values
+        this.state = Object.assign({}, defaultState, parsedState);
+        
+        // Run thorough state sanitization
+        this.sanitizeGameState();
+        
+        // Restore upgrade counts
+        for (const key in this.upgrades) {
+          if (parsedState.upgrades && parsedState.upgrades[key]) {
+            this.upgrades[key].count = parsedState.upgrades[key].count || 0;
+            this.upgrades[key].cost = parsedState.upgrades[key].cost || this.upgrades[key].cost;
+          }
+        }
+        
+        // Update shop prices based on saved state
+        this.updateShopPrices();
+        
+        // Restore achievement progress
+        if (parsedState.achievements) {
+          for (let i = 0; i < parsedState.achievements.length; i++) {
+            if (i < this.achievements.length) {
+              this.achievements[i].earned = parsedState.achievements[i].earned || false;
+            }
+          }
+        }
+        
+        this.updateDisplay();
+        this.updateAchievements();
+        
+        console.log("Game loaded from localStorage", this.state);
+        this.showToast("Game loaded!");
+        
+        // Re-initialize the golden cookie timer with the loaded chance
+        this.startGoldenCookieTimer();
+        
+        return true;
+      }
+    } catch (error) {
+      console.error("Error loading game:", error);
+      this.showToast("Error loading game.");
+    }
+    return false;
+  }
+
+  startGameLoop() {
+    // Sanitize before starting
+    this.sanitizeGameState();
+
+    let lastTime = performance.now();
+    let lastUpdateTime = 0;
+    let lastAchievementCheck = 0;
+
+    const UPDATE_INTERVAL = 100; // Update display every 100ms
+    const ACHIEVEMENT_CHECK_INTERVAL = 1000; // Check achievements every second
+
+    const loop = (now) => {
+      // Calculate accurate delta time
+      const delta = (now - lastTime) / 1000;
+      lastTime = now;
+
+      // Core cookie calculation logic with REBALANCED VALUES
+      const autoClickers = this.upgrades.autoClicker.count || 0;
+      const grandmas = this.upgrades.grandma.count || 0;
+      const farms = this.upgrades.farm.count || 0;
+
+      // Balanced CPS values
+      let cps = autoClickers * 1 + grandmas * 3 + farms * 6;
+
+      // Apply cookie multiplier
+      cps *= this.state.cookieMultiplier;
+
+      // Apply time accelerator if active
+      const timeAccelMult = this.state.timeAcceleratorActive 
+        ? this.state.timeAcceleratorMultiplier 
+        : 1;
+
+      // Update cookies
+      this.state.cookies += cps * timeAccelMult * delta;
+
+      // Update active bonuses timers
+      this.updateActiveBoostTimers();
+
+      // Throttle visual updates to reduce DOM operations
+      if (now - lastUpdateTime > UPDATE_INTERVAL) {
+        this.updateDisplay();
+        lastUpdateTime = now;
+      }
+
+      // Periodically check for new achievements
+      if (now - lastAchievementCheck > ACHIEVEMENT_CHECK_INTERVAL) {
+        this.checkAchievements();
+        lastAchievementCheck = now;
+      }
+
+      requestAnimationFrame(loop);
+    };
+
+    requestAnimationFrame(loop);
+  }
+
+  setupAchievements() {
+    // Define basic achievements
+    this.achievements = [
+      {
+        id: 'first_cookie',
+        name: 'First Cookie',
+        description: 'Click the cookie for the first time',
+        icon: '🍪',
+        rarity: 'common',
+        category: 'clicks',
+        earned: false,
+        condition: (state) => state.cookies >= 1
+      },
+      {
+        id: 'ten_cookies',
+        name: 'Cookie Newbie',
+        description: 'Bake 10 cookies in total',
+        icon: '🍪',
+        rarity: 'common',
+        category: 'cookies',
+        earned: false,
+        condition: (state) => state.cookies >= 10
+      },
+      {
+        id: 'hundred_cookies',
+        name: 'Cookie Apprentice',
+        description: 'Bake 100 cookies in total',
+        icon: '🍪',
+        rarity: 'uncommon',
+        category: 'cookies',
+        earned: false,
+        condition: (state) => state.cookies >= 100
+      },
+      {
+        id: 'first_upgrade',
+        name: 'Upgrader',
+        description: 'Buy your first upgrade',
+        icon: '⬆️',
+        rarity: 'common',
+        category: 'upgrades',
+        earned: false,
+        condition: (state, game) => {
+          // Check if any upgrade has a count > 0
+          return Object.values(game.upgrades).some(upgrade => upgrade.count > 0);
+        }
+      }
+      // More achievements can be added here
+    ];
     
-    const shopUpgrade = this.shopUpgrades[upgradeKey];
-    if (!shopUpgrade) {
-      this.log(`Shop upgrade not found: ${upgradeKey}`);
-      console.error(`Failed to find shop upgrade with key: ${upgradeKey}`);
+    this.log(`Initialized ${this.achievements.length} achievements`);
+  }
+
+  /**
+   * Check for achievements that should be unlocked
+   */
+  checkAchievements() {
+    // Skip if no achievements are defined
+    if (!this.achievements || this.achievements.length === 0) {
       return;
     }
     
-    this.log(`Purchasing shop upgrade: ${upgradeKey} (${shopUpgrade.displayPrefix})`);
-    console.log(`Purchase details: cost=${shopUpgrade.cost}, cookies=${this.state.cookies}`);
-    
     try {
-      shopUpgrade.purchase(this);
-      console.log(`Successfully purchased ${upgradeKey}`);
+      // Check each achievement's condition
+      for (const achievement of this.achievements) {
+        // Skip already earned achievements
+        if (achievement.earned) continue;
+        
+        // Check if condition is met
+        if (achievement.condition(this.state, this)) {
+          // Mark as earned
+          achievement.earned = true;
+          
+          // Show notification
+          this.showToast(`Achievement unlocked: ${achievement.name}`);
+          
+          // Log for debugging
+          this.log(`Achievement unlocked: ${achievement.name}`);
+        }
+      }
+      
+      // Update achievements visual
+      this.updateAchievements();
     } catch (error) {
-      console.error(`Error during purchase of ${upgradeKey}:`, error);
+      console.error("Error checking achievements:", error);
     }
   }
 
-  // New method for cookie multiplier
-  applyCookieMultiplier(item) {
-    // Apply a temporary 2x multiplier for 2 minutes
-    const boostDuration = 120000; // 2 minutes in ms
-    const boostMultiplier = 2;
-    const durationSec = boostDuration / 1000;
+  /**
+   * Update achievements display
+   */
+  updateAchievements() {
+    if (!this.achievementsList) return;
     
-    // Store the original multiplier
-    const originalMultiplier = this.state.cookieMultiplier;
-    
-    // Apply the multiplier
-    this.state.cookieMultiplier *= boostMultiplier;
-    
-    // Add visual indicator
-    this.addBonusIndicator(
-      'cookie-multiplier-boost',
-      'cookie-multiplier',
-      '🍪',
-      `${boostMultiplier}x Cookies`,
-      durationSec
-    );
-    
-    // Apply production boost visuals
-    this.applyProductionBoostVisuals(true);
-    
-    showToast(`Cookie production multiplied by ${boostMultiplier}x for 2 minutes!`);
-    this.log(`Cookie multiplier boosted to ${this.state.cookieMultiplier}x for 2 minutes`);
-    
-    // Start a timer to update the countdown
-    let timeLeft = durationSec;
-    const countdownInterval = setInterval(() => {
-      timeLeft--;
-      if (timeLeft <= 0) {
-        clearInterval(countdownInterval);
-      } else {
-        this.updateBonusIndicator('cookie-multiplier-boost', null, timeLeft);
+    try {
+      // Get earned achievements
+      const earnedAchievements = this.achievements.filter(a => a.earned);
+      
+      // Use UI helper to update the list
+      import('./ui.js').then(ui => {
+        ui.updateAchievementsList(this, earnedAchievements);
+      });
+    } catch (error) {
+      console.error("Error updating achievements:", error);
+    }
+  }
+
+  /**
+   * Updates the visual display for Grandmas
+   */
+  updateGrandmasVisual() {
+    try {
+      if (!this.grandmaProgressBar || !this.grandmaCountDisplay) {
+        this.log("Grandma visual elements not found, skipping update");
+        return;
       }
-    }, 1000);
-    
-    // Reset after duration
-    setTimeout(() => {
-      this.state.cookieMultiplier = originalMultiplier;
-      this.applyProductionBoostVisuals(false);
-      this.removeBonusIndicator('cookie-multiplier-boost');
-      showToast('Cookie multiplier boost has ended.');
-      this.updateDisplay();
-      clearInterval(countdownInterval);
-    }, boostDuration);
+      
+      const grandmaCount = this.upgrades.grandma?.count || 0;
+      const maxGrandmas = 100; // visual cap for progress bar
+      
+      // Update count display
+      this.grandmaCountDisplay.textContent = grandmaCount;
+      
+      // Update progress bar
+      const progressWidth = (grandmaCount / maxGrandmas) * 100;
+      this.grandmaProgressBar.style.width = `${Math.min(progressWidth, 100)}%`;
+      
+      // Store last count for comparison in game loop
+      this._lastGrandmaCount = grandmaCount;
+      
+      this.log(`Updated grandma visuals, count: ${grandmaCount}`);
+    } catch (error) {
+      console.error("Error updating grandma visuals:", error);
+    }
   }
 
-  // New method for golden cookie chance
-  increaseGoldenCookieChance(item) {
-    // Increase golden cookie chance by 0.05 (5%)
-    this.state.goldenCookieChance = Math.min(this.state.goldenCookieChance + 0.05, 0.5);
-    
-    showToast(`Golden Cookie chance increased to ${Math.round(this.state.goldenCookieChance * 100)}%!`);
-    this.log(`Golden cookie chance increased to ${this.state.goldenCookieChance}`);
-    
-    // Force spawn a golden cookie soon after purchase for immediate feedback
-    setTimeout(() => {
-        if (!this.state.goldenCookieActive) {
-            this.spawnGoldenCookie();
-        }
-    }, 3000);
+  /**
+   * Updates the visual display for Auto Clickers
+   */
+  updateAutoClickersVisual() {
+    try {
+      if (!this.autoClickersProgressBar || !this.autoClickersCountVisual) {
+        this.log("Auto Clicker visual elements not found, skipping update");
+        return;
+      }
+      
+      const autoClickerCount = this.upgrades.autoClicker?.count || 0;
+      const maxAutoClickers = 100; // visual cap for progress bar
+      
+      // Update count display
+      this.autoClickersCountVisual.textContent = autoClickerCount;
+      
+      // Update progress bar
+      const progressWidth = (autoClickerCount / maxAutoClickers) * 100;
+      this.autoClickersProgressBar.style.width = `${Math.min(progressWidth, 100)}%`;
+      
+      // Store last count for comparison in game loop
+      this._lastAutoClickerCount = autoClickerCount;
+      
+      this.log(`Updated auto clicker visuals, count: ${autoClickerCount}`);
+    } catch (error) {
+      console.error("Error updating auto clicker visuals:", error);
+    }
   }
 
-  // Start golden cookie spawn timer
+  /**
+   * Updates the visual display for Farms
+   */
+  updateFarmsVisual() {
+    try {
+      if (!this.farmsProgressBar || !this.farmsCountVisual) {
+        this.log("Farm visual elements not found, skipping update");
+        return;
+      }
+      
+      const farmCount = this.upgrades.farm?.count || 0;
+      const maxFarms = 100; // visual cap for progress bar
+      
+      // Update count display
+      this.farmsCountVisual.textContent = farmCount;
+      
+      // Update progress bar
+      const progressWidth = (farmCount / maxFarms) * 100;
+      this.farmsProgressBar.style.width = `${Math.min(progressWidth, 100)}%`;
+      
+      // Store last count for comparison in game loop
+      this._lastFarmCount = farmCount;
+      
+      this.log(`Updated farm visuals, count: ${farmCount}`);
+    } catch (error) {
+      console.error("Error updating farm visuals:", error);
+    }
+  }
+
+  // Start the golden cookie timer
   startGoldenCookieTimer() {
-    const checkGoldenCookie = () => {
-        if (!this.state.goldenCookieActive) {
-            const now = Date.now();
-            // Make sure at least 30 seconds passed since last golden cookie
-            if (now - this.state.lastGoldenCookieTime > 30000) {
-                // Random chance based on goldenCookieChance
-                const roll = Math.random();
-                this.log(`Golden cookie check: rolled ${roll.toFixed(3)} vs chance ${this.state.goldenCookieChance.toFixed(3)}`);
-                if (roll < this.state.goldenCookieChance) {
-                    this.spawnGoldenCookie();
-                }
-            }
-        }
-        
-        // Check again after a delay - use a shorter delay for more frequent checks
-        setTimeout(checkGoldenCookie, 3000); // Check every 3 seconds instead of 5
-    };
-    
-    // Start the timer with a shorter initial delay
-    setTimeout(checkGoldenCookie, 5000); // First check after 5 seconds instead of 10
+    // Clear any existing timer
+    if (this.goldenCookieTimer) {
+      clearTimeout(this.goldenCookieTimer);
+    }
+
+    // Set a random time for the next golden cookie
+    // Base time is between 60-120 seconds, modified by goldenCookieChance
+    const baseMinTime = 60000; // 60 seconds
+    const baseMaxTime = 120000; // 120 seconds
+    const chanceModifier = 1 - (this.state.goldenCookieChance || 0.1); // Lower chance = longer wait
+
+    const minTime = baseMinTime * chanceModifier;
+    const maxTime = baseMaxTime * chanceModifier;
+    const randomTime = minTime + Math.random() * (maxTime - minTime);
+
+    this.log(`Next golden cookie in ${Math.round(randomTime / 1000)} seconds`);
+
+    this.goldenCookieTimer = setTimeout(() => {
+      this.spawnGoldenCookie();
+    }, randomTime);
   }
 
   // Spawn a golden cookie
   spawnGoldenCookie() {
-    // Force reset golden cookie active state for manual spawning
     if (this.state.goldenCookieActive) {
-      console.log("Golden cookie was already active. Removing existing one...");
-      const existingCookies = document.querySelectorAll('.golden-cookie');
-      existingCookies.forEach(cookie => {
-        if (cookie.parentNode) {
-          cookie.parentNode.removeChild(cookie);
-        }
-      });
+      // Already a cookie active, try again later
+      this.startGoldenCookieTimer();
+      return;
     }
-    
-    this.state.goldenCookieActive = true;
-    console.log('Spawning golden cookie!');
-    
-    // Create the golden cookie element
+
+    // Create golden cookie element
     const goldenCookie = document.createElement('div');
     goldenCookie.className = 'golden-cookie';
-    
-    // Random position on screen - keep away from edges
-    const padding = 100;
-    const maxX = window.innerWidth - padding*2;
-    const maxY = window.innerHeight - padding*2;
-    const posX = Math.floor(Math.random() * maxX) + padding;
-    const posY = Math.floor(Math.random() * maxY) + padding;
-    
+
+    // Position randomly on screen with safe margins
+    const margin = 100; // Keep 100px from edges
+    const posX = margin + Math.random() * (window.innerWidth - margin * 2);
+    const posY = margin + Math.random() * (window.innerHeight - margin * 2);
+
     goldenCookie.style.left = `${posX}px`;
     goldenCookie.style.top = `${posY}px`;
-    
-    // Debug information directly on element
-    const debugInfo = document.createElement('div');
-    debugInfo.style.position = 'absolute';
-    debugInfo.style.bottom = '-20px';
-    debugInfo.style.left = '0';
-    debugInfo.style.right = '0';
-    debugInfo.style.textAlign = 'center';
-    debugInfo.style.color = 'white';
-    debugInfo.style.textShadow = '0 0 3px black';
-    debugInfo.style.fontSize = '12px';
-    debugInfo.textContent = 'Click me!';
-    goldenCookie.appendChild(debugInfo);
-    
+
     // Add click handler
     goldenCookie.addEventListener('click', () => {
-      console.log('Golden cookie clicked!');
       this.handleGoldenCookieClick(goldenCookie);
     });
-    
+
     // Log the golden cookie container status
     if (!this.goldenCookieContainer) {
-      console.error('Golden cookie container is missing! Creating it now...');
-      this.goldenCookieContainer = document.createElement('div');
-      this.goldenCookieContainer.id = 'goldenCookieContainer';
-      document.body.appendChild(this.goldenCookieContainer);
+      console.error("Golden cookie container not found!");
+      return;
     }
-    
+
     // Add to container
     this.goldenCookieContainer.appendChild(goldenCookie);
-    
-    // Auto-disappear after 15 seconds
+
+    // Set timeout to remove it if not clicked
+    const lifespan = 15000; // 15 seconds
     setTimeout(() => {
-      if (this.state.goldenCookieActive && goldenCookie.parentNode) {
-        console.log('Golden cookie expired without being clicked');
-        this.removeGoldenCookie(goldenCookie);
-      }
-    }, 15000);
-    
-    console.log('Golden cookie spawned at position:', posX, posY);
-    console.log('Golden cookie element:', goldenCookie);
-    console.log('Image path being used:', window.getComputedStyle(goldenCookie).backgroundImage);
-    
-    return goldenCookie;
+      this.removeGoldenCookie(goldenCookie);
+    }, lifespan);
+
+    this.state.goldenCookieActive = true;
+    this.log('Golden cookie spawned');
+
+    // Play a subtle sound to alert the player
+    if (this.soundOn) {
+      // Play golden cookie sound (if available)
+      const goldenSound = new Audio("sounds/golden.mp3");
+      goldenSound.volume = 0.3;
+      this.safePlaySound(goldenSound);
+    }
   }
 
-  // Handle golden cookie click
-  handleGoldenCookieClick(goldenCookie) {
-    if (!this.state.goldenCookieActive) return;
-    
-    // Different possible rewards - REBALANCED
-    const rewards = [
-      {
-        type: 'cookies',
-        value: () => {
-          // Scale with current production rather than total cookies
-          const autoClickers = this.upgrades.autoClicker.count || 0;
-          const grandmas = this.upgrades.grandma.count || 0;
-          const farms = this.upgrades.farm.count || 0;
-          const cps = autoClickers * 1 + grandmas * 3 + farms * 6;  // Using rebalanced production values
+  // Add method to update boost timers with safety checks
+  updateActiveBoostTimers() {
+    try {
+      const now = Date.now();
+      
+      // Update time accelerator if active
+      if (this.state.timeAcceleratorActive && this.state.timeAcceleratorEndTime) {
+        if (now >= this.state.timeAcceleratorEndTime) {
+          // Time accelerator has expired
+          this.state.timeAcceleratorActive = false;
+          this.state.timeAcceleratorMultiplier = 1;
+          this.applyTimeAcceleratorVisuals(false);
+          this.showToast("Time acceleration has ended");
+          this.log("Time accelerator expired");
           
-          // Base reward is 30 seconds of production, minimum 50 cookies
-          return Math.max(50, Math.floor(cps * 30 * this.state.cookieMultiplier));
-        },
-        message: (amt) => `Golden cookie grants you ${amt} cookies!`
-      },
-      {
-        type: 'production',
-        value: () => 2.5, // 2.5x production for 30 seconds (reduced from 2x)
-        message: () => `Golden cookie boosts production by 150% for 30 seconds!`
-      },
-      {
-        type: 'clickPower',
-        value: () => Math.ceil(this.state.clickPower * 0.4), // +40% click power (reduced from 50%)
-        message: (amt) => `Golden cookie increases click power by ${amt} for 30 seconds!`
-      },
-      {
-        type: 'frenzy', 
-        value: () => 7, // New reward: Short frenzy that rewards rapidly clicking
-        message: () => `Clicking Frenzy! Click power x7 for 15 seconds!`
+          // Remove visual indicator
+          this.removeBonusIndicator('time-accelerator-boost');
+        } else {
+          // Update time display if needed
+          const secondsLeft = Math.floor((this.state.timeAcceleratorEndTime - now) / 1000);
+          this.updateBonusIndicator('time-accelerator-boost', null, secondsLeft);
+        }
       }
-    ];
-    
-    // Select random reward (weighted to avoid too many frenzies)
-    let reward;
-    const roll = Math.random();
-    if (roll < 0.1) { // 10% chance for frenzy
-      reward = rewards[3]; // frenzy
-    } else {
-      // Distribute the remaining rewards evenly
-      const idx = Math.floor(Math.random() * 3);
-      reward = rewards[idx];
-    }
-    
-    // Apply the reward
-    switch (reward.type) {
-      case 'cookies':
-        // Direct cookie rewards are kept
-        const cookieBonus = reward.value();
-        this.state.cookies += cookieBonus;
-        showToast(reward.message(cookieBonus));
-        break;
-        
-      case 'production':
-        // Production boost is temporary
-        const multiplier = reward.value();
-        const duration = 30; // 30 seconds
-        
-        // Store original multiplier before applying boost
-        this.state.activeGoldenCookieBonuses.production = {
-          active: true,
-          originalValue: this.state.cookieMultiplier,
-          bonusValue: this.state.cookieMultiplier * (multiplier - 1),
-          endTime: Date.now() + duration * 1000
-        };
-        
-        // Apply the boost
-        this.state.cookieMultiplier *= multiplier;
-        showToast(reward.message());
-        
-        // Add visual indicator
-        this.addBonusIndicator(
-          'golden-cookie-production-boost',
-          'production-boost',
-          '✨',
-          `${multiplier}x Production`,
-          duration
-        );
-        
-        // Apply visual effects
-        this.applyProductionBoostVisuals(true);
-        
-        // Start a timer to update the countdown
-        let timeLeft = duration;
-        const countdownInterval = setInterval(() => {
-          timeLeft--;
-          if (timeLeft <= 0) {
-            clearInterval(countdownInterval);
-          } else {
-            this.updateBonusIndicator('golden-cookie-production-boost', null, timeLeft);
-          }
-        }, 1000);
-        
-        // Reset after duration
-        setTimeout(() => {
-          if (this.state.activeGoldenCookieBonuses.production.active) {
-            this.state.cookieMultiplier = this.state.activeGoldenCookieBonuses.production.originalValue;
-            this.state.activeGoldenCookieBonuses.production.active = false;
-            
-            // Remove visual effects
-            this.applyProductionBoostVisuals(false);
-            this.removeBonusIndicator('golden-cookie-production-boost');
-            
-            showToast('Production boost has ended.');
-            this.updateDisplay();
-          }
-          clearInterval(countdownInterval);
-        }, duration * 1000);
-        break;
-        
-      case 'clickPower':
-        // Click power boost is temporary
-        const powerBonus = reward.value();
-        const clickDuration = 30; // 30 seconds
-        
-        // Store original click power before applying boost
-        this.state.activeGoldenCookieBonuses.clickPower = {
-          active: true,
-          originalValue: this.state.clickPower,
-          bonusValue: powerBonus,
-          endTime: Date.now() + clickDuration * 1000
-        };
-        
-        // Apply the temporary boost
-        this.state.clickPower += powerBonus;
-        showToast(reward.message(powerBonus));
-        
-        // Add visual indicator
-        this.addBonusIndicator(
-          'golden-cookie-click-boost',
-          'click-boost',
-          '👆',
-          `+${powerBonus} Click`,
-          clickDuration
-        );
-        
-        // Apply visual effect for click power boost
-        this.applyClickPowerBoostVisuals(true);
-        
-        // Start a timer to update the countdown
-        let clickTimeLeft = clickDuration;
-        const clickCountdownInterval = setInterval(() => {
-          clickTimeLeft--;
-          if (clickTimeLeft <= 0) {
-            clearInterval(clickCountdownInterval);
-          } else {
-            this.updateBonusIndicator('golden-cookie-click-boost', null, clickTimeLeft);
-          }
-        }, 1000);
-        
-        // Reset after duration
-        setTimeout(() => {
-          if (this.state.activeGoldenCookieBonuses.clickPower.active) {
-            this.state.clickPower = this.state.activeGoldenCookieBonuses.clickPower.originalValue;
-            this.state.activeGoldenCookieBonuses.clickPower.active = false;
-            
-            // Remove visual effects
+      
+      // Check and update golden cookie bonuses
+      if (this.state.activeGoldenCookieBonuses) {
+        // Click power boosts
+        if (this.state.activeGoldenCookieBonuses.clickPower && 
+            this.state.activeGoldenCookieBonuses.clickPower.active) {
+          
+          const clickBoost = this.state.activeGoldenCookieBonuses.clickPower;
+          
+          if (now >= clickBoost.endTime) {
+            // Click boost expired
+            clickBoost.active = false;
+            this.state.clickPower = clickBoost.originalValue || 1;
             this.applyClickPowerBoostVisuals(false);
-            this.removeBonusIndicator('golden-cookie-click-boost');
+            this.showToast("Click power boost has ended");
+            this.log("Click power boost expired");
             
-            showToast('Click power boost has ended.');
-            this.updateDisplay();
-          }
-          clearInterval(clickCountdownInterval);
-        }, clickDuration * 1000);
-        break;
-        
-      case 'frenzy':
-        // Clicking frenzy - massive but short-lived click power boost
-        const frenzyMultiplier = reward.value();
-        const frenzyDuration = 15; // 15 seconds
-        
-        // Store original click power before applying boost
-        this.state.activeGoldenCookieBonuses.clickPower = {
-          active: true,
-          originalValue: this.state.clickPower,
-          bonusValue: this.state.clickPower * (frenzyMultiplier - 1),
-          endTime: Date.now() + frenzyDuration * 1000
-        };
-        
-        // Apply the temporary boost
-        this.state.clickPower *= frenzyMultiplier;
-        showToast(reward.message());
-        
-        // Add visual indicator
-        this.addBonusIndicator(
-          'golden-cookie-frenzy',
-          'frenzy',
-          '🔥',
-          `${frenzyMultiplier}x Click Power`,
-          frenzyDuration
-        );
-        
-        // Apply stronger visual effect for clicking frenzy
-        this.applyClickingFrenzyVisuals(true);
-        
-        // Start a timer to update the countdown
-        let frenzyTimeLeft = frenzyDuration;
-        const frenzyCountdownInterval = setInterval(() => {
-          frenzyTimeLeft--;
-          if (frenzyTimeLeft <= 0) {
-            clearInterval(frenzyCountdownInterval);
+            // Remove visual indicator
+            this.removeBonusIndicator('click-power-boost');
           } else {
-            this.updateBonusIndicator('golden-cookie-frenzy', null, frenzyTimeLeft);
+            // Update time display
+            const secondsLeft = Math.floor((clickBoost.endTime - now) / 1000);
+            this.updateBonusIndicator('click-power-boost', null, secondsLeft);
           }
-        }, 1000);
+        }
         
-        // Reset after duration
-        setTimeout(() => {
-          if (this.state.activeGoldenCookieBonuses.clickPower.active) {
-            this.state.clickPower = this.state.activeGoldenCookieBonuses.clickPower.originalValue;
-            this.state.activeGoldenCookieBonuses.clickPower.active = false;
+        // Production boosts
+        if (this.state.activeGoldenCookieBonuses.production && 
+            this.state.activeGoldenCookieBonuses.production.active) {
+          
+          const prodBoost = this.state.activeGoldenCookieBonuses.production;
+          
+          if (now >= prodBoost.endTime) {
+            // Production boost expired
+            prodBoost.active = false;
+            this.state.cookieMultiplier = prodBoost.originalValue || 1;
+            this.applyProductionBoostVisuals(false);
+            this.showToast("Production boost has ended");
+            this.log("Production boost expired");
             
-            // Remove visual effects
-            this.applyClickingFrenzyVisuals(false);
-            this.removeBonusIndicator('golden-cookie-frenzy');
-            
-            showToast('Clicking frenzy has ended.');
-            this.updateDisplay();
+            // Remove visual indicator
+            this.removeBonusIndicator('production-boost');
+          } else {
+            // Update time display
+            const secondsLeft = Math.floor((prodBoost.endTime - now) / 1000);
+            this.updateBonusIndicator('production-boost', null, secondsLeft);
           }
-          clearInterval(frenzyCountdownInterval);
-        }, frenzyDuration * 1000);
-        break;
+        }
+      }
+    } catch (error) {
+      console.error("Error updating boost timers:", error);
     }
-    
-    // Remove the golden cookie
-    this.removeGoldenCookie(goldenCookie);
-    
-    // Update display
-    this.updateDisplay();
-    this.checkAchievements();
   }
 
-  // Add new method to handle production boost visuals
-  applyProductionBoostVisuals(active) {
+  // Add utility method for applying time accelerator visuals
+  applyTimeAcceleratorVisuals(active) {
+    // Apply visual effects to cookie
+    if (this.cookie) {
+      if (active) {
+        this.cookie.classList.add('accelerated');
+      } else {
+        this.cookie.classList.remove('accelerated');
+      }
+    }
+    
     // Apply visual effects to CPS display
     if (this.cpsDisplay) {
       if (active) {
-        this.cpsDisplay.style.color = "#ffaa00";
-        this.cpsDisplay.style.fontWeight = "bold";
-        this.cpsDisplay.style.textShadow = "0 0 5px gold";
+        this.cpsDisplay.classList.add('boosted');
       } else {
-        this.cpsDisplay.style.color = "";
-        this.cpsDisplay.style.fontWeight = "";
-        this.cpsDisplay.style.textShadow = "";
+        this.cpsDisplay.classList.remove('boosted');
       }
-    }
-    
-    // Add a visual indicator in the stats area
-    const statsDiv = document.querySelector('.stats');
-    
-    // Remove any existing indicator first
-    const existingIndicator = document.getElementById('production-boost-indicator');
-    if (existingIndicator) {
-      existingIndicator.remove();
-    }
-    
-    // Add new indicator if boost is active
-    if (active && statsDiv) {
-      const boost = document.createElement('div');
-      boost.id = 'production-boost-indicator';
-      boost.innerHTML = '⚡ Production Boost Active! ⚡';
-      boost.style.color = '#ffaa00';
-      boost.style.fontWeight = 'bold';
-      boost.style.marginTop = '5px';
-      boost.style.animation = 'pulse 1s infinite alternate';
-      statsDiv.appendChild(boost);
-    }
-  }
-
-  // Add new method to handle click power boost visuals
-  applyClickPowerBoostVisuals(active) {
-    // Apply visual effects to click power display
-    if (this.clickPowerDisplay) {
-      if (active) {
-        this.clickPowerDisplay.style.color = "#ff6600";
-        this.clickPowerDisplay.style.fontWeight = "bold";
-        this.clickPowerDisplay.style.textShadow = "0 0 5px orange";
-      } else {
-        this.clickPowerDisplay.style.color = "";
-        this.clickPowerDisplay.style.fontWeight = "";
-        this.clickPowerDisplay.style.textShadow = "";
-      }
-    }
-    
-    // Apply visual effect to cookie
-    if (this.cookie && active) {
-      this.cookie.classList.add('click-boosted');
-    } else if (this.cookie) {
-      this.cookie.classList.remove('click-boosted');
-    }
-    
-    // Add a visual indicator in the stats area
-    const statsDiv = document.querySelector('.stats');
-    
-    // Remove any existing indicator first
-    const existingIndicator = document.getElementById('click-boost-indicator');
-    if (existingIndicator) {
-      existingIndicator.remove();
-    }
-    
-    // Add new indicator if boost is active
-    if (active && statsDiv) {
-      const boost = document.createElement('div');
-      boost.id = 'click-boost-indicator';
-      boost.innerHTML = '👆 Click Power Boost Active! 👆';
-      boost.style.color = '#ff6600';
-      boost.style.fontWeight = 'bold';
-      boost.style.marginTop = '5px';
-      boost.style.animation = 'pulse 1s infinite alternate';
-      statsDiv.appendChild(boost);
-    }
-  }
-
-  // New method for clicking frenzy visuals
-  applyClickingFrenzyVisuals(active) {
-    // Apply intense effects to cookie
-    if (this.cookie) {
-      if (active) {
-        this.cookie.classList.add('frenzy-boosted');
-        this.cookie.style.filter = "brightness(1.8) saturate(1.5) drop-shadow(0 0 15px crimson)";
-        this.cookie.style.transform = "scale(1.15)";
-      } else {
-        this.cookie.classList.remove('frenzy-boosted');
-        this.cookie.style.filter = "";
-        this.cookie.style.transform = "";
-      }
-    }
-    
-    // Apply effects to click power display
-    if (this.clickPowerDisplay) {
-      if (active) {
-        this.clickPowerDisplay.style.color = "#ff0000";
-        this.clickPowerDisplay.style.fontWeight = "bold";
-        this.clickPowerDisplay.style.textShadow = "0 0 8px red";
-        this.clickPowerDisplay.style.fontSize = "1.2em";
-      } else {
-        this.clickPowerDisplay.style.color = "";
-        this.clickPowerDisplay.style.fontWeight = "";
-        this.clickPowerDisplay.style.textShadow = "";
-        this.clickPowerDisplay.style.fontSize = "";
-      }
-    }
-    
-    // Add a frenzy indicator in the stats area
-    const statsDiv = document.querySelector('.stats');
-    
-    // Remove any existing indicator first
-    const existingIndicator = document.getElementById('frenzy-indicator');
-    if (existingIndicator) {
-      existingIndicator.remove();
-    }
-    
-    // Add new indicator if boost is active
-    if (active && statsDiv) {
-      const boost = document.createElement('div');
-      boost.id = 'frenzy-indicator';
-      boost.innerHTML = '🔥 CLICKING FRENZY! 🔥';
-      boost.style.color = '#ff0000';
-      boost.style.fontWeight = 'bold';
-      boost.style.marginTop = '5px';
-      boost.style.animation = 'pulse 0.5s infinite alternate';
-      boost.style.fontSize = '1.2em';
-      statsDiv.appendChild(boost);
     }
   }
 
   // Remove golden cookie from screen
   removeGoldenCookie(goldenCookie) {
     if (goldenCookie && goldenCookie.parentNode) {
-      goldenCookie.parentNode.removeChild(goldenCookie);
+      goldenCookie.classList.add('golden-cookie-fade');
+      setTimeout(() => {
+        if (goldenCookie.parentNode) {
+          goldenCookie.parentNode.removeChild(goldenCookie);
+        }
+      }, 1000);
     }
     
     this.state.goldenCookieActive = false;
     this.state.lastGoldenCookieTime = Date.now();
   }
 
-  startGameLoop() {
-    let lastTime = performance.now();
-    let lastUpdateTime = 0;
-    let lastAchievementCheck = 0;
-    
-    const UPDATE_INTERVAL = 100; // Update display every 100ms
-    const ACHIEVEMENT_CHECK_INTERVAL = 1000; // Check achievements every second
-    
-    const loop = (now) => {
-      // Calculate accurate delta time
-      const delta = (now - lastTime) / 1000;
-      lastTime = now;
-      
-      // Core cookie calculation logic with REBALANCED VALUES
-      const autoClickers = this.upgrades.autoClicker.count || 0;
-      const grandmas = this.upgrades.grandma.count || 0;
-      const farms = this.upgrades.farm.count || 0;
-      
-      // Reduced CPS values for better game balance
-      let cps = autoClickers * 1 + grandmas * 3 + farms * 6;  // Changed from 5 and 10 to 3 and 6
-      
-      // Apply cookie multiplier
-      cps *= this.state.cookieMultiplier;
-      
-      const timeAccelMult = this.state.timeAcceleratorActive
-        ? this.state.timeAcceleratorMultiplier
-        : 1;
-      
-      // Update cookie count
-      this.state.cookies += cps * timeAccelMult * delta;
-      
-      // Throttle visual updates to reduce DOM operations
-      if (now - lastUpdateTime > UPDATE_INTERVAL) {
-        updateGameDisplay(this);
-        lastUpdateTime = now;
-      }
-      
-      // Periodically check for new achievements
-      if (now - lastAchievementCheck > ACHIEVEMENT_CHECK_INTERVAL) {
-        this.checkAchievements();
-        lastAchievementCheck = now;
-      }
-      
-      requestAnimationFrame(loop);
-    };
-    
-    requestAnimationFrame(loop);
-  }
-
-  updateDisplay() {
-    updateGameDisplay(this);
-    
-    // Add null check before updating timers
-    if (this.state && this.state.activeGoldenCookieBonuses) {
-      this.updateActiveBoostTimers();
+  // Handle golden cookie click
+  handleGoldenCookieClick(goldenCookie) {
+    // Play sound
+    if (this.soundOn) {
+      const popSound = new Audio("sounds/pop.mp3");
+      popSound.volume = 0.5;
+      this.safePlaySound(popSound);
     }
     
-    // Update click power boost visuals if implemented
-    if (this.state.clickPowerBoostActive && this.state.clickPowerBoostEndTime > Date.now()) {
-      const secondsLeft = Math.floor((this.state.clickPowerBoostEndTime - Date.now()) / 1000);
+    // Add visual effect for click
+    goldenCookie.classList.add('golden-cookie-clicked');
+    
+    // Define possible rewards
+    const rewards = [
+      {
+        type: 'cookies',
+        value: () => Math.floor(this.state.cookies * 0.1) + 100, // 10% current cookies + 100
+        message: (amount) => `Lucky! +${this.uiManager.formatNumber(amount)} cookies!`,
+        weight: 40
+      },
+      {
+        type: 'clickPower',
+        value: () => Math.floor(5 + Math.random() * 11), // 5-15 bonus
+        message: (amount) => `Click power boosted by +${amount} for 30 seconds!`,
+        weight: 30
+      },
+      {
+        type: 'production',
+        value: () => 2 + Math.floor(Math.random() * 2), // 2-3x multiplier
+        message: () => `Frenzy! Cookie production multiplied for 30 seconds!`,
+        weight: 20
+      },
+      {
+        type: 'frenzy',
+        value: () => 7, // 7x multiplier
+        message: () => `Clicking frenzy! Click power multiplied by 7x for 15 seconds!`,
+        weight: 10
+      }
+    ];
+    
+    // Choose a reward weighted by the weight property
+    let totalWeight = rewards.reduce((sum, reward) => sum + reward.weight, 0);
+    let random = Math.random() * totalWeight;
+    let reward;
+    
+    for (const r of rewards) {
+      if (random < r.weight) {
+        reward = r;
+        break;
+      }
+      random -= r.weight;
+    }
+    
+    // Default to cookies if somehow we didn't select anything
+    reward = reward || rewards[0];
+    
+    // Apply the reward
+    switch (reward.type) {
+      case 'cookies':
+        const amount = reward.value();
+        this.state.cookies += amount;
+        this.showToast(reward.message(amount));
+        this.showFloatingNumber(amount, true);
+        break;
+        
+      case 'clickPower':
+        // Store original value and set up temporary boost
+        const clickBoost = reward.value();
+        
+        // Initialize boost object if needed
+        if (!this.state.activeGoldenCookieBonuses.clickPower) {
+          this.state.activeGoldenCookieBonuses.clickPower = { active: false };
+        }
+        
+        const clickBoostObj = this.state.activeGoldenCookieBonuses.clickPower;
+        clickBoostObj.active = true;
+        clickBoostObj.originalValue = this.state.clickPower;
+        clickBoostObj.bonusValue = clickBoost;
+        clickBoostObj.endTime = Date.now() + 30000; // 30 seconds
+        
+        // Apply boost
+        this.state.clickPower += clickBoost;
+        this.applyClickPowerBoostVisuals(true);
+        
+        // Add visual indicator
+        this.addBonusIndicator(
+          'click-power-boost',
+          'click-boost',
+          '👆',
+          `+${clickBoost} per click`,
+          30
+        );
+        
+        this.showToast(reward.message(clickBoost));
+        break;
+        
+      case 'production':
+        // Store original value and set up temporary boost
+        const prodMultiplier = reward.value();
+        
+        // Initialize boost object if needed
+        if (!this.state.activeGoldenCookieBonuses.production) {
+          this.state.activeGoldenCookieBonuses.production = { active: false };
+        }
+        
+        const prodBoostObj = this.state.activeGoldenCookieBonuses.production;
+        prodBoostObj.active = true;
+        prodBoostObj.originalValue = this.state.cookieMultiplier;
+        prodBoostObj.bonusValue = prodMultiplier;
+        prodBoostObj.endTime = Date.now() + 30000; // 30 seconds
+        
+        // Apply boost
+        this.state.cookieMultiplier *= prodMultiplier;
+        this.applyProductionBoostVisuals(true);
+        
+        // Add visual indicator
+        this.addBonusIndicator(
+          'production-boost',
+          'production-boost',
+          '⚡',
+          `${prodMultiplier}x Production`,
+          30
+        );
+        
+        this.showToast(reward.message());
+        break;
+        
+      case 'frenzy':
+        // Setup clicking frenzy (shorter but more powerful)
+        const frenzyMultiplier = reward.value();
+        
+        // Initialize boost object if needed
+        if (!this.state.activeGoldenCookieBonuses.clickPower) {
+          this.state.activeGoldenCookieBonuses.clickPower = { active: false };
+        }
+        
+        const frenzyBoostObj = this.state.activeGoldenCookieBonuses.clickPower;
+        frenzyBoostObj.active = true;
+        frenzyBoostObj.originalValue = this.state.clickPower;
+        frenzyBoostObj.bonusValue = this.state.clickPower * (frenzyMultiplier - 1); // Multiply by 7 total
+        frenzyBoostObj.endTime = Date.now() + 15000; // 15 seconds
+        
+        // Apply boost
+        this.state.clickPower = this.state.clickPower * frenzyMultiplier;
+        this.applyClickingFrenzyVisuals(true);
+        
+        // Add visual indicator
+        this.addBonusIndicator(
+          'click-frenzy-boost',
+          'click-frenzy',
+          '🔥',
+          `${frenzyMultiplier}x Clicks`,
+          15
+        );
+        
+        this.showToast(reward.message());
+        break;
+    }
+    
+    // Remove golden cookie
+    this.removeGoldenCookie(goldenCookie);
+    
+    // Start timer for next golden cookie
+    this.startGoldenCookieTimer();
+  }
+
+  /**
+   * Updates all game display elements with current state
+   */
+  updateDisplay() {
+    try {
+      // Import UI functions if needed
+      import('./ui.js').then(ui => {
+        ui.updateGameDisplay(this);
+      }).catch(error => {
+        console.error("Error importing UI module for display update:", error);
+        // Basic fallback if UI module fails to load
+        this.updateBasicDisplay();
+      });
+    } catch (error) {
+      console.error("Error updating display:", error);
+      this.updateBasicDisplay(); // Use fallback on error
+    }
+  }
+
+  /**
+   * Basic display update fallback if UI module fails
+   */
+  updateBasicDisplay() {
+    // Update cookie count
+    if (this.cookieCount) {
+      this.cookieCount.textContent = Math.floor(this.state.cookies).toLocaleString();
+    }
+    
+    // Update document title
+    if (this.count) {
+      this.count.textContent = Math.floor(this.state.cookies).toLocaleString() + " cookies";
+    }
+    
+    // Update click power display
+    if (this.clickPowerDisplay) {
+      this.clickPowerDisplay.textContent = this.state.clickPower.toLocaleString();
+    }
+    
+    // Enable/disable buttons based on available cookies
+    this.updateButtonStates();
+  }
+
+  /**
+   * Update all button states based on available cookies
+   */
+  updateButtonStates() {
+    // Make sure we have the state
+    if (!this.state || typeof this.state.cookies !== 'number') {
+      console.error("Invalid state when updating button states");
+      return;
+    }
+    
+    // Get current cookies
+    const cookies = this.state.cookies;
+    
+    // Update standard upgrade buttons
+    for (const key in this.upgrades) {
+      const btn = document.getElementById(key);
+      if (btn && this.upgrades[key]) {
+        btn.disabled = cookies < this.upgrades[key].cost;
+      }
+    }
+  }
+
+  /**
+   * Shows a toast notification to the user
+   * @param {string} message - The message to display
+   */
+  showToast(message) {
+    try {
+      console.log("Toast:", message);
       
-      // Add a visual indicator
-      if (!document.getElementById('click-boost-indicator')) {
-        const boostIndicator = document.createElement('div');
-        boostIndicator.id = 'click-boost-indicator';
-        boostIndicator.innerHTML = `Click Power x${this.state.clickPowerBoostMultiplier} (${secondsLeft}s)`;
-        const statsDiv = document.querySelector('.stats');
-        if (statsDiv) statsDiv.appendChild(boostIndicator);
+      // Create toast element
+      const toast = document.createElement('div');
+      toast.className = 'auto-save-notification';
+      toast.textContent = message;
+      
+      // Add to document
+      document.body.appendChild(toast);
+      
+      // Remove after animation completes
+      setTimeout(() => {
+        if (toast.parentNode) {
+          toast.parentNode.removeChild(toast);
+        }
+      }, 3000); // Match the animation duration
+    } catch (error) {
+      console.error("Error showing toast:", error);
+    }
+  }
+
+  /**
+   * Automatic save function (called by interval)
+   */
+  autoSave() {
+    try {
+      // Save the game silently (no notification)
+      this.saveGame(true);
+      console.log("Game auto-saved");
+    } catch (error) {
+      console.error("Auto-save failed:", error);
+    }
+  }
+
+  /**
+   * Creates confetti particles at the given coordinates
+   * @param {number} x - X coordinate for the confetti
+   * @param {number} y - Y coordinate for the confetti
+   */
+  createConfetti(x, y) {
+    // Use the imported createConfetti function from animation.js
+    // Keep track of the last confetti creation time to avoid too many particles
+    this.lastConfettiTime = createConfettiEffect(x, y, this.lastConfettiTime);
+  }
+
+  /**
+   * Apply visual effects for click power boost
+   * @param {boolean} active - Whether the boost is active
+   */
+  applyClickPowerBoostVisuals(active) {
+    // Apply visual effects to cookie when click power is boosted
+    if (this.cookie) {
+      if (active) {
+        this.cookie.classList.add('click-boosted');
       } else {
-        const indicator = document.getElementById('click-boost-indicator');
-        indicator.innerHTML = `Click Power x${this.state.clickPowerBoostMultiplier} (${secondsLeft}s)`;
+        this.cookie.classList.remove('click-boosted');
       }
-      
-      // Add visual effect to click power display
-      if (this.clickPowerDisplay) {
+    }
+    
+    // Apply visual effects to click power display
+    if (this.clickPowerDisplay) {
+      if (active) {
         this.clickPowerDisplay.classList.add('boosted');
-      }
-    } else {
-      // Remove the indicator when boost ends
-      const indicator = document.getElementById('click-boost-indicator');
-      if (indicator) indicator.remove();
-      
-      // Remove visual effect from click power display
-      if (this.clickPowerDisplay) {
+      } else {
         this.clickPowerDisplay.classList.remove('boosted');
       }
     }
   }
 
-  showFloatingNumber(amount, isBonus = false) {
-    showFloatingNumber(this.cookie, amount, isBonus);
-  }
-
-  updateGrandmasVisual() {
-    const maxGrandmas = 100;
-    const count = this.upgrades.grandma.count || 0;
-    const progressWidth = (count / maxGrandmas) * 100;
-    
-    if (this.grandmaProgressBar) {
-      this.grandmaProgressBar.style.width = `${Math.min(progressWidth, 100)}%`;
-    }
-    
-    if (this.grandmaCountDisplay) {
-      this.grandmaCountDisplay.textContent = count;
-    }
-    
-    this.log("updateGrandmasVisual: count =", count, "progressWidth =", progressWidth);
-  }
-
-  updateAutoClickersVisual() {
-    const maxAutoClickers = 100;
-    const count = this.upgrades.autoClicker.count || 0;
-    const progressWidth = (count / maxAutoClickers) * 100;
-    
-    if (this.autoClickersProgressBar) {
-      this.autoClickersProgressBar.style.width = `${Math.min(progressWidth, 100)}%`;
-    }
-    
-    if (this.autoClickersCountVisual) {
-      this.autoClickersCountVisual.textContent = count;
-    }
-  }
-
-  updateFarmsVisual() {
-    const maxFarms = 100;
-    const count = this.upgrades.farm.count || 0;
-    const progressWidth = (count / maxFarms) * 100;
-    
-    if (this.farmsProgressBar) {
-      this.farmsProgressBar.style.width = `${Math.min(progressWidth, 100)}%`;
-    }
-    
-    if (this.farmsCountVisual) {
-      this.farmsCountVisual.textContent = count;
-    }
-  }
-
-  setupAchievements() {
-    setupAchievements(this);
-  }
-
-  registerAchievement(achievement) {
-    this.achievements.push(achievement);
-  }
-
-  checkAchievements() {
-    let newAchievements = false;
-    
-    this.achievements.forEach(achievement => {
-      if (!achievement.earned && achievement.condition(this)) {
-        achievement.earned = true;
-        newAchievements = true;
-        showToast(`🏆 Achievement Unlocked: ${achievement.name}!`);
-      }
-    });
-    
-    if (newAchievements) {
-      this.updateAchievements();
-    }
-    
-    // Special tracking for lucky streak achievement
-    if (this.lastUpgradePurchased === 'luckyClick') {
-      this.state.luckyStreak = (this.state.luckyStreak || 0) + 1;
-    } else if (this.lastUpgradePurchased && this.lastUpgradePurchased !== 'luckyClick') {
-      this.state.luckyStreak = 0;
-    }
-  }
-
-  updateAchievements() {
-    const earnedAchievements = this.achievements.filter(a => a.earned);
-    updateAchievementsList(this, earnedAchievements);
-  }
-
-  doSaveGame() {
-    const gameState = {
-      state: this.state,
-      upgrades: this.upgrades,
-      shopUpgrades: this.shopUpgrades,
-      achievements: this.achievements,
-      soundOn: this.soundOn,
-      // Make sure to save personalization settings
-      personalization: this.state.personalization
-    };
-    
-    localStorage.setItem("cookieGameSave", JSON.stringify(gameState));
-    this.log("Game saved", gameState);
-  }
-
   /**
-   * Save the game silently without showing a notification
+   * Apply visual effects for production boost
+   * @param {boolean} active - Whether the boost is active
    */
-  silentSave() {
-    // Use the same saving logic as regular save but without the toast
-    this.doSaveGame();
-    this.log("Game saved silently");
+  applyProductionBoostVisuals(active) {
+    // Apply visual effects to CPS display during production boost
+    if (this.cpsDisplay) {
+      if (active) {
+        this.cpsDisplay.classList.add('boosted');
+      } else {
+        this.cpsDisplay.classList.remove('boosted');
+      }
+    }
   }
 
   /**
-   * Save the game with an optional silent parameter
+   * Apply visual effects for clicking frenzy
+   * @param {boolean} active - Whether the frenzy is active
+   */
+  applyClickingFrenzyVisuals(active) {
+    // Apply visual effects to cookie during clicking frenzy
+    if (this.cookie) {
+      if (active) {
+        this.cookie.classList.add('frenzy-boosted');
+      } else {
+        this.cookie.classList.remove('frenzy-boosted');
+      }
+    }
+    
+    // Apply visual effects to click power display
+    if (this.clickPowerDisplay) {
+      if (active) {
+        this.clickPowerDisplay.classList.add('frenzy');
+      } else {
+        this.clickPowerDisplay.classList.remove('frenzy');
+      }
+    }
+  }
+
+  /**
+   * Save the game state to localStorage
+   * @param {boolean} silent - Whether to show a notification
    */
   saveGame(silent = false) {
-    this.doSaveGame();
-    
-    if (!silent) {
-      this.showToast("Game saved!");
-      this.log("Manual save complete with notification.");
-    } else {
-      this.log("Manual save complete silently.");
-    }
-  }
-
-  // You may also need to update autoSave to be silent optionally:
-  autoSave(silent = false) {
-    this.doSaveGame();
-    
-    if (!silent) {
-      this.showToast("Game auto-saved!");
-    }
-    
-    this.log("Auto-saved game at", new Date());
-  }
-
-  loadGame() {
     try {
-      const savedStr = localStorage.getItem("cookieGameSave");
-      if (!savedStr) {
-        showToast("No saved game found!");
-        return;
+      // Create a simplified version of the state to save
+      const saveData = {
+        cookies: this.state.cookies,
+        clickPower: this.state.clickPower,
+        cookieMultiplier: this.state.cookieMultiplier,
+        goldenCookieChance: this.state.goldenCookieChance,
+        timeAcceleratorMultiplier: this.state.timeAcceleratorMultiplier,
+        luckyStreak: this.state.luckyStreak,
+        personalization: this.state.personalization,
+        upgrades: {}
+      };
+      
+      // Save upgrade counts and costs
+      for (const key in this.upgrades) {
+        saveData.upgrades[key] = {
+          count: this.upgrades[key].count,
+          cost: this.upgrades[key].cost
+        };
       }
       
-      const savedGame = JSON.parse(savedStr);
-      this.log("Saved game data loaded:", savedGame);
-
-      // Initialize activeGoldenCookieBonuses with default values if not in saved data
-      if (!savedGame.state.activeGoldenCookieBonuses) {
-        savedGame.state.activeGoldenCookieBonuses = {
-          clickPower: {
-            active: false,
-            originalValue: 1,
-            bonusValue: 0,
-            endTime: 0
-          },
-          production: {
-            active: false,
-            originalValue: 1,
-            bonusValue: 0,
-            endTime: 0
-          }
-        };
-      }
-
-      // Load main state
-      this.state = savedGame.state || this.state;
-
-      // Ensure activeGoldenCookieBonuses is properly structured
-      if (!this.state.activeGoldenCookieBonuses) {
-        this.state.activeGoldenCookieBonuses = {
-          clickPower: {
-            active: false,
-            originalValue: 1,
-            bonusValue: 0,
-            endTime: 0
-          },
-          production: {
-            active: false,
-            originalValue: 1,
-            bonusValue: 0,
-            endTime: 0
-          }
-        };
-      }
-
-      // Reinitialize upgrades using class constructors and override with saved data
-      if (typeof savedGame.upgrades === "object") {
-        this.upgrades = {
-          clickUpgrade: new ClickMultiplierUpgrade(15, 2.5, "Upgrade Click Power"),  // Was 10, 3 - now more expensive with slower scaling
-          autoClicker: new IncrementUpgrade(60, 1.6, "Buy Auto Clicker"),           // Was 50, 1.5 - slightly more expensive
-          grandma: new IncrementUpgrade(120, 1.7, "Buy Grandma's Bakery", "updateGrandmasVisual"), // Was 100, 1.5 - more expensive with better scaling
-          farm: new IncrementUpgrade(600, 1.8, "Buy Cookie Farm"),                  // Was 500, 1.5 - more expensive with better scaling
-          luckyClick: new LuckyUpgrade(25, 1.3, "Lucky Click"),                     // Was 20, 1 - now properly scales in cost
-        };
-        
-        Object.keys(savedGame.upgrades).forEach((key) => {
-          if (savedGame.upgrades[key].cost !== undefined) {
-            this.upgrades[key].cost = savedGame.upgrades[key].cost;
-          }
-          if (savedGame.upgrades[key].count !== undefined) {
-            this.upgrades[key].count = savedGame.upgrades[key].count;
-          }
-        });
-      }
-
-      // Reinitialize shopUpgrades similarly
-      if (typeof savedGame.shopUpgrades === "object") {
-        this.shopUpgrades = {
-          timeAccelerator: new ShopUpgrade(1000, 2.8, "Time Accelerator", "timeAccelerator", 1000),  // Increased cost scaling from 2.5 to 2.8
-          cookieMultiplier: new ShopUpgrade(2500, 2.2, "Cookie Multiplier", "applyCookieMultiplier", 2500), // Increased base cost from 2000 to 2500
-          goldenCookieChance: new ShopUpgrade(3000, 1.9, "Golden Cookie Charm", "increaseGoldenCookieChance", 3000) // Slightly higher cost scaling (1.8 to 1.9)
-        };
-        
-        Object.keys(savedGame.shopUpgrades).forEach((key) => {
-          if (savedGame.shopUpgrades[key].cost !== undefined && this.shopUpgrades[key]) {
-            this.shopUpgrades[key].cost = savedGame.shopUpgrades[key].cost;
-          }
-        });
-      }
-
-      // Reset and recreate achievements then restore earned status
-      this.achievements = [];
-      this.setupAchievements();
+      // Save achievements
+      saveData.achievements = this.achievements.map(a => ({
+        id: a.id,
+        earned: a.earned
+      }));
       
-      if (Array.isArray(savedGame.achievements)) {
-        // For old format (simple array of strings)
-        if (typeof savedGame.achievements[0] === 'string') {
-          savedGame.achievements.forEach(name => {
-            const achievement = this.achievements.find(a => a.name === name);
-            if (achievement) {
-              achievement.earned = true;
-            }
-          });
-        } 
-        // For new format (array of Achievement objects)
-        else {
-          savedGame.achievements.forEach(savedAch => {
-            const achievement = this.achievements.find(a => a.id === savedAch.id);
-            if (achievement) {
-              achievement.earned = savedAch.earned;
-            }
-          });
-        }
+      // Save to localStorage
+      localStorage.setItem("cookieGameSave", JSON.stringify(saveData));
+      
+      if (!silent) {
+        this.showToast("Game saved successfully!");
       }
-
-      this.soundOn = savedGame.soundOn !== undefined ? savedGame.soundOn : true;
-
-      // Ensure personalization settings are preserved
-      if (this.personalizer && this.state.personalization) {
-        this.personalizer.settings = {...this.personalizer.settings, ...this.state.personalization};
-        this.personalizer.applyAllSettings();
+      
+      this.log("Game saved to localStorage");
+      return true;
+    } catch (error) {
+      console.error("Error saving game:", error);
+      if (!silent) {
+        this.showToast("Error saving game!");
       }
+      return false;
+    }
+  }
 
+  /**
+   * Save the game silently without notification
+   */
+  silentSave() {
+    return this.saveGame(true);
+  }
+
+  /**
+   * Purchases a shop upgrade
+   * @param {string} upgradeKey - Key of the shop upgrade to purchase
+   */
+  purchaseShopUpgrade(upgradeKey) {
+    try {
+      const upgrade = this.shopUpgrades[upgradeKey];
+      
+      if (!upgrade) {
+        console.error(`Shop upgrade ${upgradeKey} not found`);
+        return false;
+      }
+      
+      // Check if player can afford the upgrade
+      if (this.state.cookies < upgrade.cost) {
+        this.log(`Not enough cookies for ${upgrade.displayPrefix}. Need ${upgrade.cost}, have ${this.state.cookies}`);
+        this.showToast(`Not enough cookies for ${upgrade.displayPrefix}`);
+        return false;
+      }
+      
+      // Apply the purchase
+      this.state.cookies -= upgrade.cost;
+      
+      // Handle specific shop upgrades
+      switch (upgradeKey) {
+        case 'timeAccelerator':
+          this.timeAccelerator(upgrade);
+          break;
+          
+        case 'cookieMultiplier':
+          this.applyCookieMultiplier(upgrade);
+          break;
+          
+        case 'goldenCookieChance':
+          this.increaseGoldenCookieChance(upgrade);
+          break;
+          
+        default:
+          console.warn(`No handler for shop upgrade ${upgradeKey}`);
+          return false;
+      }
+      
+      // Update the cost for next time
+      upgrade.updateCost();
+      
+      // Update display
       this.updateDisplay();
-      this.updateAchievements();
-      this.updateGrandmasVisual();
-      this.checkAchievements(); // Check achievements right after loading
+      this.updateShopPrices();
       
-      this.log("Load complete.");
-      showToast("Game loaded successfully!");
-    } catch (e) {
-      this.log("Failed to load game:", e);
-      showToast("Failed to load game data!");
+      return true;
+    } catch (error) {
+      console.error("Error purchasing shop upgrade:", error);
+      return false;
     }
   }
 
-  resetGame() {
-    if (!confirm("Are you sure you want to reset your game? This action cannot be undone.")) return;
-    
-    localStorage.removeItem("cookieGameSave");
-    this.state = {
-      cookies: 0,
-      clickPower: 1,
-      grandmas: 0,
-      timeAcceleratorActive: false,
-      timeAcceleratorMultiplier: 1,
-      timeAcceleratorEndTime: 0,
-      luckyStreak: 0,
-      // New state properties for shop items
-      cookieMultiplier: 1,
-      goldenCookieChance: 0.1,
-      goldenCookieActive: false,
-      lastGoldenCookieTime: 0,
-      // Personalization settings (will be populated by personalization.js)
-      personalization: {
-        theme: 'classic',
-        cookieSkin: 'classic',
-        cursorSkin: 'classic',
-        animations: 'standard',
-        particleIntensity: 1.0
-      },
-      // Ensure activeGoldenCookieBonuses is properly initialized
-      activeGoldenCookieBonuses: {
-        clickPower: {
-          active: false,
-          originalValue: 1,
-          bonusValue: 0,
-          endTime: 0
-        },
-        production: {
-          active: false,
-          originalValue: 1,
-          bonusValue: 0,
-          endTime: 0
-        }
-      }
-    };
-    
-    this.upgrades = {
-      clickUpgrade: new ClickMultiplierUpgrade(15, 2.5, "Upgrade Click Power"),  // Was 10, 3 - now more expensive with slower scaling
-      autoClicker: new IncrementUpgrade(60, 1.6, "Buy Auto Clicker"),           // Was 50, 1.5 - slightly more expensive
-      grandma: new IncrementUpgrade(120, 1.7, "Buy Grandma's Bakery", "updateGrandmasVisual"), // Was 100, 1.5 - more expensive with better scaling
-      farm: new IncrementUpgrade(600, 1.8, "Buy Cookie Farm"),                  // Was 500, 1.5 - more expensive with better scaling
-      luckyClick: new LuckyUpgrade(25, 1.3, "Lucky Click"),                     // Was 20, 1 - now properly scales in cost
-    };
-    
-    this.shopUpgrades = {
-      timeAccelerator: new ShopUpgrade(1000, 2.8, "Time Accelerator", "timeAccelerator", 1000),  // Increased cost scaling from 2.5 to 2.8
-      cookieMultiplier: new ShopUpgrade(2500, 2.2, "Cookie Multiplier", "applyCookieMultiplier", 2500), // Increased base cost from 2000 to 2500
-      goldenCookieChance: new ShopUpgrade(3000, 1.9, "Golden Cookie Charm", "increaseGoldenCookieChance", 3000) // Slightly higher cost scaling (1.8 to 1.9)
-    };
-    
-    // Properly reset achievements
-    this.achievements = [];
-    this.setupAchievements();
-    
-    this.updateDisplay();
-    this.updateAchievements();
-    this.updateGrandmasVisual();
-    
-    this.log("Game reset.");
-    alert("Game has been reset.");
-  }
-
-  // Fix the broken showToast method
-  showToast(message) {
-    try {
-      showToast(message); // Call the imported showToast function
-    } catch (e) {
-      console.error("Error showing toast:", e);
-      // Fallback implementation uses the same container pattern
-      const toastContainer = document.querySelector('.toast-container') || 
-        (() => {
-          const container = document.createElement("div");
-          container.className = "toast-container";
-          document.body.appendChild(container);
-          return container;
-        })();
-      
-      const notification = document.createElement("div");
-      notification.className = "auto-save-notification";
-      notification.textContent = message;
-      toastContainer.appendChild(notification);
-      
-      setTimeout(() => {
-        notification.remove();
-      }, 3000);
-    }
-  }
-
-  // Add method to update boost timers with safety checks
-  updateActiveBoostTimers() {
-    const now = Date.now();
-    
-    // Check time accelerator status and update the indicator if needed
-    if (this.state.timeAcceleratorActive && this.state.timeAcceleratorEndTime > now) {
-      const timeLeft = Math.max(0, Math.floor((this.state.timeAcceleratorEndTime - now) / 1000));
-      this.updateBonusIndicator('time-accelerator-bonus', null, timeLeft);
-    } else if (this.state.timeAcceleratorActive && this.state.timeAcceleratorEndTime <= now) {
-      // Time accelerator has expired but wasn't properly deactivated
-      this.state.timeAcceleratorActive = false;
-      this.state.timeAcceleratorMultiplier = 1;
-      this.removeBonusIndicator('time-accelerator-bonus');
-      
-      // Remove cookie animation
-      if (this.cookie) {
-        this.cookie.classList.remove('accelerated');
-      }
-      
-      // Remove CPS display effect
-      if (this.cpsDisplay) {
-        this.cpsDisplay.classList.remove('boosted');
-      }
-    }
-    
-    // Check if activeGoldenCookieBonuses and its properties exist before accessing
-    if (this.state.activeGoldenCookieBonuses && this.state.activeGoldenCookieBonuses.production && 
-        this.state.activeGoldenCookieBonuses.production.active) {
-      const timeLeft = Math.max(0, Math.floor((this.state.activeGoldenCookieBonuses.production.endTime - now) / 1000));
-      
-      if (timeLeft > 0) {
-        this.updateBonusIndicator('golden-cookie-production-boost', null, timeLeft);
-      } else {
-        // Boost has expired
-        this.state.cookieMultiplier = this.state.activeGoldenCookieBonuses.production.originalValue;
-        this.state.activeGoldenCookieBonuses.production.active = false;
-        this.applyProductionBoostVisuals(false);
-        this.removeBonusIndicator('golden-cookie-production-boost');
-      }
-      
-      // Add 'boosted' class to CPS display
-      if (this.cpsDisplay) {
-        this.cpsDisplay.classList.add('boosted');
-      }
-    } else if (this.cpsDisplay) {
-      this.cpsDisplay.classList.remove('boosted');
-    }
-    
-    // Check if activeGoldenCookieBonuses and its properties exist before accessing
-    if (this.state.activeGoldenCookieBonuses && this.state.activeGoldenCookieBonuses.clickPower && 
-        this.state.activeGoldenCookieBonuses.clickPower.active) {
-      const timeLeft = Math.max(0, Math.floor((this.state.activeGoldenCookieBonuses.clickPower.endTime - now) / 1000));
-      
-      // Check which boost it is - frenzy or regular click boost - and update the correct indicator
-      if (this.state.activeGoldenCookieBonuses.clickPower.bonusValue >= this.state.activeGoldenCookieBonuses.clickPower.originalValue) {
-        // This is a frenzy (multiplier effect)
-        if (timeLeft > 0) {
-          this.updateBonusIndicator('golden-cookie-frenzy', null, timeLeft);
-        } else {
-          // Boost has expired
-          this.state.clickPower = this.state.activeGoldenCookieBonuses.clickPower.originalValue;
-          this.state.activeGoldenCookieBonuses.clickPower.active = false;
-          this.applyClickingFrenzyVisuals(false);
-          this.removeBonusIndicator('golden-cookie-frenzy');
-        }
-      } else {
-        // This is a regular click boost (additive effect)
-        if (timeLeft > 0) {
-          this.updateBonusIndicator('golden-cookie-click-boost', null, timeLeft);
-        } else {
-          // Boost has expired
-          this.state.clickPower = this.state.activeGoldenCookieBonuses.clickPower.originalValue;
-          this.state.activeGoldenCookieBonuses.clickPower.active = false;
-          this.applyClickPowerBoostVisuals(false);
-          this.removeBonusIndicator('golden-cookie-click-boost');
-        }
-      }
-      
-      // Add 'boosted' class to click power display
-      if (this.clickPowerDisplay) {
-        this.clickPowerDisplay.classList.add('boosted');
-      }
-    } else if (this.clickPowerDisplay) {
-      this.clickPowerDisplay.classList.remove('boosted');
-    }
-  }
-
-  // Modified timeAccelerator method to use the new indicator system
-  timeAccelerator(item) {
-    const baseCost = item.baseCost || 1000;
-    const minDuration = 30; // 30 seconds - shorter base duration
-    const maxDuration = 60; // 1 minute max
-    let duration = minDuration + (item.cost - baseCost) * 0.05;
-    duration = Math.min(duration, maxDuration);
-
+  /**
+   * Apply time accelerator effect
+   * @param {ShopUpgrade} upgrade - The time accelerator upgrade
+   */
+  timeAccelerator(upgrade) {
+    // Apply effect - 4x production for 60 seconds
     this.state.timeAcceleratorActive = true;
-    this.state.timeAcceleratorMultiplier = 4; // 4x multiplier
-    this.state.timeAcceleratorEndTime = Date.now() + duration * 1000;
-
+    this.state.timeAcceleratorMultiplier = 4;
+    this.state.timeAcceleratorEndTime = Date.now() + 60000;
+    
+    // Apply visual effects
+    this.applyTimeAcceleratorVisuals(true);
+    
+    // Show notification
+    this.showToast("Time Accelerator activated! 4x production for 60 seconds!");
+    
     // Add visual indicator
     this.addBonusIndicator(
-      'time-accelerator-bonus',
+      'time-accelerator-boost',
       'time-accelerator',
-      '⚡',
-      '4x Production',
-      Math.floor(duration)
+      '⏱️',
+      '4x Production Speed',
+      60
     );
-    
-    // Apply cookie animation effect
-    if (this.cookie) {
-      this.cookie.classList.add('accelerated');
-    }
-    
-    // Apply CPS display effect
-    if (this.cpsDisplay) {
-      this.cpsDisplay.classList.add('boosted');
-    }
-    
-    this.log(
-      "Time Accelerator activated for",
-      duration,
-      "seconds, multiplier:",
-      this.state.timeAcceleratorMultiplier
-    );
-    this.showToast(`Time Accelerator activated! 4x production for ${Math.floor(duration)} seconds!`);
-
-    // Start a timer to update the countdown
-    let timeLeft = Math.floor(duration);
-    const countdownInterval = setInterval(() => {
-      timeLeft--;
-      if (timeLeft <= 0) {
-        clearInterval(countdownInterval);
-      } else {
-        this.updateBonusIndicator('time-accelerator-bonus', null, timeLeft);
-      }
-    }, 1000);
-    
-    // Set timeout to deactivate the time accelerator when the duration ends
-    setTimeout(() => {
-      this.state.timeAcceleratorActive = false;
-      this.state.timeAcceleratorMultiplier = 1;
-      this.removeBonusIndicator('time-accelerator-bonus');
-      
-      // Remove visual effects
-      if (this.cookie) {
-        this.cookie.classList.remove('accelerated');
-      }
-      if (this.cpsDisplay) {
-        this.cpsDisplay.classList.remove('boosted');
-      }
-      
-      this.log("Time Accelerator expired");
-      this.showToast("Time Accelerator expired");
-      clearInterval(countdownInterval);
-    }, duration * 1000);
   }
 
-  initPersonalization() {
-    try {
-      // Load personalization settings from game state
-      this.personalization.loadFromGameState();
-      
-      // Link particle intensity slider if it exists
-      const intensitySlider = document.getElementById('particle-intensity');
-      const intensityValue = document.getElementById('intensity-value');
-      
-      if (intensitySlider && intensityValue) {
-        // Set initial value from current settings
-        intensitySlider.value = this.state.personalization?.particleIntensity || 1.0;
-        intensityValue.textContent = intensitySlider.value;
-        
-        // Update when slider changes
-        intensitySlider.addEventListener('input', () => {
-          const value = parseFloat(intensitySlider.value);
-          intensityValue.textContent = value.toFixed(1);
-          this.personalization.setParticleIntensity(value);
-          this.saveGame(); // Save settings when changed
-        });
-      }
-      
-      this.log("Personalization system initialized");
-    } catch (e) {
-      this.log("Error initializing personalization:", e);
+  /**
+   * Apply cookie multiplier effect
+   * @param {ShopUpgrade} upgrade - The cookie multiplier upgrade
+   */
+  applyCookieMultiplier(upgrade) {
+    // Boost cookie multiplier by 50%
+    this.state.cookieMultiplier = (this.state.cookieMultiplier || 1) * 1.5;
+    
+    // Show notification
+    this.showToast(`Cookie production multiplier increased to ${this.state.cookieMultiplier.toFixed(1)}x!`);
+  }
+
+  /**
+   * Increase golden cookie chance
+   * @param {ShopUpgrade} upgrade - The golden cookie chance upgrade
+   */
+  increaseGoldenCookieChance(upgrade) {
+    // Increase golden cookie chance by 30%
+    this.state.goldenCookieChance = (this.state.goldenCookieChance || 0.1) * 1.3;
+    
+    // Show notification
+    this.showToast(`Golden cookie chance increased by 30%!`);
+    
+    // Restart golden cookie timer with new chance
+    if (typeof this.startGoldenCookieTimer === 'function') {
+      this.startGoldenCookieTimer();
     }
   }
 }

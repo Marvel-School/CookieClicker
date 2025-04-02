@@ -855,3 +855,74 @@ body::after {
   white-space: pre;
 }
 */
+
+/* Theme-specific styling for personalization panel */
+
+/* Highlight active theme/animation buttons */
+.theme-button.active,
+.animation-button.active {
+  background: linear-gradient(145deg, #2980b9, #3498db) !important;
+  color: white !important;
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2) !important;
+  position: relative;
+  transform: translateY(1px);
+}
+
+.theme-button.active::after,
+.animation-button.active::after {
+  content: "✓";
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 14px;
+}
+
+/* Theme previews */
+#theme-classic {
+  border-left: 4px solid #f5c542;
+}
+
+#theme-dark {
+  border-left: 4px solid #2c3e50;
+  background: linear-gradient(145deg, #34495e, #2c3e50);
+  color: #eee;
+}
+
+#theme-neon {
+  border-left: 4px solid #ff00ff;
+  background: linear-gradient(145deg, #4a148c, #311b92);
+  color: #00ffff;
+  text-shadow: 0 0 5px #00ffff;
+}
+
+/* Animation level indicators */
+#animations-standard::before {
+  content: "●●●";
+  margin-right: 5px;
+  color: #2ecc71;
+  font-size: 10px;
+}
+
+#animations-reduced::before {
+  content: "●●○";
+  margin-right: 5px;
+  color: #f39c12;
+  font-size: 10px;
+}
+
+#animations-minimal::before {
+  content: "●○○";
+  margin-right: 5px;
+  color: #e74c3c;
+  font-size: 10px;
+}
+
+/* Slider color variations */
+#particle-intensity::-webkit-slider-thumb {
+  background: linear-gradient(145deg, #2980b9, #3498db);
+}
+
+#particle-intensity::-moz-range-thumb {
+  background: linear-gradient(145deg, #2980b9, #3498db);
+}

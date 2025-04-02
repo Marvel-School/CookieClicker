@@ -11,7 +11,10 @@
     <!-- Add personalization CSS -->
     <link rel="stylesheet" href="personalization.css" />
     <link rel="preload" href="image/cookie.png" as="image" />
-    <link rel="preload" href="sounds/click.mp3" as="audio" />
+    <!-- Remove these preload links which are causing the errors -->
+    <!-- <link rel="preload" href="sounds/click.mp3" as="audio" type="audio/mpeg" />
+    <link rel="preload" href="sounds/pop.mp3" as="audio" type="audio/mpeg" />
+    <link rel="preload" href="sounds/golden.mp3" as="audio" type="audio/mpeg" /> -->
 
     <style>
       /* Immediately disable all tooltips */
@@ -74,7 +77,7 @@
 
     <!-- ACHIEVEMENTS Section: Toggled via the Achievements Icon -->
     <div id="achievementsWrapper">
-      <img id="achievementsIcon" src="image/achievements.png" alt="Achievements Icon" aria-label="Show Achievements" />
+      <img id="achievementsIcon" src="image/achievements.png" alt="Achievements Icon" aria-label="Show Achievements" style="z-index: 9999;" />
       <section id="achievementsContainer">
         <div class="achievements-header">
           <span class="trophy-icon">🏆</span>
@@ -88,7 +91,7 @@
 
     <!-- SHOP Section: Toggled via the Shop Icon -->
     <div id="shopWrapper">
-      <img id="shopIcon" src="image/shop.png" alt="Shop Icon" aria-label="Show Shop" />
+      <img id="shopIcon" src="image/shop.png" alt="Shop Icon" aria-label="Show Shop" style="z-index: 9999;" />
       <section id="shopContainer">
         <div class="shop-header">
           <span class="shop-icon">🛒</span>
@@ -218,6 +221,7 @@
           id="settingsIcon"
           class="setting-btn"
           aria-label="Toggle Settings"
+          style="background: linear-gradient(145deg, #2980b9, #3498db); z-index: 9999;"
         >
           <span class="bar bar1"></span>
           <span class="bar bar2"></span>
@@ -232,7 +236,7 @@
         </div>
       </div>
 
-      <!-- Add Personalization Panel -->
+      <!-- Update the personalization panel structure -->
       <div id="personalizationContainer" class="panel-container" style="display: none">
         <div class="panel-header">
           <span class="panel-icon">🎨</span>
@@ -258,8 +262,12 @@
           </div>
           <div class="section">
             <h3>Particle Intensity</h3>
-            <input type="range" id="particle-intensity" min="0" max="2" step="0.1" value="1">
-            <span id="intensity-value">1.0</span>
+            <div class="slider-container">
+              <div class="slider-controls">
+                <input type="range" id="particle-intensity" min="0" max="2" step="0.1" value="1">
+                <span id="intensity-value">1.0</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
