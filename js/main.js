@@ -169,3 +169,48 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.appendChild(errorMsg);
   }
 });
+
+// body blur
+class ToggleMenu {
+  constructor(iconId, menuId) {
+    this.icon = document.getElementById(iconId);
+    this.menu = document.getElementById(menuId);
+    this.backdrop = document.getElementById("backdrop");
+    this.body = document.body;
+
+    if (this.icon && this.menu) {
+      this.init();
+    } else {
+      console.error(`❌ error  : ${iconId} أو ${menuId}`);
+    }
+  }
+
+  init() {
+    this.icon.addEventListener("click", () => this.toggleMenu());
+    document.addEventListener("click", (event) => this.closeMenu(event));
+  }
+
+  toggleMenu() {
+    this.menu.classList.toggle("show");
+    this.body.classList.toggle("blur");
+    this.backdrop.classList.toggle("show");
+  }
+
+  closeMenu(event) {
+    if (!this.menu.contains(event.target) && !this.icon.contains(event.target)) {
+      this.menu.classList.remove("show");
+      this.body.classList.remove("blur");
+      this.backdrop.classList.remove("show");
+    }
+  }
+}
+
+
+document.addEventListener("DOMContentLoaded", function () {
+  new ToggleMenu("settingsIcon", "settingsMenu");
+  new ToggleMenu("achievementsIcon", "achievementsContainer");
+  new ToggleMenu("shopIcon", "shopContainer");
+});
+
+
+
