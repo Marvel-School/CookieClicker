@@ -41,7 +41,7 @@ body {
 }
 
 .left button:disabled {
-  background: #ccc !important;  /* changed grey background */
+  background: #ccc !important; /* changed grey background */
   color: #fff !important;
   box-shadow: none !important;
   transform: none !important;
@@ -52,9 +52,9 @@ body {
 .left button {
   background: linear-gradient(145deg, #2980b9, #3498db);
   color: #fff;
-  font-size: 18px;     /* reduced font size */
-  padding: 10px;        /* reduced padding */
-  width: auto;         /* removed full width */
+  font-size: 18px; /* reduced font size */
+  padding: 10px; /* reduced padding */
+  width: auto; /* removed full width */
   border: none;
   border-radius: 12px;
   cursor: pointer;
@@ -71,10 +71,9 @@ body {
   transform: scale(0.98);
   box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.25);
 }
-.product{
+.product {
   display: none;
 }
-
 
 /* TOP Section: Stats - REDESIGNED */
 .stats {
@@ -165,7 +164,7 @@ body {
   font-size: 0.9em;
 }
 
-.stats-metric #clickPower, 
+.stats-metric #clickPower,
 .stats-metric #cps {
   transition: color 0.3s, text-shadow 0.3s;
 }
@@ -181,21 +180,43 @@ body {
 }
 
 @keyframes cookieSpin {
-  0% { transform: rotate(0deg); }
-  25% { transform: rotate(0deg); }
-  35% { transform: rotate(10deg); }
-  45% { transform: rotate(-10deg); }
-  55% { transform: rotate(5deg); }
-  65% { transform: rotate(-5deg); }
-  75% { transform: rotate(0deg); }
-  100% { transform: rotate(0deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(0deg);
+  }
+  35% {
+    transform: rotate(10deg);
+  }
+  45% {
+    transform: rotate(-10deg);
+  }
+  55% {
+    transform: rotate(5deg);
+  }
+  65% {
+    transform: rotate(-5deg);
+  }
+  75% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
 }
 
 /* Cookie gain animation */
 @keyframes cookieGain {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.15); }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.15);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 .cookie-gain {
@@ -224,20 +245,32 @@ body {
   display: none;
   position: fixed;
   top: 20px;
-  right: 70px; 
+  right: 70px;
   width: 280px; /* Slightly wider */
-  background: linear-gradient(to bottom, #fffaf0, #f8f8ff); /* Warm to cool gradient */
+  max-height: 300px; 
+    overflow-y: auto; 
+    border: 1px solid #ddd;
+    padding: 10px;
+  background: linear-gradient(
+    to bottom,
+    #fffaf0,
+    #f8f8ff
+  ); /* Warm to cool gradient */
   padding: 0; /* Remove padding - we'll add it in the inner content */
   border-radius: 15px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2), 
-              inset 0 1px 3px rgba(255, 255, 255, 0.8);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2),
+    inset 0 1px 3px rgba(255, 255, 255, 0.8);
   z-index: 210;
   overflow: hidden; /* For the header styling */
   border: 1px solid rgba(210, 210, 210, 0.8);
 }
 
 #achievementsContainer .achievements-header {
-  background: linear-gradient(145deg, #2980b9, #3498db); /* Match other UI elements */
+  background: linear-gradient(
+    145deg,
+    #2980b9,
+    #3498db
+  ); /* Match other UI elements */
   color: white;
   padding: 12px 15px;
   display: flex;
@@ -256,7 +289,7 @@ body {
 #achievementsContainer .achievements-header .trophy-icon {
   font-size: 24px;
   color: gold;
-  text-shadow: 0 0 5px rgba(255,215,0,0.7);
+  text-shadow: 0 0 5px rgba(255, 215, 0, 0.7);
 }
 
 #achievementsContainer .achievements-content {
@@ -329,11 +362,11 @@ body {
   transform: rotate(30deg);
   background: rgba(255, 255, 255, 0.13);
   background: linear-gradient(
-    to right, 
+    to right,
     rgba(255, 255, 255, 0.13) 0%,
     rgba(255, 255, 255, 0.13) 77%,
     rgba(255, 255, 255, 0.5) 92%,
-    rgba(255, 255, 255, 0.0) 100%
+    rgba(255, 255, 255, 0) 100%
   );
 }
 
@@ -376,29 +409,33 @@ body {
 }
 
 .achievement-item.common {
-  border-left-color: #AAAAAA;
+  border-left-color: #aaaaaa;
 }
 
 .achievement-item.uncommon {
-  border-left-color: #1ED760;
+  border-left-color: #1ed760;
 }
 
 .achievement-item.rare {
-  border-left-color: #4169E1;
+  border-left-color: #4169e1;
 }
 
 .achievement-item.epic {
-  border-left-color: #9B30FF;
+  border-left-color: #9b30ff;
 }
 
 .achievement-item.legendary {
-  border-left-color: #FFD700;
+  border-left-color: #ffd700;
   animation: legendary-glow 2s infinite alternate;
 }
 
 @keyframes legendary-glow {
-  from { box-shadow: 0 0 5px rgba(255, 215, 0, 0.3); }
-  to { box-shadow: 0 0 15px rgba(255, 215, 0, 0.8); }
+  from {
+    box-shadow: 0 0 5px rgba(255, 215, 0, 0.3);
+  }
+  to {
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+  }
 }
 
 .achievement-icon {
@@ -436,23 +473,23 @@ body {
 }
 
 .achievement-rarity.common {
-  background-color: #AAAAAA;
+  background-color: #aaaaaa;
 }
 
 .achievement-rarity.uncommon {
-  background-color: #1ED760;
+  background-color: #1ed760;
 }
 
 .achievement-rarity.rare {
-  background-color: #4169E1;
+  background-color: #4169e1;
 }
 
 .achievement-rarity.epic {
-  background-color: #9B30FF;
+  background-color: #9b30ff;
 }
 
 .achievement-rarity.legendary {
-  background-color: #FFD700;
+  background-color: #ffd700;
   color: #000;
 }
 
@@ -468,11 +505,11 @@ body {
   transform: rotate(30deg);
   background: rgba(255, 255, 255, 0.13);
   background: linear-gradient(
-    to right, 
+    to right,
     rgba(255, 255, 255, 0.13) 0%,
     rgba(255, 255, 255, 0.13) 77%,
     rgba(255, 255, 255, 0.5) 92%,
-    rgba(255, 255, 255, 0.0) 100%
+    rgba(255, 255, 255, 0) 100%
   );
 }
 
@@ -531,8 +568,8 @@ body {
 } */
 
 .falling {
-  position: fixed; 
-  top: -100px; 
+  position: fixed;
+  top: -100px;
   width: 50px;
   height: 50px;
   animation: fallAnimation 2s linear forwards;
@@ -540,14 +577,13 @@ body {
 
 @keyframes fallAnimation {
   0% {
-      opacity: 1;
+    opacity: 1;
   }
   100% {
-      transform: translateY(100vh); 
-      opacity: 0;
+    transform: translateY(100vh);
+    opacity: 0;
   }
 }
-
 
 /* CENTER Section: Clickable Cookie */
 .center {
@@ -645,7 +681,7 @@ body {
   padding: 0;
   border-radius: 15px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2),
-              inset 0 1px 3px rgba(255, 255, 255, 0.8);
+    inset 0 1px 3px rgba(255, 255, 255, 0.8);
   z-index: 210;
   overflow: hidden; /* For the header styling */
   border: 1px solid rgba(210, 210, 210, 0.8);
@@ -663,8 +699,12 @@ body {
 }
 
 @keyframes pulse {
-  from { opacity: 0.8; }
-  to { opacity: 1; }
+  from {
+    opacity: 0.8;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 /* Shop Item Image: Reduced size */
@@ -694,8 +734,12 @@ body {
 }
 
 @keyframes glow {
-  from { filter: drop-shadow(0 0 3px gold); }
-  to { filter: drop-shadow(0 0 10px gold); }
+  from {
+    filter: drop-shadow(0 0 3px gold);
+  }
+  to {
+    filter: drop-shadow(0 0 10px gold);
+  }
 }
 
 /* SETTINGS Container */
@@ -714,7 +758,11 @@ body {
   align-items: center;
   justify-content: center;
   gap: 6px;
-  background: linear-gradient(145deg, #2980b9, #3498db); /* Match upgrade buttons */
+  background: linear-gradient(
+    145deg,
+    #2980b9,
+    #3498db
+  ); /* Match upgrade buttons */
   border-radius: 10px;
   cursor: pointer;
   border: none;
@@ -759,7 +807,11 @@ body {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 #settingsMenu button {
-  background: linear-gradient(145deg, #2980b9, #3498db); /* Match upgrade buttons */
+  background: linear-gradient(
+    145deg,
+    #2980b9,
+    #3498db
+  ); /* Match upgrade buttons */
   color: white;
   font-size: 14px;
   font-weight: 500;
@@ -774,7 +826,11 @@ body {
 }
 
 #settingsMenu button:hover {
-  background: linear-gradient(145deg, #2980b9, #3498db); /* Keep gradient on hover */
+  background: linear-gradient(
+    145deg,
+    #2980b9,
+    #3498db
+  ); /* Keep gradient on hover */
   transform: scale(1.05);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
 }
@@ -834,8 +890,8 @@ body {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1), 
-              inset 0 1px 1px rgba(255, 255, 255, 0.6);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1),
+    inset 0 1px 1px rgba(255, 255, 255, 0.6);
   border: 1px solid rgba(230, 230, 230, 0.8);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   position: relative;
@@ -849,7 +905,7 @@ body {
 .upgrade-box:hover {
   transform: translateY(-3px);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15),
-              inset 0 1px 1px rgba(255, 255, 255, 0.8);
+    inset 0 1px 1px rgba(255, 255, 255, 0.8);
 }
 
 .upgrade-progress {
@@ -869,7 +925,7 @@ body {
 }
 
 .upgrade-progress::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -909,25 +965,31 @@ body {
 }
 
 .upgrade-progress-bar::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: -100%;
   width: 100%;
   height: 100%;
   background: linear-gradient(
-    90deg, 
-    rgba(255, 255, 255, 0) 0%, 
-    rgba(255, 255, 255, 0.4) 50%, 
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.4) 50%,
     rgba(255, 255, 255, 0) 100%
   );
   animation: shine 3s infinite;
 }
 
 @keyframes shine {
-  0% { left: -100%; }
-  20% { left: 100%; }
-  100% { left: 100%; }
+  0% {
+    left: -100%;
+  }
+  20% {
+    left: 100%;
+  }
+  100% {
+    left: 100%;
+  }
 }
 
 .upgrade-counter {
@@ -939,7 +1001,7 @@ body {
 
 .upgrade-image {
   width: 42px;
-  height: 42px; 
+  height: 42px;
   filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.2));
   animation: bounce 2s infinite;
   will-change: transform;
@@ -991,8 +1053,13 @@ body {
 }
 
 @keyframes bounce {
-  0%, 100% { transform: translateY(0) translateZ(0); }
-  50% { transform: translateY(-5px) translateZ(0); }
+  0%,
+  100% {
+    transform: translateY(0) translateZ(0);
+  }
+  50% {
+    transform: translateY(-5px) translateZ(0);
+  }
 }
 
 /* Custom title for each upgrade box */
@@ -1101,7 +1168,8 @@ body {
 }
 
 /* Ensure consistent box-sizing for upgrade buttons and their inner span */
-button.upgrade, button.upgrade .button_top {
+button.upgrade,
+button.upgrade .button_top {
   box-sizing: border-box;
 }
 
@@ -1138,7 +1206,8 @@ button.upgrade:disabled .button_top {
 }
 
 /* Ensure all upgrade buttons use consistent box-sizing */
-.upgrade, .upgrade .button_top {
+.upgrade,
+.upgrade .button_top {
   box-sizing: border-box;
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -1191,7 +1260,7 @@ button.upgrade:disabled {
 
 button.upgrade:disabled .button_top {
   /* Only change colors, keep the same border width */
-  border-color: #ccc !important; 
+  border-color: #ccc !important;
   background: #eee !important;
   color: #999 !important;
 }
@@ -1209,7 +1278,7 @@ button.upgrade:disabled .button_top {
   padding: 0;
   border-radius: 15px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2),
-              inset 0 1px 3px rgba(255, 255, 255, 0.8);
+    inset 0 1px 3px rgba(255, 255, 255, 0.8);
   z-index: 210;
   overflow: visible; /* Allow tooltips to be visible outside container */
   border: 1px solid rgba(210, 210, 210, 0.8);
@@ -1259,7 +1328,9 @@ button.upgrade:disabled .button_top {
 
 #shopIcon:hover {
   transform: scale(1.1); /* Slight scale up on hover */
-  filter: drop-shadow(0 0 5px rgba(41, 128, 185, 0.6)); /* Blue glow to match the color scheme */
+  filter: drop-shadow(
+    0 0 5px rgba(41, 128, 185, 0.6)
+  ); /* Blue glow to match the color scheme */
 }
 
 #shopIcon:active {
@@ -1310,7 +1381,7 @@ button.upgrade:disabled .button_top {
   margin-bottom: 10px; /* Space between tooltip and item */
   z-index: 999999;
   pointer-events: none; /* Prevent interfering with clicks */
-  
+
   /* Direct visibility properties - no transitions that could break it */
   visibility: hidden;
   opacity: 0;
@@ -1359,7 +1430,7 @@ button.upgrade:disabled .button_top {
   font-size: 14px;
   box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.35);
   pointer-events: none;
-  
+
   /* Setup for position calculation in JS */
   opacity: 0;
   visibility: hidden;
@@ -1396,7 +1467,7 @@ button.upgrade:disabled .button_top {
   padding: 0;
   border-radius: 15px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2),
-              inset 0 1px 3px rgba(255, 255, 255, 0.8);
+    inset 0 1px 3px rgba(255, 255, 255, 0.8);
   z-index: 210;
   overflow: hidden; /* Change to hidden to contain the header */
   border: 1px solid rgba(210, 210, 210, 0.8);
@@ -1498,7 +1569,7 @@ button.upgrade:disabled .button_top {
   border-radius: 3px; /* Rounded corners */
   display: inline-block; /* Ensure block behavior */
   line-height: 1.2; /* Tighter line spacing */
-  box-shadow: 0 1px 2px rgba(0,0,0,0.2); /* Subtle shadow for depth */
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
 }
 
 /* Arrow pointing down from tooltip - match darker background */
@@ -1536,10 +1607,7 @@ button.upgrade:disabled .button_top {
 /* Style each line of text with a white background */
 .shop-item .item-desc {
   /* Text styling with background */
-  text-shadow: 
-    -1px -1px 0 #fff, 
-    1px -1px 0 #fff, 
-    -1px 1px 0 #fff, 
+  text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff,
     1px 1px 0 #fff;
   background-clip: text; /* Modern browsers */
 }
@@ -1585,7 +1653,7 @@ button.upgrade:disabled .button_top {
   margin: 2px 0;
   border-radius: 3px;
   font-weight: 500;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 /* Add spacing between highlighted lines */
@@ -1620,8 +1688,12 @@ button.upgrade:disabled .button_top {
 }
 
 @keyframes shake {
-  0% { transform: rotate(-3deg) scale(1.05); }
-  100% { transform: rotate(3deg) scale(1.1); }
+  0% {
+    transform: rotate(-3deg) scale(1.05);
+  }
+  100% {
+    transform: rotate(3deg) scale(1.1);
+  }
 }
 
 /* ...existing code... */
@@ -1701,7 +1773,7 @@ button.upgrade:disabled .button_top {
   position: absolute;
   width: 60px;
   height: 60px;
-  background-image: url('image/goldencookie.png');
+  background-image: url("image/goldencookie.png");
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
@@ -1819,7 +1891,7 @@ button.upgrade:disabled .button_top {
   position: absolute;
   width: 80px; /* Larger size for better visibility */
   height: 80px;
-  background-image: url('image/goldencookie.png');
+  background-image: url("image/goldencookie.png");
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
@@ -1828,7 +1900,7 @@ button.upgrade:disabled .button_top {
   z-index: 10001;
   animation: goldenCookiePulse 1.5s infinite alternate;
   filter: drop-shadow(0 0 15px gold);
-  
+
   /* Debugging outline and background */
   outline: 2px solid gold;
   background-color: rgba(255, 215, 0, 0.2);
@@ -2054,7 +2126,7 @@ body > .item-desc.item-desc-tooltip {
 
 .panel-icon {
   font-size: 24px;
-  text-shadow: 0 0 5px rgba(255,255,255,0.7);
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.7);
 }
 
 .close-btn {
@@ -2083,14 +2155,16 @@ body > .item-desc.item-desc-tooltip {
   padding-bottom: 8px;
 }
 
-.theme-options, .animation-options {
+.theme-options,
+.animation-options {
   display: flex;
   gap: 10px;
   justify-content: space-around;
   margin-top: 15px;
 }
 
-.theme-button, .animation-button {
+.theme-button,
+.animation-button {
   background: linear-gradient(145deg, #2980b9, #3498db);
   color: white;
   border: none;
@@ -2100,12 +2174,14 @@ body > .item-desc.item-desc-tooltip {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.theme-button:hover, .animation-button:hover {
+.theme-button:hover,
+.animation-button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
-.theme-button.active, .animation-button.active {
+.theme-button.active,
+.animation-button.active {
   background: linear-gradient(145deg, #27ae60, #2ecc71);
   box-shadow: 0 0 0 2px rgba(46, 204, 113, 0.5);
 }
@@ -2119,9 +2195,18 @@ body > .item-desc.item-desc-tooltip {
 }
 
 @keyframes floatUpSpecial {
-  0% { transform: translateY(0) scale(1); opacity: 1; }
-  50% { transform: translateY(-50px) scale(1.2); opacity: 1; }
-  100% { transform: translateY(-100px) scale(1); opacity: 0; }
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(-50px) scale(1.2);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100px) scale(1);
+    opacity: 0;
+  }
 }
 
 /* Boosted Click Power Display */
@@ -2132,8 +2217,12 @@ body > .item-desc.item-desc-tooltip {
 }
 
 @keyframes pulsate {
-  from { transform: scale(1); }
-  to { transform: scale(1.1); }
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.1);
+  }
 }
 
 /* Click Power Boost Indicator */
@@ -2151,8 +2240,12 @@ body > .item-desc.item-desc-tooltip {
 }
 
 @keyframes pulseGlow {
-  from { box-shadow: 0 0 5px rgba(255, 102, 0, 0.5); }
-  to { box-shadow: 0 0 15px rgba(255, 102, 0, 0.8); }
+  from {
+    box-shadow: 0 0 5px rgba(255, 102, 0, 0.5);
+  }
+  to {
+    box-shadow: 0 0 15px rgba(255, 102, 0, 0.8);
+  }
 }
 
 /* ...existing code... */
@@ -2271,16 +2364,15 @@ body > .item-desc,
 }
 
 /* ...existing code... */
-.upgrade .button_image{
+.upgrade .button_image {
   display: none;
 }
-.blurz{
+.blurz {
   display: none;
 }
 /* responsive */
 @media (max-width: 932px) {
- 
-  .blurz{
+  .blurz {
     position: fixed;
     top: 0;
     left: 0;
@@ -2289,9 +2381,8 @@ body > .item-desc,
     height: 100vh;
     background-color: rgba(0, 0, 0, 0.4);
     backdrop-filter: blur(15px);
-
   }
-  .blurz.show{
+  .blurz.show {
     display: block;
   }
   .upgrade-box {
@@ -2310,16 +2401,16 @@ body > .item-desc,
     font-size: 20px;
     font-style: italic;
   }
-  .right{
+  .right {
     padding-right: 52px;
   }
- 
+
   .left {
     /* width: 170px; */
     height: 150px;
-    margin-top:8%;
+    margin-top: 8%;
   }
-  .product{
+  .product {
     display: block;
   }
   /* .dropdown-content {
@@ -2341,103 +2432,95 @@ body > .item-desc,
     z-index: 528;
   } */
   .upgrade .button_image {
-    display: block; 
+    display: block;
     width: 30px;
-    height: 30px; 
-    border-radius: 5px; 
+    height: 30px;
+    border-radius: 5px;
     filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.2));
     animation: bounce 2s infinite;
     will-change: transform;
     transform: translateZ(0);
     transition: filter 0.3s ease, transform 0.3s ease;
     z-index: 528;
-  } 
+  }
   .upgrade .button_image {
     filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3));
-  transform: scale(1.1) translateZ(0);
+    transform: scale(1.1) translateZ(0);
   }
   .left .button {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 70%;
-
-  }
-  .product{
-   font-size: 15px;
-
-  }
-  /* .button{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     width: 70%;
-  } */
+  }
+  .product {
+    font-size: 15px;
+  }
+
   .upgrade {
     display: flex;
-    flex-direction: row; 
+    flex-direction: row;
     align-items: center;
     justify-content: center;
     padding: 10px;
     border: none;
     gap: 8px;
-   
-}
- /* .upgrade{
-  display: none;
- } */
+  }
+  .upgrade-progress {
+    margin-left: 5px;
+  }
 
-.upgrade-image {
-  width: 35px;
-  height: 35px;
-  padding: 2px;
-}
-.upgrade .button_top .productContainer {
-  display: block;
-  border: none;
-  color: #020202;
-  /* background: linear-gradient(145deg, #2980b9, #3498db) !important; */
-  font-size: medium;
-}
+  .upgrade-image {
+    width: 35px;
+    height: 35px;
+    padding: 2px;
+  }
+  .upgrade .button_top .productContainer {
+    display: block;
+    border: none;
+    color: #020202;
+    /* background: linear-gradient(145deg, #2980b9, #3498db) !important; */
+    font-size: medium;
+  }
 
-button.upgrade.productContainer:disabled .button_top {
-  /* background-color: #1ED760 !important; */
-  border-color: #ccc !important;
-  background: #ccc !important;
- color: #999 !important;
+  button.upgrade.productContainer:disabled .button_top {
+    /* background-color: #1ED760 !important; */
+    border-color: #ccc !important;
+    background: #ccc !important;
+    color: #999 !important;
+  }
 
-}
+  #settingsMenu {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    height: 210px;
+    transform: translate(-50%, -50%);
+    background: rgba(255, 255, 255, 0.9);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    display: none;
+  }
 
- #settingsMenu {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  height: 210px;
-  transform: translate(-50%, -50%);
-  background: rgba(255, 255, 255, 0.9); 
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-  z-index: 1000;
-  display: none; 
-}
-
-
- #settingsMenu .show {
-  display: block;
-  
-}
-#achievementsContainer {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  height: 180px;
-  transform: translate(-50%, -50%);
-  background: rgba(255, 255, 255, 0.9); 
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-  z-index: 1000;
-  display: none; 
-}
-#achievementsContainer .show{
-  display: block;
-}
+  #settingsMenu .show {
+    display: block;
+  }
+  #achievementsContainer {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    height: 180px;
+    transform: translate(-50%, -50%);
+    background: rgba(255, 255, 255, 0.9);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    display: none;
+  }
+  #achievementsContainer .show {
+    display: block;
+  }
 }

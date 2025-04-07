@@ -214,3 +214,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 
+function addAchievement(text) {
+  let list = document.getElementById("achievementsList");
+  let newItem = document.createElement("li");
+  newItem.textContent = text;
+  list.appendChild(newItem);
+
+  list.parentElement.scrollTop = list.parentElement.scrollHeight;
+}
+
+setTimeout(() => addAchievement("New Achievement Unlocked!"), 3000);
