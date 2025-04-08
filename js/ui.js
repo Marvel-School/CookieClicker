@@ -57,49 +57,18 @@ export function setupEventListeners(game) {
 }
 
 function setupTooltips(game) {
-  console.log("Setting up shop item click handlers - tooltips completely removed");
+  console.log("Setting up shop item click handlers");
   
-  // Get all shop items first to see if they exist
-  const shopItems = document.querySelectorAll('.shop-item');
-  console.log(`Found ${shopItems.length} shop items to set up`);
-  
-  shopItems.forEach((item, index) => {
-    // Create a clean replacement without any tooltip elements
+  document.querySelectorAll('.shop-item').forEach(item => {
     const upgradeKey = item.getAttribute("data-upgrade");
-    console.log(`Shop item ${index + 1} has data-upgrade="${upgradeKey}"`);
-    
-    // Create a completely new element without tooltips
-    const cleanItem = document.createElement('div');
-    cleanItem.className = item.className;
-    cleanItem.setAttribute('data-upgrade', upgradeKey);
-    
-    // Only copy essential child elements, excluding tooltips
-    const essentialSelectors = ['img.shop-item-image', '.item-name', '.item-cost', '.time-accelerator-timer'];
-    essentialSelectors.forEach(selector => {
-      const element = item.querySelector(selector);
-      if (element) {
-        cleanItem.appendChild(element.cloneNode(true));
-      }
-    });
-    
-    // Replace the original item with our clean version
-    item.parentNode.replaceChild(cleanItem, item);
     
     // Add click handler to the entire shop item
-    cleanItem.addEventListener('click', (e) => {
-      e.stopPropagation(); // Prevent bubbling
-      console.log(`Shop item clicked with key: ${upgradeKey}`);
-      
+    item.addEventListener('click', (e) => {
+      e.stopPropagation();
       if (upgradeKey && game.shopUpgrades[upgradeKey]) {
-        console.log(`Found matching upgrade for ${upgradeKey} attempting purchase`);
-        try {
-          game.purchaseShopUpgrade(upgradeKey);
-        } catch (error) {
-          console.error(`Error purchasing ${upgradeKey}:`, error);
-        }
+        game.purchaseShopUpgrade(upgradeKey);
       } else {
-        console.error(`Shop upgrade not found in game.shopUpgrades: ${upgradeKey}`);
-        console.log("Available upgrades:", Object.keys(game.shopUpgrades));
+        console.error(`Shop upgrade not found: ${upgradeKey}`);
       }
     });
   });
