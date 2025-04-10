@@ -197,7 +197,7 @@ export function dropCookieImage() {
 
   setTimeout(() => {
       newImg.remove();
-  }, 5000);
+  }, 10000);
 }
 
 document.addEventListener("DOMContentLoaded", function () {
