@@ -173,6 +173,8 @@ export class PersonalizationPanel extends UIComponent {
     }, 100);
   }
   
+  // Update the methods to use silentSave
+
   updateTheme(themeId) {
     // Update theme in game state
     if (!this.game.state.personalization) {
@@ -184,9 +186,12 @@ export class PersonalizationPanel extends UIComponent {
     // Apply theme
     this.applyTheme(themeId);
     
-    // Save settings
-    if (typeof this.game.saveGame === 'function') {
-      this.game.saveGame();
+    // Save settings silently without showing notification
+    if (typeof this.game.silentSave === 'function') {
+      this.game.silentSave();
+    } else {
+      // Fallback if silentSave isn't available
+      this.game.doSaveGame();
     }
     
     // Show feedback - let applyTheme handle this
@@ -217,9 +222,12 @@ export class PersonalizationPanel extends UIComponent {
     // Apply settings
     this.applyAnimationLevel(level);
     
-    // Save settings
-    if (typeof this.game.saveGame === 'function') {
-      this.game.saveGame();
+    // Save settings silently without showing notification
+    if (typeof this.game.silentSave === 'function') {
+      this.game.silentSave();
+    } else {
+      // Fallback if silentSave isn't available
+      this.game.doSaveGame();
     }
     
     // Show feedback (using debounced method to prevent multiple notifications)
@@ -355,10 +363,29 @@ export class PersonalizationPanel extends UIComponent {
     }, 2000);
   }
 
-  // Override show to ensure buttons are properly highlighted
+  // Override show method for better toggle behavior
   show() {
-    super.show();
-    // Just update active states but don't re-initialize buttons
-    this.updateActiveButtonStates();
+    if (this.container) {
+      // Make sure display is set to block
+      this.container.style.display = "block";
+      this.visible = true;
+      this.onShow();
+      
+      // Just update active states but don't re-initialize buttons
+      this.updateActiveButtonStates();
+    }
+  }
+  
+  // Override toggle method to ensure reliable toggling
+  toggle() {
+    if (this.visible) {
+      this.hide();
+    } else {
+      // Force display to none before showing to ensure proper state
+      if (this.container) {
+        this.container.style.display = "none";
+      }
+      setTimeout(() => this.show(), 0);
+    }
   }
 }

@@ -89,6 +89,9 @@ document.addEventListener('DOMContentLoaded', () => {
       settingsMenu.appendChild(newPersonalizationBtn);
     }
     
+    // REMOVE DUPLICATE EVENT LISTENERS - Let PersonalizationPanel handle everything
+    // The code below is causing the double-click issue
+    /*
     // Set up personalization panel toggle
     if (personalizationBtn && personalizationContainer) {
       personalizationBtn.addEventListener('click', (e) => {
@@ -117,6 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
         e.stopPropagation();
       });
     }
+    */
     
     // Legacy support for achievements dropdown
     const achieveWrapper = document.getElementById("achievementsWrapper");

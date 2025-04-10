@@ -202,6 +202,12 @@ export default class Game {
 
     // Initialize the active bonuses container
     this.activeBonusesContainer = document.getElementById('activeBonuses');
+    if (!this.activeBonusesContainer) {
+      // Create the container if it doesn't exist
+      this.activeBonusesContainer = document.createElement('div');
+      this.activeBonusesContainer.id = 'activeBonuses';
+      document.body.appendChild(this.activeBonusesContainer);
+    }
 
     // Set up event listeners
     setupEventListeners(this);
@@ -220,14 +226,107 @@ export default class Game {
     this.startGoldenCookieTimer();
     this.log("Golden cookie timer initialized with chance:", this.state.goldenCookieChance);
 
-    setInterval(() => {
+    const cookieImageInterval = setInterval(() => {
+      // Get your production values
       const autoClickers = this.upgrades.autoClicker.count || 0;
       const grandmas = this.upgrades.grandma.count || 0;
       const farms = this.upgrades.farm.count || 0;
-      let cps = autoClickers * 1 + grandmas * 3 + farms * 6;  // Using rebalanced production values
-      for(let i = 0; i < cps; i++)
+      const baseCps = autoClickers * 1 + grandmas * 3 + farms * 6;
+      
+      // Use the rate limiter
+      const particleRate = this.limitParticleRate(baseCps);
+      
+      // Only create a limited number of particles
+      for(let i = 0; i < particleRate; i++) {
         dropCookieImage();
+      }
     }, 1000);
+    
+    // Store the interval ID for cleanup later
+    this.cookieImageInterval = cookieImageInterval;
+
+    // Replace the existing setInterval with our improved cookie spawning system
+    if (this.cookieImageInterval) {
+      clearInterval(this.cookieImageInterval);
+    }
+
+    // Schedule cookie animations based on game progress
+    this.cookieImageInterval = setInterval(() => {
+      // Get production values - consider all buildings now
+      const autoClickers = this.upgrades.autoClicker.count || 0;
+      const grandmas = this.upgrades.grandma.count || 0;
+      const farms = this.upgrades.farm.count || 0;
+      const mines = this.upgrades.mine.count || 0;
+      const factories = this.upgrades.factory.count || 0;
+      const banks = this.upgrades.bank.count || 0;
+      const temples = this.upgrades.temple.count || 0;
+      
+      // Calculate base CPS from all production buildings
+      let cps = autoClickers * 1 + 
+                grandmas * 3 + 
+                farms * 6 +
+                mines * 12 +
+                factories * 25 +
+                temples * 80;
+                
+      // Apply bank bonus if present
+      if (banks > 0) {
+        cps += (this.state.cookies * 0.0005) * banks;
+      }
+      
+      // Apply any multipliers
+      cps *= this.state.cookieMultiplier || 1;
+      
+      // Apply time accelerator if active
+      if (this.state.timeAcceleratorActive) {
+        cps *= this.state.timeAcceleratorMultiplier;
+      }
+      
+      // Get the game phase by checking total CPS
+      let gamePhase = 'early';
+      if (cps > 1000) gamePhase = 'late';
+      else if (cps > 100) gamePhase = 'mid';
+      
+      // Scale cookie drop rate based on CPS with diminishing returns
+      // This prevents excessive cookies at high CPS values
+      const scaledRate = Math.min(12, Math.ceil(Math.log10(cps + 1) * 2));
+      
+      // Use our improved rate limiter
+      const cookieRate = this.limitCookieRate(scaledRate, gamePhase);
+      
+      // Spawn the determined number of cookies with appropriate sizing
+      for (let i = 0; i < cookieRate; i++) {
+        // Vary cookie sizes based on game phase
+        const sizes = ['tiny', 'small', 'normal'];
+        
+        if (gamePhase === 'mid') {
+          sizes.push('normal', 'large');  // More medium/large in mid-game
+        }
+        else if (gamePhase === 'late') {
+          sizes.push('normal', 'large', 'large', 'huge');  // More large/huge in late-game
+        }
+        
+        const size = sizes[Math.floor(Math.random() * sizes.length)];
+        
+        // Speed up cookies during active boosts
+        let speed = 1.0;
+        if (this.state.timeAcceleratorActive) {
+          speed = 1.5;  // 50% faster during time acceleration
+        }
+        
+        // Spawn the cookie with appropriate parameters
+        dropCookieImage(speed, size);
+      }
+    }, 1000);  // Update every second
+  }
+
+  // Add a safe play method that checks for user interaction first
+  limitParticleRate(cps) {
+    // Cap CPS-based particles at a reasonable rate
+    // For every 10 CPS, show 1 particle per second, up to a maximum
+    const MAX_PARTICLES_PER_SECOND = 10;
+    
+    return Math.min(Math.floor(cps / 10), MAX_PARTICLES_PER_SECOND);
   }
 
   // Add a new method to create and manage bonus indicators
@@ -238,8 +337,10 @@ export default class Game {
     if (!this.activeBonusesContainer) {
       this.activeBonusesContainer = document.getElementById('activeBonuses');
       if (!this.activeBonusesContainer) {
-        console.error("Active bonuses container not found");
-        return;
+        // Create the container if it doesn't exist
+        this.activeBonusesContainer = document.createElement('div');
+        this.activeBonusesContainer.id = 'activeBonuses';
+        document.body.appendChild(this.activeBonusesContainer);
       }
     }
     
@@ -322,6 +423,12 @@ export default class Game {
       }, 300);
     }
     
+    // Add small cookie shower effect on click with 10% chance
+    if (Math.random() < 0.1) {
+      const intensity = this.state.personalization?.particleIntensity || 1.0;
+      createCookieShower(Math.min(10, this.state.clickPower), 1000, intensity * 0.5);
+    }
+
     this.checkAchievements();
     updateGameDisplay(this);
   }
@@ -448,14 +555,13 @@ export default class Game {
     setTimeout(checkGoldenCookie, 5000); // First check after 5 seconds instead of 10
   }
 
-  // Spawn a golden cookie
+  // Spawn a golden cookie with improved positioning and tracking
   spawnGoldenCookie() {
     // Force reset golden cookie active state for manual spawning
     if (this.state.goldenCookieActive) {
       console.log("Golden cookie was already active. Removing existing one...");
-      const existingCookies = document.querySelectorAll('.golden-cookie');
-      existingCookies.forEach(cookie => {
-        if (cookie.parentNode) {
+      document.querySelectorAll('.golden-cookie').forEach(cookie => {
+        if (cookie && cookie.parentNode) {
           cookie.parentNode.removeChild(cookie);
         }
       });
@@ -470,8 +576,9 @@ export default class Game {
     
     // Random position on screen - keep away from edges
     const padding = 100;
-    const maxX = window.innerWidth - padding*2;
-    const maxY = window.innerHeight - padding*2;
+    // Use viewport dimensions to ensure it stays within visible area
+    const maxX = Math.min(window.innerWidth, document.documentElement.clientWidth) - padding*2;
+    const maxY = Math.min(window.innerHeight, document.documentElement.clientHeight) - padding*2;
     const posX = Math.floor(Math.random() * maxX) + padding;
     const posY = Math.floor(Math.random() * maxY) + padding;
     
@@ -486,16 +593,25 @@ export default class Game {
       </span>
     `;
     
-    // Add click handler with debugging info
-    goldenCookie.addEventListener('click', () => {
+    // Add click handler with debugging info and IMPROVED CLICK PROTECTION
+    const clickHandler = (e) => {
+      // Prevent event from bubbling up
+      e.stopPropagation();
+      
+      // Only handle if still active
+      if (!this.state.goldenCookieActive) return;
+      
       console.log('Golden cookie clicked!');
+      
+      // Immediately prevent further clicks
+      goldenCookie.removeEventListener('click', clickHandler);
+      goldenCookie.style.pointerEvents = 'none';
+      
+      // Handle the click
       this.handleGoldenCookieClick(goldenCookie);
-    });
+    };
     
-    // Test click handler
-    goldenCookie.addEventListener('mousedown', () => {
-      console.log('Mouse down on golden cookie');
-    });
+    goldenCookie.addEventListener('click', clickHandler);
     
     // Make sure the container exists
     if (!this.goldenCookieContainer) {
@@ -520,7 +636,7 @@ export default class Game {
     
     // Auto-disappear after 15 seconds
     setTimeout(() => {
-      if (this.state.goldenCookieActive && goldenCookie.parentNode) {
+      if (goldenCookie.parentNode) {
         console.log('Golden cookie expired without being clicked');
         this.removeGoldenCookie(goldenCookie);
       }
@@ -532,9 +648,21 @@ export default class Game {
     return goldenCookie;
   }
 
-  // Handle golden cookie click
+  // Handle golden cookie click with improved removal
   handleGoldenCookieClick(goldenCookie) {
+    // Important: Check if the cookie is still active and immediately set to inactive
+    // This prevents multiple clicks/rewards from the same cookie
     if (!this.state.goldenCookieActive) return;
+    
+    // Immediately mark as inactive and remove visually to prevent multiple clicks
+    this.state.goldenCookieActive = false;
+    
+    // Add a class to disable pointer events immediately
+    goldenCookie.classList.add('clicked');
+    goldenCookie.style.pointerEvents = 'none';
+    
+    // Move the intensity declaration outside the switch statement
+    const intensity = this.state.personalization?.particleIntensity || 1.0;
     
     // Different possible rewards - REBALANCED
     const rewards = [
@@ -587,6 +715,10 @@ export default class Game {
         const cookieBonus = reward.value();
         this.state.cookies += cookieBonus;
         showToast(reward.message(cookieBonus));
+
+        // Add a cookie shower effect matching the reward size
+        // Use the intensity declared above
+        createCookieShower(cookieBonus / 30, 3000, intensity);
         break;
         
       case 'production':
@@ -761,10 +893,14 @@ export default class Game {
           }
           clearInterval(frenzyCountdownInterval);
         }, frenzyDuration * 1000);
+
+        // Add a dramatic cookie shower for frenzy boost
+        // Use the intensity declared above rather than redeclaring it
+        createCookieShower(50, 5000, intensity * 2);
         break;
     }
     
-    // Remove the golden cookie
+    // Remove the golden cookie immediately after handling the click
     this.removeGoldenCookie(goldenCookie);
     
     // Update display
@@ -772,120 +908,26 @@ export default class Game {
     this.checkAchievements();
   }
 
-  // Add new method to handle production boost visuals
-  applyProductionBoostVisuals(active) {
-    // Apply visual effects to CPS display
-    if (this.cpsDisplay) {
-      if (active) {
-        this.cpsDisplay.classList.add('boosted-display');
-      } else {
-        this.cpsDisplay.classList.remove('boosted-display');
-      }
-    }
-    
-    // Add a visual indicator in the stats area
-    const statsDiv = document.querySelector('.stats');
-    
-    // Remove any existing indicator first
-    const existingIndicator = document.getElementById('production-boost-indicator');
-    if (existingIndicator) {
-      existingIndicator.remove();
-    }
-    
-    // Add new indicator if boost is active
-    if (active && statsDiv) {
-      const boost = document.createElement('div');
-      boost.id = 'production-boost-indicator';
-      boost.className = 'boost-indicator production-boost-indicator';
-      boost.innerHTML = '⚡ Production Boost Active! ⚡';
-      statsDiv.appendChild(boost);
-    }
-  }
-
-  // Add new method to handle click power boost visuals
-  applyClickPowerBoostVisuals(active) {
-    // Apply visual effects to click power display
-    if (this.clickPowerDisplay) {
-      if (active) {
-        this.clickPowerDisplay.classList.add('click-power-boosted');
-      } else {
-        this.clickPowerDisplay.classList.remove('click-power-boosted');
-      }
-    }
-    
-    // Apply visual effect to cookie
-    if (this.cookie) {
-      if (active) {
-        this.cookie.classList.add('click-boosted');
-      } else {
-        this.cookie.classList.remove('click-boosted');
-      }
-    }
-    
-    // Add a visual indicator in the stats area
-    const statsDiv = document.querySelector('.stats');
-    
-    // Remove any existing indicator first
-    const existingIndicator = document.getElementById('click-boost-indicator');
-    if (existingIndicator) {
-      existingIndicator.remove();
-    }
-    
-    // Add new indicator if boost is active
-    if (active && statsDiv) {
-      const boost = document.createElement('div');
-      boost.id = 'click-boost-indicator';
-      boost.className = 'boost-indicator click-boost-indicator';
-      boost.innerHTML = '👆 Click Power Boost Active! 👆';
-      statsDiv.appendChild(boost);
-    }
-  }
-
-  // New method for clicking frenzy visuals
-  applyClickingFrenzyVisuals(active) {
-    // Apply intense effects to cookie
-    if (this.cookie) {
-      if (active) {
-        this.cookie.classList.add('frenzy-boosted');
-      } else {
-        this.cookie.classList.remove('frenzy-boosted');
-      }
-    }
-    
-    // Apply effects to click power display
-    if (this.clickPowerDisplay) {
-      if (active) {
-        this.clickPowerDisplay.classList.add('frenzy-boosted-text');
-      } else {
-        this.clickPowerDisplay.classList.remove('frenzy-boosted-text');
-      }
-    }
-    
-    // Add a frenzy indicator in the stats area
-    const statsDiv = document.querySelector('.stats');
-    
-    // Remove any existing indicator first
-    const existingIndicator = document.getElementById('frenzy-indicator');
-    if (existingIndicator) {
-      existingIndicator.remove();
-    }
-    
-    // Add new indicator if boost is active
-    if (active && statsDiv) {
-      const boost = document.createElement('div');
-      boost.id = 'frenzy-indicator';
-      boost.className = 'boost-indicator frenzy-indicator';
-      boost.innerHTML = '🔥 CLICKING FRENZY! 🔥';
-      statsDiv.appendChild(boost);
-    }
-  }
-
-  // Remove golden cookie from screen
+  // Improved golden cookie removal to ensure it's always removed
   removeGoldenCookie(goldenCookie) {
-    if (goldenCookie && goldenCookie.parentNode) {
-      goldenCookie.parentNode.removeChild(goldenCookie);
+    if (goldenCookie) {
+      // First disable pointer events to prevent further clicks during removal
+      goldenCookie.style.pointerEvents = 'none';
+      
+      // Remove from DOM
+      if (goldenCookie.parentNode) {
+        goldenCookie.parentNode.removeChild(goldenCookie);
+      }
+      
+      // Also remove any other golden cookies that may have been created
+      document.querySelectorAll('.golden-cookie').forEach(cookie => {
+        if (cookie.parentNode) {
+          cookie.parentNode.removeChild(cookie);
+        }
+      });
     }
     
+    // Update game state
     this.state.goldenCookieActive = false;
     this.state.lastGoldenCookieTime = Date.now();
   }
@@ -939,6 +981,29 @@ export default class Game {
       // Throttle visual updates to reduce DOM operations
       if (now - lastUpdateTime > UPDATE_INTERVAL) {
         updateGameDisplay(this);
+        
+        // This part needs to be changed to use our new rate limiting
+        // Find the code where cookies are dropped in the game loop
+        const autoClickers = this.upgrades.autoClicker.count || 0;
+        const grandmas = this.upgrades.grandma.count || 0;
+        const farms = this.upgrades.farm.count || 0;
+        const mines = this.upgrades.mine.count || 0;
+        const factories = this.upgrades.factory.count || 0;
+        // ...other production buildings...
+        
+        let baseCps = autoClickers * 1 + grandmas * 3 + farms * 6 + mines * 12 + factories * 25; // etc
+        
+        // Apply rate limiting to avoid excessive particles
+        const particleRate = this.limitParticleRate(baseCps);
+        
+        // Only drop particles at the limited rate, scaled to update interval
+        const particlesToDrop = Math.floor(particleRate * (UPDATE_INTERVAL / 1000));
+        
+        // Create the limited number of particles
+        for (let i = 0; i < particlesToDrop; i++) {
+          dropCookieImage();
+        }
+        
         lastUpdateTime = now;
       }
       
@@ -992,6 +1057,9 @@ export default class Game {
         this.clickPowerDisplay.classList.remove('boosted');
       }
     }
+
+    // Define cookies variable before using it
+    const cookies = this.state.cookies || 0;
 
     this.clickUpgradeButton.disabled = cookies < this.upgrades.clickUpgrade.cost;
     this.autoClickerButton.disabled = cookies < this.upgrades.autoClicker.cost;
@@ -1172,6 +1240,12 @@ export default class Game {
     this.doSaveGame();
     showToast("Game saved!");
     this.log("Manual save complete.");
+  }
+  
+  // New silent save method - saves without showing a toast notification
+  silentSave() {
+    this.doSaveGame();
+    this.log("Silent save complete - no notification shown");
   }
 
   autoSave() {
@@ -1610,5 +1684,58 @@ export default class Game {
     } catch (e) {
       this.log("Error initializing personalization:", e);
     }
+  }
+
+  // Add this new method for improved cookie rate limiting
+  limitCookieRate(rate, gamePhase) {
+    // Base limit depends on game phase
+    let maxRate;
+    
+    switch (gamePhase) {
+      case 'early':
+        maxRate = 3;  // Maximum 3 cookies per second in early game
+        break;
+      case 'mid':
+        maxRate = 6;  // Maximum 6 cookies per second in mid game
+        break;
+      case 'late':
+        maxRate = 10; // Maximum 10 cookies per second in late game
+        break;
+      default:
+        maxRate = 3;
+    }
+    
+    // Apply special effects during golden cookie boosts
+    if (this.state.activeGoldenCookieBonuses) {
+      // Increase rate during production boosts
+      if (this.state.activeGoldenCookieBonuses.production && 
+          this.state.activeGoldenCookieBonuses.production.active) {
+        maxRate *= 1.5;  // 50% more cookies during production boost
+      }
+      
+      // Increase rate during frenzy
+      if (this.state.activeGoldenCookieBonuses.clickPower && 
+          this.state.activeGoldenCookieBonuses.clickPower.active) {
+        maxRate *= 1.3;  // 30% more cookies during click power boost
+      }
+    }
+    
+    // Apply adjustment based on personalization settings
+    if (this.state.personalization && this.state.personalization.animations) {
+      switch (this.state.personalization.animations) {
+        case 'standard':
+          // No adjustment needed
+          break;
+        case 'reduced':
+          maxRate = Math.max(1, Math.floor(maxRate * 0.5));  // 50% fewer cookies
+          break;
+        case 'minimal':
+          maxRate = Math.max(1, Math.floor(maxRate * 0.2));  // 80% fewer cookies
+          break;
+      }
+    }
+    
+    // Return the lower of the requested rate or max rate
+    return Math.min(rate, Math.floor(maxRate));
   }
 }

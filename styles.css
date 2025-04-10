@@ -213,11 +213,10 @@ body.blur {
 #production-boost-indicator,
 #click-boost-indicator,
 #frenzy-indicator {
-  margin-top: 5px;
-  font-size: 0.8em;
-  padding: 3px 6px;
-  border-radius: 10px;
-  display: inline-block;
+  margin-top: 10px;
+  max-width: 100%;
+  box-sizing: border-box;
+  font-size: 13px;
 }
 
 #multiplierDisplay {
@@ -545,6 +544,32 @@ body.blur {
   animation: fallAnimation 2s linear forwards;
 }
 
+/* Optimize falling animation to use hardware acceleration */
+.falling {
+  /* ...existing styles... */
+  transform: translate3d(0, 0, 0); /* Force GPU acceleration */
+  will-change: transform; /* Hint to browser that the element will animate */
+  
+  /* Reduce animation complexity for better performance */
+  animation: fall 3s linear forwards;
+}
+
+@keyframes fall {
+  to {
+    transform: translate3d(0, calc(100vh + 50px), 0);
+  }
+}
+
+/* Limit animations when too many elements are present */
+body[data-particle-heavy="true"] .falling {
+  animation-duration: 2s; /* Speed up animations */
+  opacity: 0.7; /* Lower opacity for less visual load */
+}
+
+body[data-particle-heavy="true"] .floating-number {
+  opacity: 0.5; /* Lower opacity for less visual load */
+}
+
 @keyframes fallAnimation {
   0% {
       opacity: 1;
@@ -555,6 +580,68 @@ body.blur {
   }
 }
 
+/* Add improved falling cookie animations */
+@keyframes cookieFallMedium {
+  0% { 
+    opacity: 0;
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(0.8);
+  }
+  10% { 
+    opacity: 1;
+    transform: translate3d(calc(var(--horizontal-drift) * 0.1), 10vh, 0) rotate(calc(var(--rotation) * 0.1)) scale(0.9);
+  }
+  80% {
+    opacity: 1;
+    transform: translate3d(calc(var(--horizontal-drift) * 0.8), 80vh, 0) rotate(calc(var(--rotation) * 0.8)) scale(1);
+  }
+  100% { 
+    opacity: 0;
+    transform: translate3d(var(--horizontal-drift), 110vh, 0) rotate(var(--rotation)) scale(0.9);
+  }
+}
+
+@keyframes cookieFallLow {
+  0% { 
+    opacity: 0.2;
+    transform: translate3d(0, 0, 0);
+  }
+  10% { 
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% { 
+    opacity: 0;
+    transform: translate3d(0, 110vh, 0);
+  }
+}
+
+/* Base falling cookie styling */
+.falling {
+  position: absolute;
+  transform-origin: center center;
+  pointer-events: none;
+  will-change: transform, opacity;
+  z-index: -1;
+  border-radius: 50%;
+  opacity: 0;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+/* Adjust animation styles based on quality class applied to body */
+body.quality-low .falling {
+  filter: none;
+  animation-duration: 3s !important;
+}
+
+body.quality-medium .falling {
+  filter: drop-shadow(0 2px 3px rgba(0,0,0,0.2));
+}
+
+body.quality-high .falling {
+  filter: drop-shadow(0 2px 5px rgba(0,0,0,0.3));
+}
 
 /* CENTER Section: Clickable Cookie */
 .center {
@@ -2416,54 +2503,73 @@ body > .item-desc,
 /* Bonus indicators */
 #activeBonuses {
   position: fixed;
-  top: 10px;
-  right: 10px;
+  top: 100px; /* Move it below the cookie counter */
+  right: 20px; /* Position on the right side instead of potentially overlapping center */
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  z-index: 1000;
+  gap: 8px;
+  z-index: 900; /* Lower than critical UI elements */
+  pointer-events: none; /* Let clicks pass through */
+  max-width: 200px; /* Limit width to prevent excessive horizontal spread */
 }
 
 .bonus-indicator {
   display: flex;
   align-items: center;
   gap: 8px;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.6);
   color: white;
   padding: 8px 12px;
-  border-radius: 5px;
-  font-weight: bold;
+  border-radius: 8px;
+  font-size: 14px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  animation: fadeIn 0.5s;
+  pointer-events: none; /* Let clicks pass through */
 }
 
 .bonus-indicator.time-accelerator {
-  border-left: 4px solid #ffc107;
+  border-left: 3px solid #ffcc00;
 }
 
-.bonus-indicator.production-boost {
-  border-left: 4px solid #ffaa00;
+.bonus-indicator.production-boost,
+.bonus-indicator.cookie-multiplier {
+  border-left: 3px solid #00ccff;
 }
 
 .bonus-indicator.click-boost {
-  border-left: 4px solid #ff6600;
+  border-left: 3px solid #ff66cc;
 }
 
 .bonus-indicator.frenzy {
-  border-left: 4px solid #ff0000;
+  border-left: 3px solid #ff3333;
+  animation: pulse 1s infinite alternate;
 }
 
 .bonus-icon {
-  font-size: 1.2em;
+  font-size: 18px;
 }
 
 .bonus-text {
   flex-grow: 1;
+  white-space: nowrap;
 }
 
 .bonus-timer {
-  background: rgba(255, 255, 255, 0.2);
-  padding: 2px 6px;
-  border-radius: 10px;
-  font-size: 0.9em;
+  font-weight: bold;
+  min-width: 40px;
+  text-align: right;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes pulse {
+  from { opacity: 0.8; transform: scale(0.98); }
+  to { opacity: 1; transform: scale(1); }
 }
 
 /* Golden cookie styles */
@@ -2629,6 +2735,7 @@ body > .item-desc,
   filter: none !important;
   -webkit-backdrop-filter: none !important;
   backdrop-filter: none !important;
+  pointer-events: none;
 }
 
 /* Add z-index to ensure backdrop stays behind other elements */
@@ -2713,6 +2820,81 @@ body > .item-desc,
   opacity: 0.8;
 }
 
+/* Fix for active bonuses container - reposition to avoid overlapping the cookie counter */
+#activeBonuses {
+  position: fixed;
+  top: 100px; /* Move it below the cookie counter */
+  right: 20px; /* Position on the right side instead of potentially overlapping center */
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 900; /* Lower than critical UI elements */
+  pointer-events: none; /* Let clicks pass through */
+  max-width: 200px; /* Limit width to prevent excessive horizontal spread */
+}
+
+/* Style for bonus indicators to be more compact and less obtrusive */
+.bonus-indicator {
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  animation: fadeIn 0.5s;
+  pointer-events: none; /* Let clicks pass through */
+}
+
+/* Different types of indicators */
+.bonus-indicator.time-accelerator {
+  border-left: 3px solid #ffcc00;
+}
+
+.bonus-indicator.production-boost,
+.bonus-indicator.cookie-multiplier {
+  border-left: 3px solid #00ccff;
+}
+
+.bonus-indicator.click-boost {
+  border-left: 3px solid #ff66cc;
+}
+
+.bonus-indicator.frenzy {
+  border-left: 3px solid #ff3333;
+  animation: pulse 1s infinite alternate;
+}
+
+/* Indicator parts */
+.bonus-icon {
+  font-size: 18px;
+}
+
+.bonus-text {
+  flex-grow: 1;
+  white-space: nowrap;
+}
+
+.bonus-timer {
+  font-weight: bold;
+  min-width: 40px;
+  text-align: right;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes pulse {
+  from { opacity: 0.8; transform: scale(0.98); }
+  to { opacity: 1; transform: scale(1); }
+}
+
 /* Add scroll indicators */
 .left::after, .right::after {
   content: '';
@@ -2731,20 +2913,90 @@ body > .item-desc,
   opacity: 1; /* Show when content overflows */
 }
 
-/* Upgrade buttons layout optimization */
-.left button {
-  margin-bottom: 10px; /* Slightly reduced margin */
+/* Ensure boosts in stats area don't obstruct the cookie counter */
+#production-boost-indicator,
+#click-boost-indicator,
+#frenzy-indicator {
+  margin-top: 10px;
+  max-width: 100%;
+  box-sizing: border-box;
+  font-size: 13px;
 }
 
-/* For dark theme compatibility */
-body.theme-dark ::-webkit-scrollbar-track {
-  background-color: rgba(0, 0, 0, 0.2);
+/* Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+  #activeBonuses {
+    right: 10px;
+    max-width: 180px;
+    font-size: 12px;
+  }
+  
+  .bonus-indicator {
+    padding: 6px 8px;
+    font-size: 12px;
+  }
+  
+  .bonus-icon {
+    font-size: 16px;
+  }
 }
 
-body.theme-dark ::-webkit-scrollbar-thumb {
-  background-color: rgba(150, 150, 150, 0.3);
+/* Add these rules to prevent horizontal scrollbar */
+
+html, body {
+  overflow-x: hidden; /* Prevent horizontal scrollbar */
+  width: 100%;
+  position: relative;
 }
 
-body.theme-dark * {
-  scrollbar-color: rgba(150, 150, 150, 0.3) rgba(0, 0, 0, 0.2);
+.falling {
+  position: absolute;
+  transform-origin: center center;
+  pointer-events: none;
+  will-change: transform, opacity;
+  z-index: -1;
+  border-radius: 50%;
+  opacity: 0;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  max-width: 100px; /* Limit maximum size */
+  max-height: 100px;
+}
+
+/* Ensure content is contained */
+#content-container {
+  position: relative;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+/* Fix cookie animation containers */
+#goldenCookieContainer, 
+#confetti-canvas,
+.animation-demo-effect {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw !important; /* Use viewport width */
+  height: 100vh !important; /* Use viewport height */
+  overflow: hidden;
+}
+
+/* Improve falling animation to prevent overflow */
+@keyframes cookieFallMedium {
+  0% { 
+    opacity: 0;
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(0.8);
+  }
+  10% { 
+    opacity: 1;
+    transform: translate3d(calc(clamp(-10vw, var(--horizontal-drift), 10vw) * 0.1), 10vh, 0) rotate(calc(var(--rotation) * 0.1)) scale(0.9);
+  }
+  80% {
+    opacity: 1;
+    transform: translate3d(calc(clamp(-10vw, var(--horizontal-drift), 10vw) * 0.8), 80vh, 0) rotate(calc(var(--rotation) * 0.8)) scale(1);
+  }
+  100% { 
+    opacity: 0;
+    transform: translate3d(clamp(-10vw, var(--horizontal-drift), 10vw), 110vh, 0) rotate(var(--rotation)) scale(0.9);
+  }
 }
