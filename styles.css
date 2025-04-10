@@ -2888,7 +2888,9 @@ html, body {
 body.theme-dark * {
   scrollbar-color: rgba(150, 150, 150, 0.3) rgba(0, 0, 0, 0.2);
 }
-
+.blurz {
+  display: none;
+}
 /* responsive */
 @media (max-width: 932px) {
   .blurz{
@@ -2900,11 +2902,12 @@ body.theme-dark * {
     height: 100vh;
     background-color: rgba(0, 0, 0, 0.4);
     backdrop-filter: blur(15px);
-    display: block;
+    /* display: block; */
   }
   .blurz.show{
     display: block;
   }
+
   .upgrade-box {
     width: 120px;
   }
