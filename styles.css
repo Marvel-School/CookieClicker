@@ -2508,11 +2508,10 @@ body > .item-desc,
 }
 
 /* Add z-index to ensure backdrop stays behind other elements */
-#backdrop, .backdrop {
+/* #backdrop, .backdrop {
   z-index: 998;
   pointer-events: none;
-}
-
+} */
 /* Set proper pointer events for modals */
 .shop-container, .settings-menu, .achievements-container {
   pointer-events: auto;
@@ -2624,7 +2623,9 @@ body.theme-dark ::-webkit-scrollbar-thumb {
 body.theme-dark * {
   scrollbar-color: rgba(150, 150, 150, 0.3) rgba(0, 0, 0, 0.2);
 }
-
+.blurz {
+  display: none;
+}
 /* responsive */
 @media (max-width: 932px) {
   .blurz{
@@ -2636,11 +2637,12 @@ body.theme-dark * {
     height: 100vh;
     background-color: rgba(0, 0, 0, 0.4);
     backdrop-filter: blur(15px);
-    display: block;
+    /* display: block; */
   }
   .blurz.show{
     display: block;
   }
+
   .upgrade-box {
     width: 120px;
   }
