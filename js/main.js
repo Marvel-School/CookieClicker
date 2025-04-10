@@ -281,31 +281,43 @@ class ToggleMenu {
     document.addEventListener("click", (event) => this.closeMenu(event));
   }
 
+  // toggleMenu() {
+  //   this.menu.classList.toggle("show");
+  //   if (this.backdrop) {
+  //     this.backdrop.classList.toggle("show");
+  //     // Ensure no blur is applied
+  //     this.backdrop.style.backdropFilter = 'none';
+  //     this.backdrop.style.webkitBackdropFilter = 'none';
+  //     this.backdrop.style.filter = 'none';
+  //   }
+  // }
   toggleMenu() {
     this.menu.classList.toggle("show");
-    if (this.backdrop) {
-      this.backdrop.classList.toggle("show");
-      // Ensure no blur is applied
-      this.backdrop.style.backdropFilter = 'none';
-      this.backdrop.style.webkitBackdropFilter = 'none';
-      this.backdrop.style.filter = 'none';
-    }
+    this.body.classList.toggle("blur");
+    this.backdrop.classList.toggle("show");
   }
 
-  closeMenu(event) {
-    if (!this.menu.contains(event.target) && !this.icon.contains(event.target)) {
-      this.menu.classList.remove("show");
-      if (this.backdrop) {
-        this.backdrop.classList.remove("show");
-        // Ensure no blur is applied
-        this.backdrop.style.backdropFilter = 'none';
-        this.backdrop.style.webkitBackdropFilter = 'none';
-        this.backdrop.style.filter = 'none';
-      }
-    }
+//   closeMenu(event) {
+//     if (!this.menu.contains(event.target) && !this.icon.contains(event.target)) {
+//       this.menu.classList.remove("show");
+//       if (this.backdrop) {
+//         this.backdrop.classList.remove("show");
+//         // Ensure no blur is applied
+//         this.backdrop.style.backdropFilter = 'none';
+//         this.backdrop.style.webkitBackdropFilter = 'none';
+//         this.backdrop.style.filter = 'none';
+//       }
+//     }
+//   }
+// }
+closeMenu(event) {
+  if (!this.menu.contains(event.target) && !this.icon.contains(event.target)) {
+    this.menu.classList.remove("show");
+    this.body.classList.remove("blur");
+    this.backdrop.classList.remove("show");
   }
 }
-
+}
 document.addEventListener("DOMContentLoaded", function () {
   new ToggleMenu("settingsIcon", "settingsMenu");
   new ToggleMenu("achievementsIcon", "achievementsContainer");

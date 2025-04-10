@@ -1,0 +1,2527 @@
+/* Global Styles */
+body {
+    font-family: "Roboto", sans-serif;
+    background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+    margin: 0;
+    padding: 0;
+    color: #333;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+  
+  /* LEFT Section: Upgrade Buttons */
+  /* Shifted down slightly (top: 60%) */
+  .left {
+    position: fixed;
+    top: 60%;
+    left: 20px;
+    gap: 20px;
+    transform: translateY(-60%);
+    width: 220px;
+    /* Remove the white background */
+    background: transparent;
+    padding: 20px;
+    margin-top: 50px;
+    border-radius: 12px;
+    /* Remove box-shadow completely */
+    box-shadow: none;
+    overflow-y: auto;
+    max-height: 90%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    z-index: 100;
+  }
+  
+  .left .button {
+    display: inline-block;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .left button:disabled {
+    background: #ccc !important; /* changed grey background */
+    color: #fff !important;
+    box-shadow: none !important;
+    transform: none !important;
+    cursor: not-allowed !important;
+    /* Removed forced padding override */
+  }
+  
+  .left button {
+    background: linear-gradient(145deg, #2980b9, #3498db);
+    color: #fff;
+    font-size: 18px; /* reduced font size */
+    padding: 10px; /* reduced padding */
+    width: auto; /* removed full width */
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+  
+  .left button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+  }
+  
+  .left button:active {
+    transform: scale(0.98);
+    box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.25);
+  }
+  .product {
+    display: none;
+  }
+  
+  /* TOP Section: Stats - REDESIGNED */
+  .stats {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255, 255, 255, 0.92);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    z-index: 200;
+    text-align: center;
+    padding: 12px 15px;
+    width: auto;
+    min-width: 220px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    visibility: visible !important;
+    opacity: 1 !important;
+    display: block !important;
+  }
+  
+  /* New cookie count styling */
+  .stats h1 {
+    font-size: 1.6em;
+    margin: 0 0 8px 0;
+    color: #333;
+    text-shadow: 0 1px 1px rgba(255, 255, 255, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  
+  .stats h1 .cookie-icon {
+    font-size: 0.9em;
+    animation: cookieSpin 3s infinite linear;
+    display: inline-block;
+  }
+  
+  .stats h1 #cookieCount {
+    color: #8b4513; /* Cookie brown */
+    font-weight: 700;
+    transition: text-shadow 0.3s, color 0.3s;
+  }
+  
+  .stats h1 #cookieCount.updating {
+    text-shadow: 0 0 8px rgba(139, 69, 19, 0.7);
+  }
+  
+  /* Stats metrics section */
+  .stats-metrics {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    font-size: 0.9em;
+    margin-top: 3px;
+    padding-top: 6px;
+    border-top: 1px dashed rgba(0, 0, 0, 0.1);
+  }
+  
+  .stats-metric {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .stats-metric .label {
+    font-size: 0.75em;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #777;
+    margin-bottom: 2px;
+  }
+  
+  .stats-metric .value {
+    font-weight: 600;
+    color: #333;
+    font-size: 1.1em;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  
+  .stats-metric .icon {
+    opacity: 0.7;
+    font-size: 0.9em;
+  }
+  
+  .stats-metric #clickPower,
+  .stats-metric #cps {
+    transition: color 0.3s, text-shadow 0.3s;
+  }
+  
+  .stats-metric #cps.boosted {
+    color: #ffaa00;
+    text-shadow: 0 0 5px rgba(255, 170, 0, 0.3);
+  }
+  
+  .stats-metric #clickPower.boosted {
+    color: #ff6600;
+    text-shadow: 0 0 5px rgba(255, 102, 0, 0.3);
+  }
+  
+  @keyframes cookieSpin {
+    0% {
+      transform: rotate(0deg);
+    }
+    25% {
+      transform: rotate(0deg);
+    }
+    35% {
+      transform: rotate(10deg);
+    }
+    45% {
+      transform: rotate(-10deg);
+    }
+    55% {
+      transform: rotate(5deg);
+    }
+    65% {
+      transform: rotate(-5deg);
+    }
+    75% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(0deg);
+    }
+  }
+  
+  /* Cookie gain animation */
+  @keyframes cookieGain {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.15);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+  
+  .cookie-gain {
+    animation: cookieGain 0.4s ease-in-out;
+  }
+  
+  /* New Position for Boost Indicators */
+  #production-boost-indicator,
+  #click-boost-indicator,
+  #frenzy-indicator {
+    margin-top: 5px;
+    font-size: 0.8em;
+    padding: 3px 6px;
+    border-radius: 10px;
+    display: inline-block;
+  }
+  
+  #multiplierDisplay {
+    margin: 0;
+    font-size: 0.85em;
+    color: #777;
+  }
+  
+  /* ACHIEVEMENTS Container - Redesigned Trophy Case Look */
+  #achievementsContainer {
+    display: none;
+    position: fixed;
+    top: 20px;
+    right: 70px;
+    width: 280px; /* Slightly wider */
+    max-height: 300px; 
+      overflow-y: auto; 
+      border: 1px solid #ddd;
+      padding: 10px;
+    background: linear-gradient(
+      to bottom,
+      #fffaf0,
+      #f8f8ff
+    ); /* Warm to cool gradient */
+    padding: 0; /* Remove padding - we'll add it in the inner content */
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2),
+      inset 0 1px 3px rgba(255, 255, 255, 0.8);
+    z-index: 210;
+    overflow: hidden; /* For the header styling */
+    border: 1px solid rgba(210, 210, 210, 0.8);
+  }
+  
+  #achievementsContainer .achievements-header {
+    background: linear-gradient(
+      145deg,
+      #2980b9,
+      #3498db
+    ); /* Match other UI elements */
+    color: white;
+    padding: 12px 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+  }
+  
+  #achievementsContainer .achievements-header h2 {
+    margin: 0;
+    font-size: 20px;
+    flex-grow: 1;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+  }
+  
+  #achievementsContainer .achievements-header .trophy-icon {
+    font-size: 24px;
+    color: gold;
+    text-shadow: 0 0 5px rgba(255, 215, 0, 0.7);
+  }
+  
+  #achievementsContainer .achievements-content {
+    padding: 15px;
+    max-height: 300px;
+    overflow-y: auto;
+  }
+  
+  #achievementsList {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+  }
+  
+  #achievementsList li {
+    margin-bottom: 12px;
+    padding: 10px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    transition: transform 0.2s ease;
+    position: relative;
+    overflow: hidden;
+    border-left: 4px solid #ffd700; /* Gold accent */
+  }
+  
+  #achievementsList li:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+  
+  #achievementsList li::before {
+    content: "🏆";
+    margin-right: 8px;
+    font-size: 20px;
+  }
+  
+  #achievementsList li:nth-child(2n)::before {
+    content: "🥇"; /* Alternate medal icon */
+  }
+  
+  #achievementsList li:nth-child(3n)::before {
+    content: "🍪"; /* Cookie icon for some variety */
+  }
+  
+  #achievementsList li:last-child {
+    margin-bottom: 0;
+  }
+  
+  #achievementsContainer:empty::after {
+    content: "No achievements yet. Keep playing!";
+    display: block;
+    padding: 20px;
+    text-align: center;
+    color: #666;
+    font-style: italic;
+  }
+  
+  /* Subtle shine effect */
+  #achievementsList li::after {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -60%;
+    width: 20%;
+    height: 200%;
+    opacity: 0;
+    transform: rotate(30deg);
+    background: rgba(255, 255, 255, 0.13);
+    background: linear-gradient(
+      to right,
+      rgba(255, 255, 255, 0.13) 0%,
+      rgba(255, 255, 255, 0.13) 77%,
+      rgba(255, 255, 255, 0.5) 92%,
+      rgba(255, 255, 255, 0) 100%
+    );
+  }
+  
+  #achievementsList li:hover::after {
+    opacity: 1;
+    left: 130%;
+    transition: all 0.7s ease;
+  }
+  
+  /* Enhanced achievement styling */
+  #achievementsList {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+  }
+  
+  #achievementsList .no-achievements {
+    text-align: center;
+    padding: 20px 10px;
+    color: #888;
+    font-style: italic;
+  }
+  
+  .achievement-item {
+    margin-bottom: 12px;
+    padding: 12px;
+    background: #fff;
+    border-radius: 8px;
+    display: flex;
+    align-items: flex-start;
+    transition: transform 0.2s ease;
+    position: relative;
+    overflow: hidden;
+    border-left: 4px solid;
+  }
+  
+  .achievement-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+  
+  .achievement-item.common {
+    border-left-color: #aaaaaa;
+  }
+  
+  .achievement-item.uncommon {
+    border-left-color: #1ed760;
+  }
+  
+  .achievement-item.rare {
+    border-left-color: #4169e1;
+  }
+  
+  .achievement-item.epic {
+    border-left-color: #9b30ff;
+  }
+  
+  .achievement-item.legendary {
+    border-left-color: #ffd700;
+    animation: legendary-glow 2s infinite alternate;
+  }
+  
+  @keyframes legendary-glow {
+    from {
+      box-shadow: 0 0 5px rgba(255, 215, 0, 0.3);
+    }
+    to {
+      box-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+    }
+  }
+  
+  .achievement-icon {
+    font-size: 24px;
+    margin-right: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .achievement-content {
+    flex: 1;
+  }
+  
+  .achievement-content h3 {
+    margin: 0 0 5px 0;
+    font-size: 16px;
+    font-weight: bold;
+  }
+  
+  .achievement-content p {
+    margin: 0;
+    font-size: 12px;
+    color: #666;
+  }
+  
+  .achievement-rarity {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-size: 10px;
+    text-transform: uppercase;
+    margin-top: 5px;
+    color: white;
+  }
+  
+  .achievement-rarity.common {
+    background-color: #aaaaaa;
+  }
+  
+  .achievement-rarity.uncommon {
+    background-color: #1ed760;
+  }
+  
+  .achievement-rarity.rare {
+    background-color: #4169e1;
+  }
+  
+  .achievement-rarity.epic {
+    background-color: #9b30ff;
+  }
+  
+  .achievement-rarity.legendary {
+    background-color: #ffd700;
+    color: #000;
+  }
+  
+  /* Shine effect for all achievements */
+  .achievement-item::after {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -60%;
+    width: 20%;
+    height: 200%;
+    opacity: 0;
+    transform: rotate(30deg);
+    background: rgba(255, 255, 255, 0.13);
+    background: linear-gradient(
+      to right,
+      rgba(255, 255, 255, 0.13) 0%,
+      rgba(255, 255, 255, 0.13) 77%,
+      rgba(255, 255, 255, 0.5) 92%,
+      rgba(255, 255, 255, 0) 100%
+    );
+  }
+  
+  .achievement-item:hover::after {
+    opacity: 1;
+    left: 130%;
+    transition: all 0.7s ease;
+  }
+  
+  /* Achievements Icon Wrapper */
+  #achievementsWrapper {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    cursor: pointer;
+  }
+  #achievementsIcon {
+    width: 40px;
+    height: 40px;
+    position: relative;
+    z-index: 9999;
+  }
+  
+  /* Background and Center Section */
+  .background {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    background: radial-gradient(#333, #000);
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .background .set {
+    /* position: absolute;
+    width: 50%;
+    height: 100%;
+    top: 0;
+    left: 30%;
+    pointer-events: none;
+    filter: brightness(35%);
+    overflow: hidden;
+    will-change: transform; */
+    display: none;
+  }
+  /* .background .set div {
+    position: absolute;
+    display: block;
+  }
+  .background .set div img {
+    width: 20px;
+    height: 30px;
+    will-change: transform;
+  } */
+  
+  .falling {
+    position: fixed;
+    top: -100px;
+    width: 50px;
+    height: 50px;
+    animation: fallAnimation 2s linear forwards;
+  }
+  
+  @keyframes fallAnimation {
+    0% {
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(100vh);
+      opacity: 0;
+    }
+  }
+  
+  /* CENTER Section: Clickable Cookie */
+  .center {
+    position: relative;
+    z-index: 300;
+    text-align: center;
+  }
+  #cookie {
+    width: 250px;
+    height: 250px;
+    cursor: pointer;
+    transition: transform 0.1s ease;
+    will-change: transform;
+    transform: translateZ(0);
+    visibility: visible !important;
+    opacity: 1 !important;
+    display: block !important;
+  }
+  #cookie:hover {
+    transform: scale(1.05);
+  }
+  #cookie:active {
+    transform: scale(0.95);
+  }
+  
+  /* RIGHT Section: Upgrade Visualizations Only (Mirrors Left Section) */
+  .right {
+    position: fixed;
+    top: 60%;
+    right: 20px;
+    transform: translateY(-60%);
+    width: 220px;
+    /* Remove the white background */
+    background: transparent;
+    padding: 20px;
+    border-radius: 12px;
+    /* Remove box-shadow completely */
+    box-shadow: none;
+    overflow-y: auto;
+    overflow-x: hidden;
+    max-height: 90%;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  /* SHOP Section: Fixed dimensions, positioned at top left */
+  #shop {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    width: 200px;
+    height: 120px;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    z-index: 150;
+    overflow: auto;
+  }
+  #shop h2 {
+    margin-top: 0;
+  }
+  .shop-item {
+    margin-bottom: 10px;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 10px;
+    position: relative;
+  }
+  .shop-item:last-child {
+    border-bottom: none;
+  }
+  .shop-item .item-name {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 4px;
+  }
+  .shop-item .item-cost {
+    display: block;
+    margin-bottom: 4px;
+  }
+  
+  /* REMOVE ALL TOOLTIP STYLES FROM HERE - Tooltips now controlled by tooltip.css */
+  /* Tooltip Speech Bubble, Reset tooltip styles, etc. sections should be removed */
+  
+  /* SHOP Container - Fixed header overflow issue */
+  #shopContainer {
+    display: none;
+    position: fixed;
+    top: 20px;
+    left: 95px; /* Increased from 70px to prevent overlap with icon */
+    width: 280px;
+    background: linear-gradient(to bottom, #fffaf0, #f8f8ff);
+    padding: 0;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2),
+      inset 0 1px 3px rgba(255, 255, 255, 0.8);
+    z-index: 210;
+    overflow: hidden; /* For the header styling */
+    border: 1px solid rgba(210, 210, 210, 0.8);
+  }
+  
+  /* Time Accelerator Countdown */
+  .time-accelerator-timer {
+    display: block;
+    margin-top: 4px;
+    font-weight: bold;
+    color: #ff4500; /* Bright orange-red */
+    font-size: 14px;
+    text-shadow: 0 0 3px rgba(255, 255, 255, 0.8);
+    animation: pulse 1s infinite alternate;
+  }
+  
+  @keyframes pulse {
+    from {
+      opacity: 0.8;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  
+  /* Shop Item Image: Reduced size */
+  .shop-item img.shop-item-image {
+    display: block;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    margin-bottom: 4px;
+    transition: transform 0.2s ease;
+    will-change: transform;
+    transform: translateZ(0);
+  }
+  
+  .shop-item img.shop-item-image:hover {
+    transform: scale(1.05);
+  }
+  
+  /* Highlight active shop item */
+  .shop-item.active {
+    border: 2px solid #ff4444;
+  }
+  
+  .shop-item.active img {
+    animation: glow 1s infinite alternate;
+    filter: drop-shadow(0 0 5px gold);
+  }
+  
+  @keyframes glow {
+    from {
+      filter: drop-shadow(0 0 3px gold);
+    }
+    to {
+      filter: drop-shadow(0 0 10px gold);
+    }
+  }
+  
+  /* SETTINGS Container */
+  #settingsContainer {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 999;
+    text-align: right;
+  }
+  .setting-btn {
+    width: 45px;
+    height: 45px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    background: linear-gradient(
+      145deg,
+      #2980b9,
+      #3498db
+    ); /* Match upgrade buttons */
+    border-radius: 10px;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Match upgrade buttons shadow */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .setting-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+  }
+  .setting-btn:active {
+    transform: scale(0.98);
+    box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.25);
+  }
+  .bar {
+    width: 50%;
+    height: 2px;
+    background-color: #fff; /* White color to match upgrade button text */
+    position: relative;
+    border-radius: 2px;
+  }
+  .bar::before {
+    content: "";
+    width: 2px;
+    height: 2px;
+    background-color: #e0efff; /* Match upgrade button's --button_color */
+    position: absolute;
+    border-radius: 50%;
+    border: 2px solid white;
+    transition: all 0.3s;
+    box-shadow: 0px 0px 5px white;
+  }
+  #settingsMenu {
+    display: none;
+    position: absolute;
+    right: 0;
+    bottom: 55px;
+    background: #fff;
+    padding: 10px;
+    border-radius: 10px;
+    width: 200px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  #settingsMenu button {
+    background: linear-gradient(
+      145deg,
+      #2980b9,
+      #3498db
+    ); /* Match upgrade buttons */
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 8px 10px;
+    margin: 5px 0;
+    width: 100%;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Match upgrade buttons shadow */
+  }
+  
+  #settingsMenu button:hover {
+    background: linear-gradient(
+      145deg,
+      #2980b9,
+      #3498db
+    ); /* Keep gradient on hover */
+    transform: scale(1.05);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+  }
+  
+  #settingsMenu button:active {
+    transform: scale(0.95);
+    box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.25);
+  }
+  
+  /* Confetti Particle Styles */
+  .confetti {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    pointer-events: none;
+    opacity: 1;
+    border-radius: 50%;
+    animation: confettiAnimation 1s ease-out forwards;
+    z-index: 999999;
+  }
+  @keyframes confettiAnimation {
+    0% {
+      transform: translate(0, 0) rotate(0deg);
+      opacity: 1;
+    }
+    100% {
+      transform: translate(var(--x), var(--y)) rotate(720deg);
+      opacity: 0;
+    }
+  }
+  
+  /* Floating Numbers */
+  .floating-number {
+    position: absolute;
+    color: red;
+    font-size: 20px;
+    animation: floatUp 1s ease-out;
+    pointer-events: none;
+  }
+  @keyframes floatUp {
+    0% {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(-50px);
+      opacity: 0;
+    }
+  }
+  
+  /* Enhanced Upgrade Visualization Boxes */
+  .upgrade-box {
+    background: linear-gradient(145deg, #ffffff, #f0f0f0);
+    border-radius: 12px;
+    padding: 25px 15px 15px 2px; /* Increased top padding to make room for title */
+    width: 220px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1),
+      inset 0 1px 1px rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(230, 230, 230, 0.8);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+    overflow: visible; /* Changed from hidden to visible so title can appear outside box */
+    margin-top: 15px; /* Added margin to ensure space for the title */
+    visibility: visible !important;
+    opacity: 1 !important;
+    display: block !important;
+  }
+  
+  .upgrade-box:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15),
+      inset 0 1px 1px rgba(255, 255, 255, 0.8);
+  }
+  
+  .upgrade-progress {
+    width: 100%;
+    height: 14px;
+    background: repeating-linear-gradient(
+      45deg,
+      #f0f0f0,
+      #f0f0f0 10px,
+      #e6e6e6 10px,
+      #e6e6e6 20px
+    );
+    border-radius: 7px;
+    overflow: hidden;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+    position: relative;
+  }
+  
+  .upgrade-progress::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.1),
+      rgba(255, 255, 255, 0.05) 50%,
+      transparent 51%,
+      rgba(0, 0, 0, 0.05)
+    );
+    pointer-events: none;
+  }
+  
+  /* Different colored bars for each upgrade type */
+  #autoClickersBox .upgrade-progress-bar {
+    background: linear-gradient(90deg, #3498db, #2980b9);
+  }
+  
+  #grandmasBox .upgrade-progress-bar {
+    background: linear-gradient(90deg, #e74c3c, #c0392b);
+  }
+  
+  #farmsBox .upgrade-progress-bar {
+    background: linear-gradient(90deg, #2ecc71, #27ae60);
+  }
+  
+  .upgrade-progress-bar {
+    height: 100%;
+    width: 0;
+    border-radius: 7px;
+    transition: width 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+    box-shadow: 0 0 10px rgba(255, 140, 66, 0.5);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .upgrade-progress-bar::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.4) 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
+    animation: shine 3s infinite;
+  }
+  
+  @keyframes shine {
+    0% {
+      left: -100%;
+    }
+    20% {
+      left: 100%;
+    }
+    100% {
+      left: 100%;
+    }
+  }
+  
+  .upgrade-counter {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 5px;
+  }
+  
+  .upgrade-image {
+    width: 42px;
+    height: 42px;
+    filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.2));
+    animation: bounce 2s infinite;
+    will-change: transform;
+    transform: translateZ(0);
+    transition: filter 0.3s ease, transform 0.3s ease;
+  }
+  
+  .upgrade-image:hover {
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3));
+    transform: scale(1.1) translateZ(0);
+  }
+  
+  .upgrade-counter span {
+    font-size: 22px;
+    font-weight: bold;
+    color: #333;
+    text-shadow: 0 1px 1px rgba(255, 255, 255, 0.8);
+    background: linear-gradient(to bottom, #333, #555);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    position: relative;
+    padding: 0 8px;
+  }
+  
+  .upgrade-counter span::before {
+    content: "";
+    position: absolute;
+    top: -1px;
+    left: -3px;
+    right: -3px;
+    bottom: -1px;
+    background: white;
+    border-radius: 4px;
+    z-index: -1;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Different themes for each upgrade type */
+  #autoClickersBox .upgrade-counter span::before {
+    background: linear-gradient(to bottom, #e1f5fe, #b3e5fc);
+  }
+  
+  #grandmasBox .upgrade-counter span::before {
+    background: linear-gradient(to bottom, #ffebee, #ffcdd2);
+  }
+  
+  #farmsBox .upgrade-counter span::before {
+    background: linear-gradient(to bottom, #e8f5e9, #c8e6c9);
+  }
+  
+  @keyframes bounce {
+    0%,
+    100% {
+      transform: translateY(0) translateZ(0);
+    }
+    50% {
+      transform: translateY(-5px) translateZ(0);
+    }
+  }
+  
+  /* Custom title for each upgrade box */
+  .upgrade-box::before {
+    content: attr(data-title);
+    position: absolute;
+    top: -10px;
+    left: 15px;
+    background: #fff;
+    padding: 2px 10px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: bold;
+    color: #555;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    z-index: 10; /* Higher z-index to ensure visibility */
+    white-space: nowrap; /* Ensure text doesn't wrap */
+  }
+  
+  #autoClickersBox::before {
+    content: "Auto Clickers";
+    background: #e1f5fe;
+    color: #0288d1;
+  }
+  
+  #grandmasBox::before {
+    content: "Grandmas";
+    background: #ffebee;
+    color: #c62828;
+  }
+  
+  #farmsBox::before {
+    content: "Farms";
+    background: #e8f5e9;
+    color: #2e7d32;
+  }
+  
+  /* Toast Notification */
+  .auto-save-notification {
+    position: relative; /* Changed from fixed to relative */
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 14px;
+    opacity: 0;
+    animation: fadeInOut 3s forwards;
+    white-space: nowrap;
+    pointer-events: none;
+    margin-bottom: 5px; /* Add margin between toasts */
+    width: 100%;
+    text-align: center;
+  }
+  
+  @keyframes fadeInOut {
+    0% {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    10% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    90% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+  }
+  
+  /* Uiverse.io Button styling for upgrade buttons - Even Further Reduced Size */
+  .upgrade {
+    --button_radius: 0.75em;
+    --button_color: #e0efff;
+    --button_outline_color: #0056b3;
+    --hover_offset: 4px;
+    --active_offset: 2px;
+    --shadow_color: rgba(0, 0, 0, 0.5);
+    --glitch_offset: 2px;
+  
+    font-size: 8px; /* further reduced font size */
+    font-weight: bold;
+    border: none;
+    width: 60px; /* further reduced width */
+    border-radius: var(--button_radius);
+    background: var(--button_outline_color);
+    position: relative;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.23, 1, 0.32, 1);
+    overflow: hidden;
+  }
+  
+  .upgrade .button_top {
+    display: block;
+    box-sizing: border-box;
+    border: 5px solid var(--button_outline_color);
+    border-radius: var(--button_radius);
+    padding: 0.2em 0.3em; /* further reduced padding */
+    background: var(--button_color);
+    color: var(--button_outline_color);
+    transform: translateY(-0.2em);
+    transition: transform 0.2s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+  
+  /* Ensure consistent box-sizing for upgrade buttons and their inner span */
+  button.upgrade,
+  button.upgrade .button_top {
+    box-sizing: border-box;
+  }
+  
+  /* Override upgrade button styling when disabled */
+  button.upgrade:disabled {
+    background: #ccc !important;
+    border: 5px solid #ccc !important;
+    color: #fff !important;
+    pointer-events: none;
+    /* Optional: Reset custom variables if used */
+    --button_outline_color: #ccc;
+  }
+  button.upgrade:disabled .button_top {
+    border: 5px solid #ccc !important;
+    color: #fff !important;
+  }
+  
+  /* Force consistent box-sizing and disable default appearance */
+  button.upgrade,
+  button.upgrade .button_top {
+    box-sizing: border-box;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+  }
+  
+  /* Remove duplicate disabled button overrides and add a single minimal override */
+  button.upgrade:disabled,
+  button.upgrade:disabled .button_top {
+    background: #ccc !important;
+    border-color: #ccc !important;
+    color: #fff !important;
+    pointer-events: none !important; /* prevent clicking */
+  }
+  
+  /* Ensure all upgrade buttons use consistent box-sizing */
+  .upgrade,
+  .upgrade .button_top {
+    box-sizing: border-box;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+  }
+  
+  /* Unified disabled state override: only override colors (no change in dimensions) */
+  button.upgrade:disabled,
+  button.upgrade:disabled .button_top {
+    background: linear-gradient(145deg, #aaaaaa, #888888) !important;
+    border-color: #aaaaaa !important;
+    color: #fff !important;
+    pointer-events: none !important;
+  }
+  
+  /* Remove all other duplicate disabled styling rules */
+  
+  /* ...existing code... */
+  .upgrade {
+    /* ...existing layout properties... */
+    background: linear-gradient(145deg, #2980b9, #3498db);
+  }
+  .upgrade .button_top {
+    /* ...existing layout properties... */
+    border: 5px solid var(--button_outline_color);
+    color: var(--button_outline_color);
+  }
+  
+  /* Disabled state: only change the colors */
+  button.upgrade:disabled,
+  button.upgrade:disabled .button_top {
+    background: linear-gradient(145deg, #aaaaaa, #888888) !important;
+    border-color: #aaaaaa !important;
+    color: #fff !important;
+    pointer-events: none !important;
+  }
+  
+  /* CLEAN SLATE: Remove all previous disabled button styling */
+  /* Keep only these consolidated rules that preserve dimensions */
+  button.upgrade:disabled {
+    background: #ccc !important;
+    color: #fff !important;
+    cursor: not-allowed !important;
+    pointer-events: none !important;
+    /* Don't add any border that would change dimensions */
+    border: none !important;
+    /* Only modify the color variable */
+    --button_outline_color: #ccc;
+  }
+  
+  button.upgrade:disabled .button_top {
+    /* Only change colors, keep the same border width */
+    border-color: #ccc !important;
+    background: #eee !important;
+    color: #999 !important;
+  }
+  
+  /* Remove all other duplicate disabled styling rules */
+  
+  /* SHOP Container - Fixed header overflow issue */
+  #shopContainer {
+    display: none;
+    position: fixed;
+    top: 20px;
+    left: 95px; /* Increased from 70px to prevent overlap with icon */
+    width: 280px;
+    background: linear-gradient(to bottom, #fffaf0, #f8f8ff);
+    padding: 0;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2),
+      inset 0 1px 3px rgba(255, 255, 255, 0.8);
+    z-index: 210;
+    overflow: visible; /* Allow tooltips to be visible outside container */
+    border: 1px solid rgba(210, 210, 210, 0.8);
+  }
+  
+  #shopContainer .shop-header {
+    background: linear-gradient(145deg, #2980b9, #3498db);
+    color: white;
+    padding: 12px 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+    width: 100%; /* Ensure header width fits container */
+    box-sizing: border-box; /* Include padding in width calculation */
+  }
+  
+  #shopContainer .shop-content {
+    padding: 15px;
+    max-height: 300px;
+    overflow-y: auto; /* Only the content scrolls */
+    overflow-x: visible; /* Allow tooltips to show */
+    position: relative; /* Create positioning context for tooltip */
+  }
+  
+  /* Shop Icon Wrapper */
+  #shopWrapper {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 9999;
+    cursor: pointer;
+    width: 64px; /* Define width to match icon size */
+    height: 64px; /* Define height to match icon size */
+    display: flex; /* For better icon centering */
+    justify-content: center;
+    align-items: center;
+  }
+  
+  #shopIcon {
+    width: 64px; /* Increased from 40px */
+    height: 64px; /* Increased from 40px */
+    position: relative;
+    z-index: 9999;
+    transition: transform 0.3s ease, filter 0.3s ease; /* Added transition for hover effect */
+  }
+  
+  #shopIcon:hover {
+    transform: scale(1.1); /* Slight scale up on hover */
+    filter: drop-shadow(
+      0 0 5px rgba(41, 128, 185, 0.6)
+    ); /* Blue glow to match the color scheme */
+  }
+  
+  #shopIcon:active {
+    transform: scale(0.95); /* Slight press effect */
+  }
+  
+  /* Remove the old fixed shop styling */
+  #shop {
+    display: none; /* Hide the old shop section */
+  }
+  
+  /* Update shop items to fit in the new container */
+  .shop-item {
+    position: relative; /* Enable tooltip positioning */
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .shop-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+  
+  /* Make sure shop container allows overflow */
+  #shopContainer {
+    /* ...existing properties... */
+    overflow: visible; /* Allow tooltips to be visible outside container */
+  }
+  
+  /* Reset tooltip styles for better visibility */
+  .shop-item .item-desc {
+    position: absolute;
+    bottom: 100%; /* Position above the item */
+    left: 50%;
+    transform: translateX(-50%);
+    background: #fff;
+    color: #333;
+    padding: 12px 15px;
+    border: 2px solid #2980b9; /* More visible border */
+    border-radius: 5px;
+    min-width: 180px;
+    max-width: 250px;
+    white-space: normal;
+    font-size: 14px;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.35);
+    margin-bottom: 10px; /* Space between tooltip and item */
+    z-index: 999999;
+    pointer-events: none; /* Prevent interfering with clicks */
+  
+    /* Direct visibility properties - no transitions that could break it */
+    visibility: hidden;
+    opacity: 0;
+  }
+  
+  /* Tooltip arrow pointing to the item */
+  .shop-item .item-desc::after {
+    content: "";
+    position: absolute;
+    bottom: -10px; /* Position at bottom of tooltip */
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 10px 8px 0 8px;
+    border-style: solid;
+    border-color: #2980b9 transparent transparent transparent; /* Match border color */
+  }
+  
+  /* Simple direct display for tooltip on hover */
+  .shop-item:hover .item-desc {
+    visibility: visible;
+    opacity: 1;
+  }
+  
+  /* Fix shop content overflow settings */
+  #shopContainer .shop-content {
+    padding: 15px;
+    max-height: 300px;
+    overflow-y: auto;
+    overflow-x: visible;
+  }
+  
+  /* ...existing code... */
+  
+  /* Reset tooltip styles for maximum visibility above ALL elements */
+  .shop-item .item-desc {
+    position: fixed; /* Changed from absolute to fixed to escape stacking contexts */
+    z-index: 9999999; /* Ultra-high z-index to appear above everything */
+    background: #fff;
+    color: #333;
+    padding: 12px 15px;
+    border: 2px solid #2980b9;
+    border-radius: 5px;
+    min-width: 180px;
+    max-width: 250px;
+    white-space: normal;
+    font-size: 14px;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.35);
+    pointer-events: none;
+  
+    /* Setup for position calculation in JS */
+    opacity: 0;
+    visibility: hidden;
+  }
+  
+  /* Tooltip arrow pointing to the item */
+  .shop-item .item-desc::after {
+    content: "";
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 10px 8px 0 8px;
+    border-style: solid;
+    border-color: #2980b9 transparent transparent transparent;
+  }
+  
+  /* Simple direct display for tooltip on hover with JS position calculation */
+  .shop-item:hover .item-desc {
+    visibility: visible;
+    opacity: 1;
+  }
+  
+  /* ...existing code... */
+  
+  /* SHOP Container - Fix header overflow */
+  #shopContainer {
+    display: none;
+    position: fixed;
+    top: 20px;
+    left: 95px;
+    width: 280px;
+    background: linear-gradient(to bottom, #fffaf0, #f8f8ff);
+    padding: 0;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2),
+      inset 0 1px 3px rgba(255, 255, 255, 0.8);
+    z-index: 210;
+    overflow: hidden; /* Change to hidden to contain the header */
+    border: 1px solid rgba(210, 210, 210, 0.8);
+  }
+  
+  #shopContainer .shop-header {
+    background: linear-gradient(145deg, #2980b9, #3498db);
+    color: white;
+    padding: 12px 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+    width: 100%; /* Ensure header fits container */
+    box-sizing: border-box; /* Include padding in width calculation */
+    margin: 0; /* Remove any margin */
+  }
+  
+  #shopContainer .shop-content {
+    padding: 15px;
+    max-height: 300px;
+    overflow-y: auto;
+    overflow-x: visible; /* Allow tooltips to show */
+    position: relative;
+  }
+  
+  /* Completely redesigned tooltip with better visibility */
+  .shop-item .item-desc {
+    background: rgba(255, 255, 255, 0.9); /* semi-transparent white */
+    color: #333;
+    padding: 8px 10px; /* more compact padding */
+    border: 2px solid #2980b9;
+    border-radius: 5px;
+    width: 220px; /* fixed width */
+    font-size: 13px; /* slightly reduced font-size for compactness */
+    line-height: 1.2; /* tighter line spacing */
+    word-wrap: break-word; /* allow breaking long words */
+    white-space: normal;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.35);
+    pointer-events: none;
+    visibility: hidden;
+    opacity: 0;
+    /* Remove any absolute or fixed positioning so JS sets them */
+    position: initial;
+    margin-bottom: 10px;
+  }
+  
+  .shop-item .item-desc::after {
+    content: "";
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 10px 8px 0 8px;
+    border-style: solid;
+    border-color: #2980b9 transparent transparent transparent;
+  }
+  
+  /* Simple direct display for tooltip on hover */
+  .shop-item:hover .item-desc {
+    visibility: visible;
+    opacity: 1;
+  }
+  
+  /* ...existing code... */
+  
+  /* Completely redesigned tooltip with better visibility and positioning */
+  .shop-item .item-desc {
+    position: absolute;
+    bottom: 100%; /* Position above the item */
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.9); /* Darker background for better contrast */
+    color: #333; /* Dark text color */
+    padding: 10px 12px;
+    border: 1px solid #2980b9;
+    border-radius: 5px;
+    width: max-content;
+    max-width: 200px;
+    font-size: 13px;
+    line-height: 1.3;
+    word-wrap: break-word;
+    word-break: break-word;
+    hyphens: auto;
+    white-space: normal;
+    text-align: center;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.5);
+    pointer-events: none;
+    margin-bottom: 10px;
+    z-index: 999999;
+  }
+  
+  /* Improved text-highlight styling for better visibility */
+  .shop-item .item-desc .text-highlight {
+    background-color: #ffffff; /* Pure white background */
+    color: #000000; /* Black text for maximum contrast */
+    padding: 3px 6px; /* More padding around text */
+    margin: 2px 0; /* Space between lines */
+    border-radius: 3px; /* Rounded corners */
+    display: inline-block; /* Ensure block behavior */
+    line-height: 1.2; /* Tighter line spacing */
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+  }
+  
+  /* Arrow pointing down from tooltip - match darker background */
+  .shop-item .item-desc::after {
+    content: "";
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 8px 8px 0 8px;
+    border-style: solid;
+    border-color: rgba(0, 0, 0, 0.9) transparent transparent transparent; /* Match background */
+  }
+  
+  /* ...existing code... */
+  
+  /* Special class for tooltips that would appear off-screen */
+  .shop-item .item-desc.align-left {
+    left: 0;
+    transform: translateX(0);
+  }
+  
+  .shop-item .item-desc.align-left::after {
+    left: 20px; /* Align arrow with item when left-aligned */
+    transform: translateX(0);
+  }
+  
+  /* Add styling for text with white background */
+  .shop-item .item-desc br {
+    display: block; /* Ensure line breaks work properly */
+    content: "";
+    margin-top: 3px; /* Spacing between lines */
+  }
+  
+  /* Style each line of text with a white background */
+  .shop-item .item-desc {
+    /* Text styling with background */
+    text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff,
+      1px 1px 0 #fff;
+    background-clip: text; /* Modern browsers */
+  }
+  
+  /* Alternative approach - add spans with white background to each line */
+  .shop-item .item-desc .text-highlight {
+    background-color: white;
+    padding: 2px 4px;
+    border-radius: 2px;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+  }
+  
+  /* ...existing code... */
+  
+  /* Completely redesigned tooltip with clear text highlights */
+  .shop-item .item-desc {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.85);
+    padding: 12px;
+    border: 1px solid #2980b9;
+    border-radius: 6px;
+    width: max-content;
+    max-width: 220px;
+    font-size: 13px;
+    line-height: 1.5;
+    text-align: center;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.5);
+    pointer-events: none;
+    margin-bottom: 12px;
+    z-index: 999999;
+  }
+  
+  /* Remove all previous text highlighting approaches */
+  .shop-item .item-desc .text-highlight {
+    display: inline-block;
+    background-color: #ffffff;
+    color: #000000;
+    padding: 3px 6px;
+    margin: 2px 0;
+    border-radius: 3px;
+    font-weight: 500;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  }
+  
+  /* Add spacing between highlighted lines */
+  .shop-item .item-desc br {
+    display: block;
+    content: "";
+    margin-top: 4px;
+  }
+  
+  /* Arrow pointing down from tooltip - match darker background */
+  .shop-item .item-desc::after {
+    content: "";
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 8px 8px 0 8px;
+    border-style: solid;
+    border-color: rgba(0, 0, 0, 0.85) transparent transparent transparent;
+  }
+  
+  /* Important override to ensure visibility */
+  .shop-item:hover .item-desc {
+    visibility: visible !important;
+    opacity: 1 !important;
+    display: block !important;
+  }
+  
+  /* Cookie animation when accelerated */
+  #cookie.accelerated {
+    animation: shake 0.5s infinite alternate;
+  }
+  
+  @keyframes shake {
+    0% {
+      transform: rotate(-3deg) scale(1.05);
+    }
+    100% {
+      transform: rotate(3deg) scale(1.1);
+    }
+  }
+  
+  /* ...existing code... */
+  
+  /* SHOP Container styles - keep existing settings */
+  #shopContainer {
+    /* ...existing code... */
+  }
+  
+  /* Updated shop item styling for better proportions */
+  .shop-item {
+    position: relative;
+    display: inline-block;
+    margin: 8px;
+    padding: 5px;
+    text-align: center;
+    width: 60px; /* Fixed width to match image + padding */
+    vertical-align: top;
+    border-radius: 5px;
+    transition: background-color 0.2s ease;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .shop-item:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+  
+  /* Keep existing image styling */
+  .shop-item img.shop-item-image {
+    display: block;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    margin: 0 auto 4px; /* Center horizontally with bottom margin */
+    transition: transform 0.2s ease;
+  }
+  
+  /* Improved cost display to fit compact layout */
+  .shop-item .item-cost {
+    display: block;
+    font-size: 11px;
+    margin-top: 2px;
+    color: #888;
+    white-space: nowrap;
+  }
+  
+  /* Shop content layout for compact items */
+  #shopContainer .shop-content {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 10px;
+  }
+  
+  /* Enhanced active shop item highlighting */
+  .shop-item.active {
+    background-color: rgba(255, 215, 0, 0.2);
+    border: 1px solid #ff4444;
+    box-shadow: 0 0 5px gold;
+  }
+  
+  /* ...existing code... */
+  
+  /* Golden Cookie styling */
+  #goldenCookieContainer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 10000;
+  }
+  
+  .golden-cookie {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    background-image: url("image/goldencookie.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    cursor: pointer;
+    pointer-events: auto;
+    z-index: 10001;
+    animation: goldenCookiePulse 1.5s infinite alternate;
+    filter: drop-shadow(0 0 10px gold);
+  }
+  
+  @keyframes goldenCookiePulse {
+    0% {
+      transform: scale(0.9);
+      opacity: 0.8;
+    }
+    100% {
+      transform: scale(1.1);
+      opacity: 1;
+    }
+  }
+  
+  /* Indicator for applied multiplier */
+  .multiplier-indicator {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    background: gold;
+    color: #333;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    text-align: center;
+    line-height: 24px;
+    font-size: 12px;
+    font-weight: bold;
+    box-shadow: 0 0 8px rgba(255, 215, 0, 0.8);
+  }
+  
+  /* Update shop content layout for 3 items */
+  #shopContainer .shop-content {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 10px;
+    max-height: 400px; /* Increased to accommodate more items */
+  }
+  
+  /* ...existing code... */
+  
+  /* Toast Notification Container */
+  .toast-container {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10000;
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+    gap: 10px;
+    pointer-events: none;
+    width: auto;
+  }
+  
+  /* Toast Notification Item */
+  .auto-save-notification {
+    position: relative; /* Changed from fixed to relative */
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 14px;
+    opacity: 0;
+    animation: fadeInOut 3s forwards;
+    white-space: nowrap;
+    pointer-events: none;
+    margin-bottom: 5px; /* Add margin between toasts */
+    width: 100%;
+    text-align: center;
+  }
+  
+  @keyframes fadeInOut {
+    0% {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    10% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    90% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+  }
+  
+  /* ...existing code... */
+  
+  /* Golden Cookie styling - enhanced visibility */
+  #goldenCookieContainer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 10000; /* Very high z-index to be above everything */
+  }
+  
+  .golden-cookie {
+    position: absolute;
+    width: 80px; /* Larger size for better visibility */
+    height: 80px;
+    background-image: url("image/goldencookie.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    cursor: pointer;
+    pointer-events: auto; /* Make it clickable */
+    z-index: 10001;
+    animation: goldenCookiePulse 1.5s infinite alternate;
+    filter: drop-shadow(0 0 15px gold);
+  
+    /* Debugging outline and background */
+    outline: 2px solid gold;
+    background-color: rgba(255, 215, 0, 0.2);
+    border-radius: 50%;
+  }
+  
+  @keyframes goldenCookiePulse {
+    0% {
+      transform: scale(0.9);
+      opacity: 0.8;
+    }
+    100% {
+      transform: scale(1.1);
+      opacity: 1;
+    }
+  }
+  
+  /* ...existing code... */
+  
+  /* Golden cookie animation when clicked */
+  .golden-cookie-clicked {
+    animation: zoom-out 0.5s forwards;
+    filter: brightness(1.5);
+  }
+  
+  @keyframes zoom-out {
+    0% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(2);
+      opacity: 0;
+    }
+  }
+  
+  /* Pulse animation for bonus indicators */
+  @keyframes pulse {
+    0% {
+      opacity: 0.8;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+  
+  /* Click power boosted cookie animation */
+  #cookie.click-boosted {
+    animation: click-pulse 0.8s infinite alternate;
+    filter: brightness(1.2) drop-shadow(0 0 10px orange);
+  }
+  
+  @keyframes click-pulse {
+    0% {
+      transform: scale(1.02);
+    }
+    100% {
+      transform: scale(1.08);
+      filter: brightness(1.4) drop-shadow(0 0 15px orange);
+    }
+  }
+  
+  /* New Frenzy animation for clicking frenzy */
+  #cookie.frenzy-boosted {
+    animation: frenzy-pulse 0.4s infinite alternate;
+    filter: brightness(1.5) drop-shadow(0 0 15px crimson);
+  }
+  
+  @keyframes frenzy-pulse {
+    0% {
+      transform: scale(1.1) rotate(-2deg);
+    }
+    100% {
+      transform: scale(1.2) rotate(2deg);
+      filter: brightness(1.8) saturate(1.5) drop-shadow(0 0 20px crimson);
+    }
+  }
+  
+  /* ...existing code... */
+  
+  /* Click power boosted cookie animation */
+  #cookie.click-boosted {
+    animation: click-pulse 0.8s infinite alternate;
+    filter: brightness(1.2) drop-shadow(0 0 10px orange);
+  }
+  
+  @keyframes click-pulse {
+    0% {
+      transform: scale(1.02);
+    }
+    100% {
+      transform: scale(1.08);
+      filter: brightness(1.4) drop-shadow(0 0 15px orange);
+    }
+  }
+  
+  /* ...existing code... */
+  
+  /* Active Bonuses Section */
+  .active-bonuses {
+    margin-top: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 5px;
+    max-width: 100%;
+    overflow: hidden;
+  }
+  
+  .bonus-indicator {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.75em;
+    font-weight: bold;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    animation: pulse-glow 1.5s infinite alternate;
+    white-space: nowrap;
+  }
+  
+  .bonus-indicator .bonus-icon {
+    font-size: 1.2em;
+  }
+  
+  .bonus-indicator .bonus-timer {
+    margin-left: 2px;
+    font-size: 0.9em;
+  }
+  
+  .bonus-indicator.time-accelerator {
+    background: linear-gradient(135deg, #ff4500, #ff8c00);
+  }
+  
+  .bonus-indicator.production-boost {
+    background: linear-gradient(135deg, #ffaa00, #ffcc00);
+  }
+  
+  .bonus-indicator.click-boost {
+    background: linear-gradient(135deg, #ff6600, #ff9966);
+  }
+  
+  .bonus-indicator.frenzy {
+    background: linear-gradient(135deg, #cc0000, #ff0000);
+  }
+  
+  .bonus-indicator.cookie-multiplier {
+    background: linear-gradient(135deg, #9932cc, #ba55d3);
+  }
+  
+  @keyframes pulse-glow {
+    0% {
+      box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+      transform: scale(1);
+    }
+    100% {
+      box-shadow: 0 0 12px rgba(255, 255, 255, 0.8);
+      transform: scale(1.05);
+    }
+  }
+  
+  /* Remove old boost indicators - they're replaced with the new system */
+  #production-boost-indicator,
+  #click-boost-indicator,
+  #frenzy-indicator {
+    display: none;
+  }
+  
+  /* ...existing code... */
+  
+  /* Fix duplicate tooltips by hiding the original static tooltips */
+  .shop-item > .item-desc {
+    display: none !important; /* Hide the original tooltips that are direct children of shop-item */
+    visibility: hidden !important;
+    opacity: 0 !important;
+  }
+  
+  /* Ensure only dynamically created tooltips are visible */
+  body > .item-desc.item-desc-tooltip {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    z-index: 9999999;
+    position: absolute;
+  }
+  
+  /* ...existing code... */
+  
+  /* Personalization Panel */
+  .panel-container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 360px;
+    background: linear-gradient(to bottom, #fffaf0, #f8f8ff);
+    padding: 0;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    z-index: 9999;
+    overflow: hidden;
+    border: 1px solid rgba(210, 210, 210, 0.8);
+  }
+  
+  .panel-header {
+    background: linear-gradient(145deg, #2980b9, #3498db);
+    color: white;
+    padding: 12px 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+  }
+  
+  .panel-header h2 {
+    margin: 0;
+    font-size: 20px;
+    flex-grow: 1;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+  }
+  
+  .panel-icon {
+    font-size: 24px;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.7);
+  }
+  
+  .close-btn {
+    font-size: 24px;
+    cursor: pointer;
+    padding: 0 5px;
+  }
+  
+  .close-btn:hover {
+    color: #ffcc00;
+  }
+  
+  .panel-content {
+    padding: 15px;
+    max-height: 400px;
+    overflow-y: auto;
+  }
+  
+  .section {
+    margin-bottom: 20px;
+  }
+  
+  .section h3 {
+    margin-top: 0;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 8px;
+  }
+  
+  .theme-options,
+  .animation-options {
+    display: flex;
+    gap: 10px;
+    justify-content: space-around;
+    margin-top: 15px;
+  }
+  
+  .theme-button,
+  .animation-button {
+    background: linear-gradient(145deg, #2980b9, #3498db);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 15px;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  .theme-button:hover,
+  .animation-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+  
+  .theme-button.active,
+  .animation-button.active {
+    background: linear-gradient(145deg, #27ae60, #2ecc71);
+    box-shadow: 0 0 0 2px rgba(46, 204, 113, 0.5);
+  }
+  
+  /* Enhanced Lucky Click Effects */
+  .floating-effect {
+    position: absolute;
+    animation: floatUpSpecial 2s ease-out;
+    pointer-events: none;
+    font-weight: bold;
+  }
+  
+  @keyframes floatUpSpecial {
+    0% {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+    }
+    50% {
+      transform: translateY(-50px) scale(1.2);
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(-100px) scale(1);
+      opacity: 0;
+    }
+  }
+  
+  /* Boosted Click Power Display */
+  #clickPower.boosted {
+    color: #ff6600 !important;
+    text-shadow: 0 0 5px rgba(255, 102, 0, 0.5) !important;
+    animation: pulsate 1s infinite alternate;
+  }
+  
+  @keyframes pulsate {
+    from {
+      transform: scale(1);
+    }
+    to {
+      transform: scale(1.1);
+    }
+  }
+  
+  /* Click Power Boost Indicator */
+  #click-boost-indicator {
+    background: linear-gradient(to right, #ff6600, #ff9933);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 10px;
+    margin-top: 5px;
+    font-size: 0.8em;
+    font-weight: bold;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+    animation: pulseGlow 1.5s infinite alternate;
+    display: inline-block;
+  }
+  
+  @keyframes pulseGlow {
+    from {
+      box-shadow: 0 0 5px rgba(255, 102, 0, 0.5);
+    }
+    to {
+      box-shadow: 0 0 15px rgba(255, 102, 0, 0.8);
+    }
+  }
+  
+  /* ...existing code... */
+  
+  /* Hide all shop item tooltips */
+  .shop-item .item-desc,
+  .shop-item .item-desc-tooltip,
+  .item-desc-tooltip {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+  
+  /* Also remove tooltip arrows */
+  .shop-item .item-desc::after,
+  .item-desc-tooltip::after {
+    display: none !important;
+  }
+  
+  /* ...existing code... */
+  
+  /* COMPLETE REMOVAL OF ALL TOOLTIPS AND HOVER EFFECTS */
+  /* This will forcefully hide any tooltip-like elements */
+  .shop-item .item-desc,
+  .item-desc,
+  .item-desc-tooltip,
+  body > .item-desc,
+  .tooltip,
+  [data-tooltip],
+  [title],
+  .shop-item *[title],
+  .shop-item::after,
+  .shop-item::before {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    content: none !important;
+  }
+  
+  /* Prevent any hover styling on shop items */
+  .shop-item:hover {
+    transform: none !important;
+    background: inherit !important;
+    box-shadow: none !important;
+  }
+  
+  /* Make sure absolutely no pseudo-elements show on hover */
+  .shop-item::after,
+  .shop-item::before,
+  .shop-item *::after,
+  .shop-item *::before {
+    display: none !important;
+    content: none !important;
+  }
+  
+  /* Remove any hover styling that might change appearance */
+  .shop-item:hover,
+  .shop-item:hover *,
+  .shop-item *:hover {
+    border-color: inherit !important;
+    background: inherit !important;
+    color: inherit !important;
+    text-decoration: none !important;
+  }
+  
+  /* ...existing code... */
+  
+  /* Remove all tooltip-related styles from the main CSS */
+  /* These styles should be completely purged */
+  
+  /* Shop item styling - simplified without tooltips */
+  .shop-item {
+    margin-bottom: 10px;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 10px;
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+  }
+  
+  .shop-item:hover {
+    transform: translateY(-2px);
+  }
+  
+  .shop-item:last-child {
+    border-bottom: none;
+  }
+  
+  .shop-item .item-name {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 4px;
+  }
+  
+  .shop-item .item-cost {
+    display: block;
+    margin-bottom: 4px;
+  }
+  
+  /* Shop Item Image: Reduced size */
+  .shop-item img.shop-item-image {
+    display: block;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    margin-bottom: 4px;
+    transition: transform 0.2s ease;
+    will-change: transform;
+    transform: translateZ(0);
+  }
+  
+  .shop-item img.shop-item-image:hover {
+    transform: scale(1.05);
+  }
+  
+  /* ...existing code... */
+  .upgrade .button_image {
+    display: none;
+  }
+  .blurz {
+    display: none;
+  }
+  /* responsive */
+  @media (max-width: 932px) {
+    .blurz {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 500;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(15px);
+    }
+    .blurz.show {
+      display: block;
+    }
+    .upgrade-box {
+      width: 120px;
+    }
+    .right {
+      width: 150px;
+    }
+    #cookie {
+      padding-top: 50%;
+    }
+    #shop {
+      height: 100px;
+    }
+    #shop h2 {
+      font-size: 20px;
+      font-style: italic;
+    }
+    .right {
+      padding-right: 52px;
+    }
+  
+    .left {
+      /* width: 170px; */
+      height: 150px;
+      margin-top: 8%;
+    }
+    .product {
+      display: block;
+    }
+    /* .dropdown-content {
+      display: flex;
+      flex-direction: row;
+      width: auto;
+    }
+  
+    .dropdown-content button {
+      flex: 1;
+      text-align: center;
+    }
+  } */
+    /* button.upgrade .button_image {
+      display: block; 
+      width: 30px;
+      height: 30px; 
+      border-radius: 5px; 
+      z-index: 528;
+    } */
+    .upgrade .button_image {
+      display: block;
+      width: 30px;
+      height: 30px;
+      border-radius: 5px;
+      filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.2));
+      animation: bounce 2s infinite;
+      will-change: transform;
+      transform: translateZ(0);
+      transition: filter 0.3s ease, transform 0.3s ease;
+      z-index: 528;
+    }
+    .upgrade .button_image {
+      filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3));
+      transform: scale(1.1) translateZ(0);
+    }
+    .left .button {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 70%;
+    }
+    .product {
+      font-size: 15px;
+    }
+  
+    .upgrade {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      padding: 10px;
+      border: none;
+      gap: 8px;
+    }
+    .upgrade-progress {
+      margin-left: 5px;
+    }
+  
+    .upgrade-image {
+      width: 35px;
+      height: 35px;
+      padding: 2px;
+    }
+    .upgrade .button_top .productContainer {
+      display: block;
+      border: none;
+      color: #020202;
+      /* background: linear-gradient(145deg, #2980b9, #3498db) !important; */
+      font-size: medium;
+    }
+  
+    button.upgrade.productContainer:disabled .button_top {
+      /* background-color: #1ED760 !important; */
+      border-color: #ccc !important;
+      background: #ccc !important;
+      color: #999 !important;
+    }
+  
+    #settingsMenu {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      height: 210px;
+      transform: translate(-50%, -50%);
+      background: rgba(255, 255, 255, 0.9);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      z-index: 1000;
+      display: none;
+    }
+  
+    #settingsMenu .show {
+      display: block;
+    }
+    #achievementsContainer {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      height: 180px;
+      transform: translate(-50%, -50%);
+      background: rgba(255, 255, 255, 0.9);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      z-index: 1000;
+      display: none;
+    }
+    #achievementsContainer .show {
+      display: block;
+    }
+  }
+  
