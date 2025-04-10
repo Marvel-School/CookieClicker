@@ -188,7 +188,7 @@ export function dropCookieImage() {
   let centerWidth = screenWidth * 0.4; 
 
   let screenLength = window.innerHeight
-  let topStart = screenLength * -0.6
+  let topStart = screenLength * 0.2;
   let topWidth = screenLength * -0.6; 
   
   newImg.style.left = centerStart + Math.random() * centerWidth + "px";
@@ -197,7 +197,7 @@ export function dropCookieImage() {
 
   setTimeout(() => {
       newImg.remove();
-  }, 10000);
+  }, 5000);
 }
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -208,3 +208,4 @@ document.addEventListener("DOMContentLoaded", function () {
     dropCookieImage();
   });
 });
+
