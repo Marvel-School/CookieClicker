@@ -131,6 +131,75 @@
           </div>
         </button>
       </div>
+      <!-- Add new building buttons here -->
+      <div class="button">
+        <button
+          id="mine"
+          type="button"
+          class="upgrade"
+          data-content="Buy Cookie Mine (Cost: 3,000)"
+        >
+          <img
+            class="button_image"
+            src="image/cookie-mine.png"
+            alt="Click Upgrade"
+          />
+          <div class="productContainer">
+            <span class="button_top">Buy Cookie Mine (Cost: 3,000)</span>
+          </div>
+        </button>
+      </div>
+      <div class="button">
+        <button
+          id="factory"
+          type="button"
+          class="upgrade"
+          data-content="Buy Cookie Factory (Cost: 10,000)"
+        >
+          <img
+            class="button_image"
+            src="image/cookie-factory.png"
+            alt="Click Upgrade"
+          />
+          <div class="productContainer">
+            <span class="button_top">Buy Cookie Factory (Cost: 10,000)</span>
+          </div>
+        </button>
+      </div>
+      <div class="button">
+        <button
+          id="bank"
+          type="button"
+          class="upgrade"
+          data-content="Buy Cookie Bank (Cost: 30,000)"
+        >
+          <img
+            class="button_image"
+            src="image/cookie-bank.png"
+            alt="Click Upgrade"
+          />
+          <div class="productContainer">
+            <span class="button_top">Buy Cookie Bank (Cost: 30,000)</span>
+          </div>
+        </button>
+      </div>
+      <div class="button">
+        <button
+          id="temple"
+          type="button"
+          class="upgrade"
+          data-content="Buy Cookie Temple (Cost: 100,000)"
+        >
+          <img
+            class="button_image"
+            src="image/cookie-temple.png"
+            alt="Click Upgrade"
+          />
+          <div class="productContainer">
+            <span class="button_top">Buy Cookie Temple (Cost: 100,000)</span>
+          </div>
+        </button>
+      </div>
     </section>
 
     <!-- ACHIEVEMENTS Section: Toggled via the Achievements Icon -->
@@ -304,6 +373,43 @@
             <span id="grandmaCount">0</span>
           </div>
         </div>
+        <!-- Add new building visualizations in the production section -->
+        <div id="minesBox" class="upgrade-box" data-title="Mines">
+          <div class="upgrade-progress">
+            <div id="mineProgressBar" class="upgrade-progress-bar"></div>
+          </div>
+          <div class="upgrade-counter">
+            <img src="image/cookie-mine.png" alt="Mine" class="upgrade-image" />
+            <span id="mineCount">0</span>
+          </div>
+        </div>
+        <div id="factoriesBox" class="upgrade-box" data-title="Factories">
+          <div class="upgrade-progress">
+            <div id="factoryProgressBar" class="upgrade-progress-bar"></div>
+          </div>
+          <div class="upgrade-counter">
+            <img src="image/cookie-factory.png" alt="Factory" class="upgrade-image" />
+            <span id="factoryCount">0</span>
+          </div>
+        </div>
+        <div id="banksBox" class="upgrade-box" data-title="Banks">
+          <div class="upgrade-progress">
+            <div id="bankProgressBar" class="upgrade-progress-bar"></div>
+          </div>
+          <div class="upgrade-counter">
+            <img src="image/cookie-bank.png" alt="Bank" class="upgrade-image" />
+            <span id="bankCount">0</span>
+          </div>
+        </div>
+        <div id="templesBox" class="upgrade-box" data-title="Temples">
+          <div class="upgrade-progress">
+            <div id="templeProgressBar" class="upgrade-progress-bar"></div>
+          </div>
+          <div class="upgrade-counter">
+            <img src="image/cookie-temple.png" alt="Temple" class="upgrade-image" />
+            <span id="templeCount">0</span>
+          </div>
+        </div>
       </section>
 
       <!-- SETTINGS Container in Bottom Right -->
@@ -381,5 +487,85 @@
 
     <!-- Comment out the old script reference -->
     <!-- <script src="script.js" defer></script> -->
+
+    <!-- Add this right before the closing body tag -->
+    <script>
+      // Immediate fix for any backdrop blur
+      document.addEventListener('DOMContentLoaded', () => {
+        // Fix any elements with backdrop or blur classes
+        const blurElements = document.querySelectorAll('#backdrop, .backdrop, .blur, .blurz');
+        blurElements.forEach(el => {
+          el.style.backdropFilter = 'none';
+          el.style.webkitBackdropFilter = 'none';
+          el.style.filter = 'none';
+          el.classList.remove('blur', 'blurz');
+        });
+        
+        // Add style tag to force override blur
+        const styleEl = document.createElement('style');
+        styleEl.textContent = `
+          #backdrop, .backdrop, .blur, .blurz {
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+            filter: none !important;
+          }
+        `;
+        document.head.appendChild(styleEl);
+      });
+    </script>
+
+    <!-- Add this right before the closing body tag -->
+    <script>
+      // Check if containers need scroll indicators
+      function updateScrollIndicators() {
+        const containers = document.querySelectorAll('.left, .right');
+        
+        containers.forEach(container => {
+          // Check if scrollable
+          if (container.scrollHeight > container.clientHeight) {
+            container.classList.add('has-overflow');
+            
+            // Add scroll listener if not already added
+            if (!container.hasScrollListener) {
+              container.addEventListener('scroll', handleScroll);
+              container.hasScrollListener = true;
+            }
+          } else {
+            container.classList.remove('has-overflow');
+          }
+        });
+      }
+      
+      // Handle scroll events to show/hide indicators
+      function handleScroll(e) {
+        const container = e.target;
+        const scrollTop = container.scrollTop;
+        const scrollHeight = container.scrollHeight;
+        const clientHeight = container.clientHeight;
+        
+        // Near top
+        if (scrollTop < 20) {
+          container.classList.add('at-top');
+          container.classList.remove('at-bottom');
+        } 
+        // Near bottom
+        else if (scrollTop + clientHeight > scrollHeight - 20) {
+          container.classList.add('at-bottom');
+          container.classList.remove('at-top');
+        } 
+        // Middle
+        else {
+          container.classList.remove('at-top');
+          container.classList.remove('at-bottom');
+        }
+      }
+      
+      // Run on load and whenever content might change
+      window.addEventListener('load', updateScrollIndicators);
+      window.addEventListener('resize', updateScrollIndicators);
+      
+      // Also run occasionally to catch dynamic content changes
+      setInterval(updateScrollIndicators, 2000);
+    </script>
   </body>
 </html>

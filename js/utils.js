@@ -17,7 +17,7 @@ export function showToast(message) {
   notification.className = "auto-save-notification";
   notification.textContent = message;
   
-  // Add to container (at the beginning for proper stacking)
+  // Add to container
   toastContainer.appendChild(notification);
   
   // Track this toast
