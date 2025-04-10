@@ -670,6 +670,7 @@ body.quality-high .falling {
 /* RIGHT Section: Upgrade Visualizations Only (Mirrors Left Section) */
 .right {
   position: fixed;
+  margin: 15px;
   top: 60%;
   right: 20px;
   transform: translateY(-60%);
@@ -923,7 +924,7 @@ body.quality-high .falling {
 .upgrade-box {
   background: linear-gradient(145deg, #ffffff, #f0f0f0);
   border-radius: 12px;
-  padding: 25px 15px 15px 2px; /* Increased top padding to make room for title */
+  padding: 25px 10px 10px 2px; /* Increased top padding to make room for title */
   width: 220px;
   display: flex;
   flex-direction: column;
