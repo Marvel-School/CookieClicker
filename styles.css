@@ -670,6 +670,7 @@ body.quality-high .falling {
 
 /* RIGHT Section: Upgrade Visualizations Only (Mirrors Left Section) */
 .right {
+  margin: 15px;
   position: fixed;
   margin: 15px;
   top: 60%;
