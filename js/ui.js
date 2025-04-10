@@ -15,6 +15,11 @@ export function setupEventListeners(game) {
     game.autoClickerButton,
     game.grandmaButton,
     game.farmButton,
+    // Add new upgrade buttons
+    game.mineButton,
+    game.factoryButton, 
+    game.bankButton,
+    game.templeButton,
     game.luckyClickButton,
   ];
   
@@ -54,6 +59,9 @@ export function setupEventListeners(game) {
 
   // Set up shop item tooltips
   setupTooltips(game);
+
+  // Ensure proper image paths
+  setupShopItems(game);
 }
 
 function setupTooltips(game) {
@@ -71,6 +79,20 @@ function setupTooltips(game) {
         console.error(`Shop upgrade not found: ${upgradeKey}`);
       }
     });
+  });
+}
+
+function setupShopItems(game) {
+  // Example of how to properly set image paths
+  document.querySelectorAll('.shop-item').forEach(item => {
+    const imgElement = item.querySelector('img');
+    if (imgElement) {
+      // Make sure all image paths start with 'image/' to reference the correct folder
+      if (!imgElement.src.includes('image/')) {
+        const imageName = imgElement.getAttribute('data-image') || 'default.png';
+        imgElement.src = `image/${imageName}`;
+      }
+    }
   });
 }
 
@@ -270,6 +292,11 @@ function updateButtonStates(game, cookies) {
   game.autoClickerButton.disabled = cookies < game.upgrades.autoClicker.cost;
   game.grandmaButton.disabled = cookies < game.upgrades.grandma.cost;
   game.farmButton.disabled = cookies < game.upgrades.farm.cost;
+  // New upgrades
+  game.mineButton.disabled = cookies < game.upgrades.mine.cost;
+  game.factoryButton.disabled = cookies < game.upgrades.factory.cost;
+  game.bankButton.disabled = cookies < game.upgrades.bank.cost;
+  game.templeButton.disabled = cookies < game.upgrades.temple.cost;
   game.luckyClickButton.disabled = cookies < game.upgrades.luckyClick.cost;
 }
 
@@ -298,7 +325,24 @@ function updateProgressionVisuals(game) {
     const autoClickers = game.upgrades?.autoClicker?.count || 0;
     const grandmas = game.upgrades?.grandma?.count || 0;
     const farms = game.upgrades?.farm?.count || 0;
-    let cps = autoClickers * 1 + grandmas * 5 + farms * 10;
+    const mines = game.upgrades?.mine?.count || 0;
+    const factories = game.upgrades?.factory?.count || 0;
+    const banks = game.upgrades?.bank?.count || 0;
+    const temples = game.upgrades?.temple?.count || 0;
+    
+    // Calculate base CPS from all buildings
+    let cps = autoClickers * 1 + 
+              grandmas * 3 + 
+              farms * 6 + 
+              mines * 12 + 
+              factories * 25 + 
+              temples * 80;
+    
+    // Add bank interest if banks are present
+    if (banks > 0) {
+      // 0.05% of total cookies per second per bank
+      cps += (game.state.cookies * 0.0005) * banks;
+    }
     
     // Apply cookie multiplier (protect against NaN)
     if (typeof game.state.cookieMultiplier === 'number' && !isNaN(game.state.cookieMultiplier)) {
@@ -323,6 +367,23 @@ function updateProgressionVisuals(game) {
       updateResourceBar(game.grandmaProgressBar, game.grandmaCountDisplay, grandmas, 100);
     } else {
       console.warn("Grandma visual elements not found, will try again later");
+    }
+    
+    // Add new building bars
+    if (game.mineProgressBar && game.mineCountDisplay) {
+      updateResourceBar(game.mineProgressBar, game.mineCountDisplay, mines, 100);
+    }
+    
+    if (game.factoryProgressBar && game.factoryCountDisplay) {
+      updateResourceBar(game.factoryProgressBar, game.factoryCountDisplay, factories, 100);
+    }
+    
+    if (game.bankProgressBar && game.bankCountDisplay) {
+      updateResourceBar(game.bankProgressBar, game.bankCountDisplay, banks, 100);
+    }
+    
+    if (game.templeProgressBar && game.templeCountDisplay) {
+      updateResourceBar(game.templeProgressBar, game.templeCountDisplay, temples, 100);
     }
   } catch (e) {
     console.error("ERROR in updateProgressionVisuals:", e);

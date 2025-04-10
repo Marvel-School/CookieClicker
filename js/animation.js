@@ -5,7 +5,7 @@ const PARTICLE_LIFETIME = 2000;
 
 export function showFloatingNumber(element, amount, isBonus = false) {
   const floatingNumber = document.createElement("div");
-  floatingNumber.className = "floating-number";
+  floatingNumber.className = isBonus ? "floating-number bonus" : "floating-number regular";
 
   // Format amount with fewer decimal places - limit to 1 decimal place
   const formattedAmount =
@@ -16,7 +16,7 @@ export function showFloatingNumber(element, amount, isBonus = false) {
       : amount;
 
   floatingNumber.textContent = `+${formattedAmount}`;
-  floatingNumber.style.color = isBonus ? "blue" : "red";
+  
   const { left, top, width } = element.getBoundingClientRect();
   floatingNumber.style.left = `${left + width / 2 - 15}px`;
   floatingNumber.style.top = `${top - 10}px`;
@@ -154,21 +154,17 @@ export function applyTimeAcceleratorVisuals(cookie, cpsDisplay, active) {
   if (cookie) {
     if (active) {
       cookie.classList.add("accelerated");
-      cookie.style.filter = "brightness(1.5) drop-shadow(0 0 10px gold)";
     } else {
       cookie.classList.remove("accelerated");
-      cookie.style.filter = "";
     }
   }
 
   // Apply effects to CPS display
   if (cpsDisplay) {
     if (active) {
-      cpsDisplay.style.color = "#ff4500";
-      cpsDisplay.style.fontWeight = "bold";
+      cpsDisplay.classList.add("boosted-display");
     } else {
-      cpsDisplay.style.color = "";
-      cpsDisplay.style.fontWeight = "";
+      cpsDisplay.classList.remove("boosted-display");
     }
   }
 }
@@ -195,15 +191,15 @@ export function dropCookieImage() {
   let topStart = screenLength * -0.6
   let topWidth = screenLength * -0.6; 
   
-  
   newImg.style.left = centerStart + Math.random() * centerWidth + "px";
-  newImg.style.top = topStart + Math.random() * centerWidth + "px";
+  newImg.style.top = topStart + Math.random() * topWidth + "px";
   document.body.appendChild(newImg);
 
   setTimeout(() => {
       newImg.remove();
   }, 5000);
 }
+
 document.addEventListener("DOMContentLoaded", function () {
   let cookie = document.getElementById("cookie");
   let images = document.querySelectorAll(".set img");

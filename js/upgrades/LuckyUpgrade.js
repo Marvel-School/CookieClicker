@@ -124,35 +124,13 @@ export class LuckyUpgrade extends Upgrade {
       if (effectMessage) {
         // Create a special effect message
         const message = document.createElement("div");
-        message.className = "floating-effect";
+        message.className = isCritical ? "floating-effect critical" : "floating-effect";
         message.textContent = effectMessage;
-        message.style.position = "absolute";
-        message.style.fontSize = isCritical ? "24px" : "18px";
-        message.style.color = isCritical ? "#ff4500" : "#1e90ff";
-        message.style.fontWeight = "bold";
-        message.style.textShadow = "0px 0px 5px white";
-        message.style.zIndex = "9999";
         
         const { left, top, width } = game.cookie.getBoundingClientRect();
         message.style.left = `${left + width / 2 - 120}px`;
         message.style.top = `${top - 50}px`;
-        message.style.width = "240px";
-        message.style.textAlign = "center";
-        message.style.pointerEvents = "none";
         document.body.appendChild(message);
-        
-        // Animate and remove after animation
-        message.animate(
-          [
-            { transform: "translateY(0) scale(1)", opacity: 1 },
-            { transform: "translateY(-50px) scale(1.2)", opacity: 1 },
-            { transform: "translateY(-100px) scale(1)", opacity: 0 }
-          ],
-          {
-            duration: 2000,
-            easing: "cubic-bezier(0.215, 0.61, 0.355, 1)"
-          }
-        );
         
         setTimeout(() => message.remove(), 2000);
       }

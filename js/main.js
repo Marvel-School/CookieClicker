@@ -28,6 +28,19 @@ document.addEventListener('DOMContentLoaded', () => {
       console.error("Cookie element not found!");
     }
     
+    // Initialize golden cookie container
+    const goldenCookieContainer = document.createElement('div');
+    goldenCookieContainer.id = 'goldenCookieContainer';
+    goldenCookieContainer.style.position = 'fixed';
+    goldenCookieContainer.style.top = '0';
+    goldenCookieContainer.style.left = '0';
+    goldenCookieContainer.style.width = '100%';
+    goldenCookieContainer.style.height = '100%';
+    goldenCookieContainer.style.zIndex = '999';
+    goldenCookieContainer.style.pointerEvents = 'none'; // This makes children able to receive events
+    document.body.appendChild(goldenCookieContainer);
+    gameInstance.goldenCookieContainer = goldenCookieContainer;
+    
     // Initialize personalization system after game is loaded
     try {
       initPersonalizationSystem(gameInstance);

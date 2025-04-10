@@ -58,6 +58,11 @@ export default class Game {
       autoClicker: new IncrementUpgrade(60, 1.6, "Buy Auto Clicker"),           // Was 50, 1.5 - slightly more expensive
       grandma: new IncrementUpgrade(120, 1.7, "Buy Grandma's Bakery", "updateGrandmasVisual"), // Was 100, 1.5 - more expensive with better scaling
       farm: new IncrementUpgrade(600, 1.8, "Buy Cookie Farm"),                  // Was 500, 1.5 - more expensive with better scaling
+      // New upgrades
+      mine: new IncrementUpgrade(3000, 1.9, "Buy Cookie Mine", "updateMinesVisual"),
+      factory: new IncrementUpgrade(10000, 2.0, "Buy Cookie Factory", "updateFactoriesVisual"),
+      bank: new IncrementUpgrade(30000, 2.1, "Buy Cookie Bank", "updateBanksVisual"), 
+      temple: new IncrementUpgrade(100000, 2.2, "Buy Cookie Temple", "updateTemplesVisual"),
       luckyClick: new LuckyUpgrade(25, 1.3, "Lucky Click"),                     // Was 20, 1 - now properly scales in cost
     };
 
@@ -150,6 +155,11 @@ export default class Game {
     this.autoClickerButton = document.getElementById("autoClicker");
     this.grandmaButton = document.getElementById("grandma");
     this.farmButton = document.getElementById("farm");
+    // New upgrade buttons
+    this.mineButton = document.getElementById("mine");
+    this.factoryButton = document.getElementById("factory");
+    this.bankButton = document.getElementById("bank");
+    this.templeButton = document.getElementById("temple");
     this.luckyClickButton = document.getElementById("luckyClick");
 
     // Shop Section
@@ -175,6 +185,15 @@ export default class Game {
     this.autoClickersCountVisual = document.getElementById("autoClickersCountVisual");
     this.farmsProgressBar = document.getElementById("farmsProgressBar");
     this.farmsCountVisual = document.getElementById("farmsCountVisual");
+    // New visualization elements
+    this.mineProgressBar = document.getElementById("mineProgressBar");
+    this.mineCountDisplay = document.getElementById("mineCount");
+    this.factoryProgressBar = document.getElementById("factoryProgressBar");
+    this.factoryCountDisplay = document.getElementById("factoryCount");
+    this.bankProgressBar = document.getElementById("bankProgressBar");
+    this.bankCountDisplay = document.getElementById("bankCount");
+    this.templeProgressBar = document.getElementById("templeProgressBar");
+    this.templeCountDisplay = document.getElementById("templeCount");
 
     // Create container for golden cookies
     this.goldenCookieContainer = document.createElement('div');
@@ -445,7 +464,7 @@ export default class Game {
     this.state.goldenCookieActive = true;
     console.log('Spawning golden cookie!');
     
-    // Create the golden cookie element
+    // Create the golden cookie element with enhanced visibility for debugging
     const goldenCookie = document.createElement('div');
     goldenCookie.className = 'golden-cookie';
     
@@ -459,32 +478,42 @@ export default class Game {
     goldenCookie.style.left = `${posX}px`;
     goldenCookie.style.top = `${posY}px`;
     
-    // Debug information directly on element
-    const debugInfo = document.createElement('div');
-    debugInfo.style.position = 'absolute';
-    debugInfo.style.bottom = '-20px';
-    debugInfo.style.left = '0';
-    debugInfo.style.right = '0';
-    debugInfo.style.textAlign = 'center';
-    debugInfo.style.color = 'white';
-    debugInfo.style.textShadow = '0 0 3px black';
-    debugInfo.style.fontSize = '12px';
-    debugInfo.textContent = 'Click me!';
-    goldenCookie.appendChild(debugInfo);
+    // Make it more obvious for debugging
+    goldenCookie.innerHTML = `
+      <span style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); 
+      color:#fff; font-weight:bold; font-size:16px; text-shadow:0 0 3px black; pointer-events:none;">
+        Click me!
+      </span>
+    `;
     
-    // Add click handler
+    // Add click handler with debugging info
     goldenCookie.addEventListener('click', () => {
       console.log('Golden cookie clicked!');
       this.handleGoldenCookieClick(goldenCookie);
     });
     
-    // Log the golden cookie container status
+    // Test click handler
+    goldenCookie.addEventListener('mousedown', () => {
+      console.log('Mouse down on golden cookie');
+    });
+    
+    // Make sure the container exists
     if (!this.goldenCookieContainer) {
       console.error('Golden cookie container is missing! Creating it now...');
       this.goldenCookieContainer = document.createElement('div');
       this.goldenCookieContainer.id = 'goldenCookieContainer';
+      this.goldenCookieContainer.style.position = 'fixed';
+      this.goldenCookieContainer.style.top = '0';
+      this.goldenCookieContainer.style.left = '0';
+      this.goldenCookieContainer.style.width = '100%';
+      this.goldenCookieContainer.style.height = '100%';
+      this.goldenCookieContainer.style.zIndex = '999';
+      this.goldenCookieContainer.style.pointerEvents = 'none';
       document.body.appendChild(this.goldenCookieContainer);
     }
+    
+    // Add this important style to make the golden cookie clickable
+    goldenCookie.style.pointerEvents = 'auto';
     
     // Add to container
     this.goldenCookieContainer.appendChild(goldenCookie);
@@ -499,7 +528,6 @@ export default class Game {
     
     console.log('Golden cookie spawned at position:', posX, posY);
     console.log('Golden cookie element:', goldenCookie);
-    console.log('Image path being used:', window.getComputedStyle(goldenCookie).backgroundImage);
     
     return goldenCookie;
   }
@@ -749,13 +777,9 @@ export default class Game {
     // Apply visual effects to CPS display
     if (this.cpsDisplay) {
       if (active) {
-        this.cpsDisplay.style.color = "#ffaa00";
-        this.cpsDisplay.style.fontWeight = "bold";
-        this.cpsDisplay.style.textShadow = "0 0 5px gold";
+        this.cpsDisplay.classList.add('boosted-display');
       } else {
-        this.cpsDisplay.style.color = "";
-        this.cpsDisplay.style.fontWeight = "";
-        this.cpsDisplay.style.textShadow = "";
+        this.cpsDisplay.classList.remove('boosted-display');
       }
     }
     
@@ -772,11 +796,8 @@ export default class Game {
     if (active && statsDiv) {
       const boost = document.createElement('div');
       boost.id = 'production-boost-indicator';
+      boost.className = 'boost-indicator production-boost-indicator';
       boost.innerHTML = '⚡ Production Boost Active! ⚡';
-      boost.style.color = '#ffaa00';
-      boost.style.fontWeight = 'bold';
-      boost.style.marginTop = '5px';
-      boost.style.animation = 'pulse 1s infinite alternate';
       statsDiv.appendChild(boost);
     }
   }
@@ -786,21 +807,19 @@ export default class Game {
     // Apply visual effects to click power display
     if (this.clickPowerDisplay) {
       if (active) {
-        this.clickPowerDisplay.style.color = "#ff6600";
-        this.clickPowerDisplay.style.fontWeight = "bold";
-        this.clickPowerDisplay.style.textShadow = "0 0 5px orange";
+        this.clickPowerDisplay.classList.add('click-power-boosted');
       } else {
-        this.clickPowerDisplay.style.color = "";
-        this.clickPowerDisplay.style.fontWeight = "";
-        this.clickPowerDisplay.style.textShadow = "";
+        this.clickPowerDisplay.classList.remove('click-power-boosted');
       }
     }
     
     // Apply visual effect to cookie
-    if (this.cookie && active) {
-      this.cookie.classList.add('click-boosted');
-    } else if (this.cookie) {
-      this.cookie.classList.remove('click-boosted');
+    if (this.cookie) {
+      if (active) {
+        this.cookie.classList.add('click-boosted');
+      } else {
+        this.cookie.classList.remove('click-boosted');
+      }
     }
     
     // Add a visual indicator in the stats area
@@ -816,11 +835,8 @@ export default class Game {
     if (active && statsDiv) {
       const boost = document.createElement('div');
       boost.id = 'click-boost-indicator';
+      boost.className = 'boost-indicator click-boost-indicator';
       boost.innerHTML = '👆 Click Power Boost Active! 👆';
-      boost.style.color = '#ff6600';
-      boost.style.fontWeight = 'bold';
-      boost.style.marginTop = '5px';
-      boost.style.animation = 'pulse 1s infinite alternate';
       statsDiv.appendChild(boost);
     }
   }
@@ -831,27 +847,17 @@ export default class Game {
     if (this.cookie) {
       if (active) {
         this.cookie.classList.add('frenzy-boosted');
-        this.cookie.style.filter = "brightness(1.8) saturate(1.5) drop-shadow(0 0 15px crimson)";
-        this.cookie.style.transform = "scale(1.15)";
       } else {
         this.cookie.classList.remove('frenzy-boosted');
-        this.cookie.style.filter = "";
-        this.cookie.style.transform = "";
       }
     }
     
     // Apply effects to click power display
     if (this.clickPowerDisplay) {
       if (active) {
-        this.clickPowerDisplay.style.color = "#ff0000";
-        this.clickPowerDisplay.style.fontWeight = "bold";
-        this.clickPowerDisplay.style.textShadow = "0 0 8px red";
-        this.clickPowerDisplay.style.fontSize = "1.2em";
+        this.clickPowerDisplay.classList.add('frenzy-boosted-text');
       } else {
-        this.clickPowerDisplay.style.color = "";
-        this.clickPowerDisplay.style.fontWeight = "";
-        this.clickPowerDisplay.style.textShadow = "";
-        this.clickPowerDisplay.style.fontSize = "";
+        this.clickPowerDisplay.classList.remove('frenzy-boosted-text');
       }
     }
     
@@ -868,12 +874,8 @@ export default class Game {
     if (active && statsDiv) {
       const boost = document.createElement('div');
       boost.id = 'frenzy-indicator';
+      boost.className = 'boost-indicator frenzy-indicator';
       boost.innerHTML = '🔥 CLICKING FRENZY! 🔥';
-      boost.style.color = '#ff0000';
-      boost.style.fontWeight = 'bold';
-      boost.style.marginTop = '5px';
-      boost.style.animation = 'pulse 0.5s infinite alternate';
-      boost.style.fontSize = '1.2em';
       statsDiv.appendChild(boost);
     }
   }
@@ -905,9 +907,24 @@ export default class Game {
       const autoClickers = this.upgrades.autoClicker.count || 0;
       const grandmas = this.upgrades.grandma.count || 0;
       const farms = this.upgrades.farm.count || 0;
+      const mines = this.upgrades.mine.count || 0;
+      const factories = this.upgrades.factory.count || 0;
+      const banks = this.upgrades.bank.count || 0;
+      const temples = this.upgrades.temple.count || 0;
       
       // Reduced CPS values for better game balance
-      let cps = autoClickers * 1 + grandmas * 3 + farms * 6;  // Changed from 5 and 10 to 3 and 6
+      let cps = autoClickers * 1 + 
+                grandmas * 3 + 
+                farms * 6 +
+                mines * 12 +
+                factories * 25 +
+                temples * 80;
+      
+      // Banks generate cookies based on current total (like interest)
+      if (banks > 0) {
+        // 0.05% of total cookies per second per bank
+        cps += (this.state.cookies * 0.0005) * banks;
+      }
       
       // Apply cookie multiplier
       cps *= this.state.cookieMultiplier;
@@ -975,6 +992,25 @@ export default class Game {
         this.clickPowerDisplay.classList.remove('boosted');
       }
     }
+
+    this.clickUpgradeButton.disabled = cookies < this.upgrades.clickUpgrade.cost;
+    this.autoClickerButton.disabled = cookies < this.upgrades.autoClicker.cost;
+    this.grandmaButton.disabled = cookies < this.upgrades.grandma.cost;
+    this.farmButton.disabled = cookies < this.upgrades.farm.cost;
+    // Add new buttons
+    this.mineButton.disabled = cookies < this.upgrades.mine.cost;
+    this.factoryButton.disabled = cookies < this.upgrades.factory.cost;
+    this.bankButton.disabled = cookies < this.upgrades.bank.cost;
+    this.templeButton.disabled = cookies < this.upgrades.temple.cost;
+    this.luckyClickButton.disabled = cookies < this.upgrades.luckyClick.cost;
+    
+    // ...existing code...
+    
+    // Also update the new building visuals
+    this.updateMinesVisual();
+    this.updateFactoriesVisual();
+    this.updateBanksVisual(); 
+    this.updateTemplesVisual();
   }
 
   showFloatingNumber(amount, isBonus = false) {
@@ -1022,6 +1058,62 @@ export default class Game {
     
     if (this.farmsCountVisual) {
       this.farmsCountVisual.textContent = count;
+    }
+  }
+
+  updateMinesVisual() {
+    const maxMines = 100;
+    const count = this.upgrades.mine.count || 0;
+    const progressWidth = (count / maxMines) * 100;
+    
+    if (this.mineProgressBar) {
+      this.mineProgressBar.style.width = `${Math.min(progressWidth, 100)}%`;
+    }
+    
+    if (this.mineCountDisplay) {
+      this.mineCountDisplay.textContent = count;
+    }
+  }
+
+  updateFactoriesVisual() {
+    const maxFactories = 100;
+    const count = this.upgrades.factory.count || 0;
+    const progressWidth = (count / maxFactories) * 100;
+    
+    if (this.factoryProgressBar) {
+      this.factoryProgressBar.style.width = `${Math.min(progressWidth, 100)}%`;
+    }
+    
+    if (this.factoryCountDisplay) {
+      this.factoryCountDisplay.textContent = count;
+    }
+  }
+
+  updateBanksVisual() {
+    const maxBanks = 100;
+    const count = this.upgrades.bank.count || 0;
+    const progressWidth = (count / maxBanks) * 100;
+    
+    if (this.bankProgressBar) {
+      this.bankProgressBar.style.width = `${Math.min(progressWidth, 100)}%`;
+    }
+    
+    if (this.bankCountDisplay) {
+      this.bankCountDisplay.textContent = count;
+    }
+  }
+
+  updateTemplesVisual() {
+    const maxTemples = 100;
+    const count = this.upgrades.temple.count || 0;
+    const progressWidth = (count / maxTemples) * 100;
+    
+    if (this.templeProgressBar) {
+      this.templeProgressBar.style.width = `${Math.min(progressWidth, 100)}%`;
+    }
+    
+    if (this.templeCountDisplay) {
+      this.templeCountDisplay.textContent = count;
     }
   }
 
@@ -1145,6 +1237,11 @@ export default class Game {
           autoClicker: new IncrementUpgrade(60, 1.6, "Buy Auto Clicker"),           // Was 50, 1.5 - slightly more expensive
           grandma: new IncrementUpgrade(120, 1.7, "Buy Grandma's Bakery", "updateGrandmasVisual"), // Was 100, 1.5 - more expensive with better scaling
           farm: new IncrementUpgrade(600, 1.8, "Buy Cookie Farm"),                  // Was 500, 1.5 - more expensive with better scaling
+          // New upgrades
+          mine: new IncrementUpgrade(3000, 1.9, "Buy Cookie Mine", "updateMinesVisual"),
+          factory: new IncrementUpgrade(10000, 2.0, "Buy Cookie Factory", "updateFactoriesVisual"),
+          bank: new IncrementUpgrade(30000, 2.1, "Buy Cookie Bank", "updateBanksVisual"), 
+          temple: new IncrementUpgrade(100000, 2.2, "Buy Cookie Temple", "updateTemplesVisual"),
           luckyClick: new LuckyUpgrade(25, 1.3, "Lucky Click"),                     // Was 20, 1 - now properly scales in cost
         };
         
@@ -1266,6 +1363,11 @@ export default class Game {
       autoClicker: new IncrementUpgrade(60, 1.6, "Buy Auto Clicker"),           // Was 50, 1.5 - slightly more expensive
       grandma: new IncrementUpgrade(120, 1.7, "Buy Grandma's Bakery", "updateGrandmasVisual"), // Was 100, 1.5 - more expensive with better scaling
       farm: new IncrementUpgrade(600, 1.8, "Buy Cookie Farm"),                  // Was 500, 1.5 - more expensive with better scaling
+      // New upgrades
+      mine: new IncrementUpgrade(3000, 1.9, "Buy Cookie Mine", "updateMinesVisual"),
+      factory: new IncrementUpgrade(10000, 2.0, "Buy Cookie Factory", "updateFactoriesVisual"),
+      bank: new IncrementUpgrade(30000, 2.1, "Buy Cookie Bank", "updateBanksVisual"), 
+      temple: new IncrementUpgrade(100000, 2.2, "Buy Cookie Temple", "updateTemplesVisual"),
       luckyClick: new LuckyUpgrade(25, 1.3, "Lucky Click"),                     // Was 20, 1 - now properly scales in cost
     };
     
@@ -1428,7 +1530,7 @@ export default class Game {
     
     // Apply CPS display effect
     if (this.cpsDisplay) {
-      this.cpsDisplay.classList.add('boosted');
+      this.cpsDisplay.classList.add('boosted-display');
     }
     
     this.log(
@@ -1466,7 +1568,7 @@ export default class Game {
       
       // Remove CPS display effect
       if (this.cpsDisplay) {
-        this.cpsDisplay.classList.remove('boosted');
+        this.cpsDisplay.classList.remove('boosted-display');
       }
       
       this.log("Time Accelerator expired");
@@ -1496,6 +1598,12 @@ export default class Game {
           this.personalization.setParticleIntensity(value);
           this.saveGame(); // Save settings when changed
         });
+      }
+      
+      // Example of ensuring correct paths when setting images programmatically
+      const cookieElement = this.cookie;
+      if (cookieElement && cookieElement.src && !cookieElement.src.includes('/image/')) {
+        cookieElement.src = 'image/cookie.png';  // Use relative path from root
       }
       
       this.log("Personalization system initialized");

@@ -118,7 +118,99 @@ export function setupAchievements(game) {
     '🤖'
   ));
   
-  // ...more achievements (adding just a few here for brevity)
+  // Mine achievements
+  game.registerAchievement(new Achievement(
+    'mine_5',
+    'Cookie Miner',
+    'Own 5 Cookie Mines.',
+    (game) => (game.upgrades.mine.count || 0) >= 5,
+    'common',
+    'collection',
+    '⛏️'
+  ));
+  
+  game.registerAchievement(new Achievement(
+    'mine_25',
+    'Excavation Expert',
+    'Own 25 Cookie Mines.',
+    (game) => (game.upgrades.mine.count || 0) >= 25,
+    'uncommon',
+    'collection',
+    '⛏️'
+  ));
+  
+  game.registerAchievement(new Achievement(
+    'mine_50',
+    'Deep Cookie Deposits',
+    'Own 50 Cookie Mines.',
+    (game) => (game.upgrades.mine.count || 0) >= 50,
+    'rare',
+    'collection',
+    '💎'
+  ));
+  
+  // Factory achievements
+  game.registerAchievement(new Achievement(
+    'factory_5',
+    'Industrialist',
+    'Own 5 Cookie Factories.',
+    (game) => (game.upgrades.factory.count || 0) >= 5,
+    'common',
+    'collection',
+    '🏭'
+  ));
+  
+  game.registerAchievement(new Achievement(
+    'factory_25',
+    'Mass Production',
+    'Own 25 Cookie Factories.',
+    (game) => (game.upgrades.factory.count || 0) >= 25,
+    'uncommon',
+    'collection', 
+    '🏭'
+  ));
+  
+  // Bank achievements
+  game.registerAchievement(new Achievement(
+    'bank_5',
+    'Cookie Investor',
+    'Own 5 Cookie Banks.',
+    (game) => (game.upgrades.bank.count || 0) >= 5,
+    'common',
+    'collection',
+    '🏦'
+  ));
+  
+  game.registerAchievement(new Achievement(
+    'bank_25',
+    'Cookie Magnate',
+    'Own 25 Cookie Banks.',
+    (game) => (game.upgrades.bank.count || 0) >= 25,
+    'uncommon',
+    'collection', 
+    '💰'
+  ));
+  
+  // Temple achievements
+  game.registerAchievement(new Achievement(
+    'temple_5',
+    'Cookie Worshipper',
+    'Own 5 Cookie Temples.',
+    (game) => (game.upgrades.temple.count || 0) >= 5,
+    'uncommon',
+    'collection',
+    '🏛️'
+  ));
+  
+  game.registerAchievement(new Achievement(
+    'temple_25',
+    'Cookie Deity',
+    'Own 25 Cookie Temples.',
+    (game) => (game.upgrades.temple.count || 0) >= 25,
+    'rare',
+    'collection', 
+    '👑'
+  ));
   
   // Special achievements
   game.registerAchievement(new Achievement(
@@ -144,5 +236,25 @@ export function setupAchievements(game) {
     'epic',
     'special',
     '🍀'
+  ));
+  
+  // Special achievement - Balanced Collector
+  game.registerAchievement(new Achievement(
+    'balanced_collector',
+    'Cookie Connoisseur',
+    'Have exactly 10 of each production building (Auto Clickers, Grandmas, Farms, Mines, Factories, Banks, Temples)',
+    (game) => {
+      const count = game.upgrades.autoClicker.count || 0;
+      return count >= 10 &&
+             count === (game.upgrades.grandma.count || 0) &&
+             count === (game.upgrades.farm.count || 0) &&
+             count === (game.upgrades.mine.count || 0) &&
+             count === (game.upgrades.factory.count || 0) &&
+             count === (game.upgrades.bank.count || 0) &&
+             count === (game.upgrades.temple.count || 0);
+    },
+    'legendary',
+    'special',
+    '🎭'
   ));
 }
