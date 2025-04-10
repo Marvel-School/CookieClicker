@@ -288,11 +288,16 @@ class ToggleMenu {
   toggleMenu() {
     this.menu.classList.toggle("show");
     if (this.backdrop) {
+      console.log("menu");
       this.backdrop.classList.toggle("show");
       // Ensure no blur is applied
-      this.backdrop.style.backdropFilter = 'none';
-      this.backdrop.style.webkitBackdropFilter = 'none';
-      this.backdrop.style.filter = 'none';
+      // this.backdrop.style.backdropFilter = 'none';
+      // this.backdrop.style.webkitBackdropFilter = 'none';
+      // this.backdrop.style.filter = 'none';
+      
+        this.backdrop.style.backdropFilter = 'blur(5px)';
+      this.backdrop.style.webkitBackdropFilter = 'blur(5px)';
+      this.backdrop.style.filter = 'blur(5px)';
     }
   }
 

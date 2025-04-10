@@ -542,6 +542,7 @@ body.blur {
   width: 50px;
   height: 50px;
   animation: fallAnimation 2s linear forwards;
+  
 }
 
 /* Optimize falling animation to use hardware acceleration */
@@ -623,7 +624,7 @@ body[data-particle-heavy="true"] .floating-number {
   transform-origin: center center;
   pointer-events: none;
   will-change: transform, opacity;
-  z-index: -1;
+  z-index: 10000 !important;
   border-radius: 50%;
   opacity: 0;
   box-shadow: 0 2px 10px rgba(0,0,0,0.1);
@@ -2723,26 +2724,34 @@ body > .item-desc,
 }
 
 /* Remove all blur effects */
-.blur, .blurz, body.blur, #backdrop.blur, #backdrop.blurz, .backdrop.blurz, .backdrop.blur {
+/* .blur, .blurz, body.blur, #backdrop.blur, #backdrop.blurz, .backdrop.blurz, .backdrop.blur {
   filter: none !important;
   -webkit-backdrop-filter: none !important;
   backdrop-filter: none !important;
   pointer-events: auto !important;
-}
+} */
 
 /* Completely disable all backdrop blur effects */
-#backdrop, #backdrop.show, .backdrop, .backdrop.show {
-  background-color: rgba(0, 0, 0, 0.2); /* Semi-transparent overlay instead of blur */
+/* #backdrop, #backdrop.show, .backdrop, .backdrop.show {
+  background-color: rgba(0, 0, 0, 0.2); 
   filter: none !important;
   -webkit-backdrop-filter: none !important;
   backdrop-filter: none !important;
   pointer-events: none;
-}
+} */
 
 /* Add z-index to ensure backdrop stays behind other elements */
-#backdrop, .backdrop {
-  z-index: 998;
-  pointer-events: none;
+@media (max-width: 935px){
+
+  #backdrop, .backdrop {
+    position: fixed;
+    top:0;
+    left:0;
+    width: 100%;
+    height: 100%;
+    z-index: 998;
+    pointer-events: none;
+  }
 }
 
 /* Set proper pointer events for modals */
