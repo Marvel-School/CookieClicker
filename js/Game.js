@@ -2,7 +2,7 @@
 
 import { ClickMultiplierUpgrade, IncrementUpgrade, LuckyUpgrade, ShopUpgrade } from './upgrades.js';
 import { setupAchievements } from './achievements.js';
-import { showFloatingNumber, createConfetti, applyTimeAcceleratorVisuals,dropCookieImage} from './animation.js';
+import { showFloatingNumber, createConfetti, applyTimeAcceleratorVisuals, dropCookieImage, createCookieShower } from './animation.js';
 import { log, showToast, AUTO_SAVE_INTERVAL } from './utils.js';
 import { setupEventListeners, updateGameDisplay, updateAchievementsList } from './ui.js';
 import { PersonalizationManager } from './personalization.js';
@@ -531,42 +531,63 @@ export default class Game {
     }, 3000);
   }
 
-  // Start golden cookie spawn timer
+  // Fix golden cookie spawn timer to reduce frequency
   startGoldenCookieTimer() {
+    // Only create one timer instance at a time
+    if (this.goldenCookieTimerID) {
+      clearTimeout(this.goldenCookieTimerID);
+      this.goldenCookieTimerID = null;
+    }
+    
     const checkGoldenCookie = () => {
-        if (!this.state.goldenCookieActive) {
-            const now = Date.now();
-            // Make sure at least 30 seconds passed since last golden cookie
-            if (now - this.state.lastGoldenCookieTime > 30000) {
-                // Random chance based on goldenCookieChance
-                const roll = Math.random();
-                this.log(`Golden cookie check: rolled ${roll.toFixed(3)} vs chance ${this.state.goldenCookieChance.toFixed(3)}`);
-                if (roll < this.state.goldenCookieChance) {
-                    this.spawnGoldenCookie();
-                }
-            }
+      // Clear the timer ID so we know no timer is pending
+      this.goldenCookieTimerID = null;
+      
+      // Only try to spawn if there's no active golden cookie
+      if (!this.state.goldenCookieActive) {
+        const now = Date.now();
+        // Increase minimum time between golden cookies from 30 to 60 seconds
+        if (now - this.state.lastGoldenCookieTime > 60000) {
+          // Reduce chance by 50% to make them rarer
+          const baseChance = this.state.goldenCookieChance * 0.5; 
+          const roll = Math.random();
+          this.log(`Golden cookie check: rolled ${roll.toFixed(3)} vs chance ${baseChance.toFixed(3)}`);
+          if (roll < baseChance) {
+            this.spawnGoldenCookie();
+          }
         }
-        
-        // Check again after a delay - use a shorter delay for more frequent checks
-        setTimeout(checkGoldenCookie, 3000); // Check every 3 seconds instead of 5
+      }
+      
+      // Check less frequently - every 10 seconds instead of 3
+      if (!this.goldenCookieTimerID) {
+        this.goldenCookieTimerID = setTimeout(checkGoldenCookie, 10000);
+      }
     };
     
-    // Start the timer with a shorter initial delay
-    setTimeout(checkGoldenCookie, 5000); // First check after 5 seconds instead of 10
+    // Start the timer with a longer initial delay
+    this.goldenCookieTimerID = setTimeout(checkGoldenCookie, 10000);
   }
 
   // Spawn a golden cookie with improved positioning and tracking
   spawnGoldenCookie() {
-    // Force reset golden cookie active state for manual spawning
+    // Safety check - if there's already a golden cookie, don't spawn another
     if (this.state.goldenCookieActive) {
-      console.log("Golden cookie was already active. Removing existing one...");
-      document.querySelectorAll('.golden-cookie').forEach(cookie => {
-        if (cookie && cookie.parentNode) {
-          cookie.parentNode.removeChild(cookie);
-        }
-      });
+      console.log("Golden cookie already active. Not spawning another one.");
+      
+      // Force clean up any existing golden cookies to ensure UI is consistent
+      const existingCookies = document.querySelectorAll('.golden-cookie');
+      if (existingCookies.length > 0) {
+        console.log(`Found ${existingCookies.length} existing golden cookies. Cleaning up.`);
+        existingCookies.forEach(cookie => {
+          if (cookie.parentNode) {
+            cookie.parentNode.removeChild(cookie);
+          }
+        });
+      }
+      return;
     }
     
+    // Set state flag to active first to prevent other spawn attempts
     this.state.goldenCookieActive = true;
     console.log('Spawning golden cookie!');
     
@@ -639,6 +660,10 @@ export default class Game {
       if (goldenCookie.parentNode) {
         console.log('Golden cookie expired without being clicked');
         this.removeGoldenCookie(goldenCookie);
+        
+        // Ensure state is properly updated
+        this.state.goldenCookieActive = false;
+        this.state.lastGoldenCookieTime = Date.now();
       }
     }, 15000);
     
@@ -648,20 +673,41 @@ export default class Game {
     return goldenCookie;
   }
 
-  // Handle golden cookie click with improved removal
+  // Fix golden cookie click handler to ensure immediate removal
   handleGoldenCookieClick(goldenCookie) {
-    // Important: Check if the cookie is still active and immediately set to inactive
-    // This prevents multiple clicks/rewards from the same cookie
+    // Check if already clicked or inactive
     if (!this.state.goldenCookieActive) return;
     
-    // Immediately mark as inactive and remove visually to prevent multiple clicks
+    // IMPORTANT: Immediately mark as inactive
     this.state.goldenCookieActive = false;
     
-    // Add a class to disable pointer events immediately
-    goldenCookie.classList.add('clicked');
-    goldenCookie.style.pointerEvents = 'none';
+    // IMPORTANT: Immediately remove from DOM to prevent multiple clicks
+    if (goldenCookie) {
+      // First disable pointer events
+      goldenCookie.style.pointerEvents = 'none';
+      
+      // For immediate visual feedback
+      goldenCookie.style.opacity = '0.5';
+      goldenCookie.style.transform = 'scale(0.1)';
+      goldenCookie.style.transition = 'all 0.2s ease-out';
+      
+      // Remove from DOM immediately
+      if (goldenCookie.parentNode) {
+        goldenCookie.parentNode.removeChild(goldenCookie);
+      }
+    }
     
-    // Move the intensity declaration outside the switch statement
+    // Remove all other golden cookies that might exist
+    document.querySelectorAll('.golden-cookie').forEach(cookie => {
+      if (cookie !== goldenCookie && cookie.parentNode) {
+        cookie.parentNode.removeChild(cookie);
+      }
+    });
+    
+    // Update state
+    this.state.lastGoldenCookieTime = Date.now();
+    
+    // Get intensity for rewards
     const intensity = this.state.personalization?.particleIntensity || 1.0;
     
     // Different possible rewards - REBALANCED
@@ -1737,5 +1783,113 @@ export default class Game {
     
     // Return the lower of the requested rate or max rate
     return Math.min(rate, Math.floor(maxRate));
+  }
+
+  // Add the missing applyProductionBoostVisuals method
+  applyProductionBoostVisuals(active) {
+    // Apply visual effects to CPS display
+    if (this.cpsDisplay) {
+      if (active) {
+        this.cpsDisplay.classList.add('boosted-display');
+      } else {
+        this.cpsDisplay.classList.remove('boosted-display');
+      }
+    }
+    
+    // Add a visual indicator in the stats area
+    const statsDiv = document.querySelector('.stats');
+    
+    // Remove any existing indicator first
+    const existingIndicator = document.getElementById('production-boost-indicator');
+    if (existingIndicator) {
+      existingIndicator.remove();
+    }
+    
+    // Add new indicator if boost is active
+    if (active && statsDiv) {
+      const boost = document.createElement('div');
+      boost.id = 'production-boost-indicator';
+      boost.className = 'boost-indicator production-boost-indicator';
+      boost.innerHTML = '⚡ Production Boost Active! ⚡';
+      statsDiv.appendChild(boost);
+    }
+  }
+
+  // Add missing click boosting functionality (used by golden cookies)
+  applyClickPowerBoostVisuals(active) {
+    // Apply visual effects to click power display
+    if (this.clickPowerDisplay) {
+      if (active) {
+        this.clickPowerDisplay.classList.add('click-power-boosted');
+      } else {
+        this.clickPowerDisplay.classList.remove('click-power-boosted');
+      }
+    }
+    
+    // Apply visual effect to cookie
+    if (this.cookie) {
+      if (active) {
+        this.cookie.classList.add('click-boosted');
+      } else {
+        this.cookie.classList.remove('click-boosted');
+      }
+    }
+    
+    // Add a visual indicator in the stats area
+    const statsDiv = document.querySelector('.stats');
+    
+    // Remove any existing indicator first
+    const existingIndicator = document.getElementById('click-boost-indicator');
+    if (existingIndicator) {
+      existingIndicator.remove();
+    }
+    
+    // Add new indicator if boost is active
+    if (active && statsDiv) {
+      const boost = document.createElement('div');
+      boost.id = 'click-boost-indicator';
+      boost.className = 'boost-indicator click-boost-indicator';
+      boost.innerHTML = '👆 Click Power Boost Active! 👆';
+      statsDiv.appendChild(boost);
+    }
+  }
+
+  // Add missing frenzy visuals functionality
+  applyClickingFrenzyVisuals(active) {
+    // Apply intense effects to cookie
+    if (this.cookie) {
+      if (active) {
+        this.cookie.classList.add('frenzy-boosted');
+      } else {
+        this.cookie.classList.remove('frenzy-boosted');
+      }
+    }
+    
+    // Apply effects to click power display
+    if (this.clickPowerDisplay) {
+      if (active) {
+        this.clickPowerDisplay.classList.add('frenzy-boosted-text');
+      } else {
+        this.clickPowerDisplay.classList.remove('frenzy-boosted-text');
+      }
+    }
+    
+    // Add a frenzy indicator in the stats area
+    const statsDiv = document.querySelector('.stats');
+    
+    // Remove any existing indicator first
+    const existingIndicator = document.getElementById('frenzy-indicator');
+    if (existingIndicator) {
+      existingIndicator.remove();
+    }
+    
+    // Add new indicator if boost is active
+    if (active && statsDiv) {
+      const boost = document.createElement('div');
+      boost.id = 'frenzy-indicator';
+      boost.className = 'boost-indicator frenzy-indicator';
+      boost.innerHTML = '🔥 CLICKING FRENZY! 🔥';
+      statsDiv.appendChild(boost);
+    }
   }
 }
