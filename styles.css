@@ -10,6 +10,13 @@ body {
   opacity: 1 !important;
 }
 
+/* Remove the blur effect that was applied to body */
+body.blur {
+  /* Remove this rule entirely or replace with something that doesn't blur */
+  filter: none !important; /* Override any blur filter with none */
+  pointer-events: auto !important; /* Ensure clicks work normally */
+}
+
 /* LEFT Section: Upgrade Buttons */
 /* Shifted down slightly (top: 60%) */
 .left {
@@ -2470,8 +2477,7 @@ body > .item-desc,
   z-index: 1000;
   box-shadow: 0 0 15px 5px rgba(255, 215, 0, 0.7);
   animation: golden-glow 1.5s infinite alternate;
-  /* Ensure it's clickable */
-  pointer-events: auto;
+  pointer-events: auto; /* Ensure it's clickable */
 }
 
 /* Animation for golden cookie glow effect */
@@ -2607,4 +2613,138 @@ body > .item-desc,
   0% { transform: scale(1); }
   50% { transform: scale(1.1); }
   100% { transform: scale(1); }
+}
+
+/* Remove all blur effects */
+.blur, .blurz, body.blur, #backdrop.blur, #backdrop.blurz, .backdrop.blurz, .backdrop.blur {
+  filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  pointer-events: auto !important;
+}
+
+/* Completely disable all backdrop blur effects */
+#backdrop, #backdrop.show, .backdrop, .backdrop.show {
+  background-color: rgba(0, 0, 0, 0.2); /* Semi-transparent overlay instead of blur */
+  filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+
+/* Add z-index to ensure backdrop stays behind other elements */
+#backdrop, .backdrop {
+  z-index: 998;
+  pointer-events: none;
+}
+
+/* Set proper pointer events for modals */
+.shop-container, .settings-menu, .achievements-container {
+  pointer-events: auto;
+}
+
+/* Golden cookie styles remain unchanged */
+.golden-cookie {
+  /* ...existing code... */
+  pointer-events: auto; /* Ensure it's clickable */
+}
+
+/* Rest of the styles remain unchanged */
+
+/* Custom scrollbar styling for better immersion */
+/* For WebKit browsers (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(100, 100, 100, 0.4);
+  border-radius: 10px;
+  transition: background-color 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(100, 100, 100, 0.6);
+}
+
+/* For Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(100, 100, 100, 0.4) rgba(0, 0, 0, 0.1);
+}
+
+/* Optimize container heights to reduce need for scrolling */
+.left, .right {
+  max-height: 80vh; /* Use viewport height instead of fixed pixels */
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Production container (right side) adjustments */
+.production-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px; /* Slightly reduce gap to fit more content */
+  padding-right: 10px; /* Add padding for scrollbar space */
+}
+
+/* Make product items more compact */
+.product {
+  margin-bottom: 5px; /* Reduce margin to fit more items */
+}
+
+.product img {
+  width: 36px; /* Slightly smaller images */
+  height: 36px;
+}
+
+.product-info {
+  font-size: 0.95em; /* Slightly smaller text */
+}
+
+.product-description {
+  margin-top: 2px;
+  font-size: 0.9em; /* Smaller description text */
+  opacity: 0.8;
+}
+
+/* Add scroll indicators */
+.left::after, .right::after {
+  content: '';
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 20px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.1), transparent);
+  pointer-events: none;
+  opacity: 0; /* Start hidden */
+  transition: opacity 0.3s;
+}
+
+.left.has-overflow::after, .right.has-overflow::after {
+  opacity: 1; /* Show when content overflows */
+}
+
+/* Upgrade buttons layout optimization */
+.left button {
+  margin-bottom: 10px; /* Slightly reduced margin */
+}
+
+/* For dark theme compatibility */
+body.theme-dark ::-webkit-scrollbar-track {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+body.theme-dark ::-webkit-scrollbar-thumb {
+  background-color: rgba(150, 150, 150, 0.3);
+}
+
+body.theme-dark * {
+  scrollbar-color: rgba(150, 150, 150, 0.3) rgba(0, 0, 0, 0.2);
 }

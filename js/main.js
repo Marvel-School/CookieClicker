@@ -183,18 +183,96 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-// body blur
+// Add this right after the document.addEventListener('DOMContentLoaded') block
+// This will run after all other initialization
+
+// Check for overflow in containers and add appropriate classes
+function checkOverflow() {
+  const leftContainer = document.querySelector('.left');
+  const rightContainer = document.querySelector('.right');
+  
+  if (leftContainer) {
+    if (leftContainer.scrollHeight > leftContainer.clientHeight) {
+      leftContainer.classList.add('has-overflow');
+    } else {
+      leftContainer.classList.remove('has-overflow');
+    }
+  }
+  
+  if (rightContainer) {
+    if (rightContainer.scrollHeight > rightContainer.clientHeight) {
+      rightContainer.classList.add('has-overflow');
+    } else {
+      rightContainer.classList.remove('has-overflow');
+    }
+  }
+}
+
+// Call initially and on resize
+window.addEventListener('load', checkOverflow);
+window.addEventListener('resize', checkOverflow);
+
+// Also check overflow when new upgrades are purchased
+document.addEventListener('click', function(e) {
+  if (e.target.closest('.upgrade') || e.target.closest('.shop-item')) {
+    // Short delay to allow DOM updates
+    setTimeout(checkOverflow, 100);
+  }
+});
+
+// Fix for blur effects that may be applied on resize
+window.addEventListener('load', () => {
+  // Remove any blur classes immediately
+  document.querySelectorAll('.blur, .blurz').forEach(el => {
+    el.classList.remove('blur', 'blurz');
+  });
+  
+  // Find and fix any backdrop elements
+  const backdrop = document.getElementById('backdrop');
+  if (backdrop) {
+    backdrop.style.backdropFilter = 'none';
+    backdrop.style.webkitBackdropFilter = 'none';
+    backdrop.style.filter = 'none';
+  }
+  
+  // Also check for elements with backdrop class
+  document.querySelectorAll('.backdrop').forEach(el => {
+    el.style.backdropFilter = 'none';
+    el.style.webkitBackdropFilter = 'none';
+    el.style.filter = 'none';
+  });
+  
+  // Add a resize listener to ensure blur doesn't come back
+  window.addEventListener('resize', () => {
+    document.querySelectorAll('.blur, .blurz').forEach(el => {
+      el.classList.remove('blur', 'blurz');
+    });
+    
+    // Make sure body doesn't get blur class
+    document.body.classList.remove('blur', 'blurz');
+    
+    // Check backdrop elements again
+    if (backdrop) {
+      backdrop.style.backdropFilter = 'none';
+      backdrop.style.webkitBackdropFilter = 'none';
+      backdrop.style.filter = 'none';
+    }
+  });
+  
+  console.log("Anti-blur protection initialized");
+});
+
+// Simplified menu toggle functionality without blur effects
 class ToggleMenu {
   constructor(iconId, menuId) {
     this.icon = document.getElementById(iconId);
     this.menu = document.getElementById(menuId);
     this.backdrop = document.getElementById("backdrop");
-    this.body = document.body;
 
     if (this.icon && this.menu) {
       this.init();
     } else {
-      console.error(`❌ error  : ${iconId} أو ${menuId}`);
+      console.error(`❌ error: ${iconId} or ${menuId} not found`);
     }
   }
 
@@ -205,19 +283,28 @@ class ToggleMenu {
 
   toggleMenu() {
     this.menu.classList.toggle("show");
-    this.body.classList.toggle("blur");
-    this.backdrop.classList.toggle("show");
+    if (this.backdrop) {
+      this.backdrop.classList.toggle("show");
+      // Ensure no blur is applied
+      this.backdrop.style.backdropFilter = 'none';
+      this.backdrop.style.webkitBackdropFilter = 'none';
+      this.backdrop.style.filter = 'none';
+    }
   }
 
   closeMenu(event) {
     if (!this.menu.contains(event.target) && !this.icon.contains(event.target)) {
       this.menu.classList.remove("show");
-      this.body.classList.remove("blur");
-      this.backdrop.classList.remove("show");
+      if (this.backdrop) {
+        this.backdrop.classList.remove("show");
+        // Ensure no blur is applied
+        this.backdrop.style.backdropFilter = 'none';
+        this.backdrop.style.webkitBackdropFilter = 'none';
+        this.backdrop.style.filter = 'none';
+      }
     }
   }
 }
-
 
 document.addEventListener("DOMContentLoaded", function () {
   new ToggleMenu("settingsIcon", "settingsMenu");
