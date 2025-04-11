@@ -10,6 +10,9 @@
     <link rel="icon" type="image/png" href="image/cookie.png" />
     <!-- Put tooltip.css AFTER styles.css for higher precedence -->
     <link rel="stylesheet" href="styles.css" />
+    <!-- <link rel="stylesheet" href="main.css" /> -->
+
+    <link rel="stylesheet" href="tooltip.css" />
     <!-- Add personalization CSS -->
     <link rel="stylesheet" href="personalization.css" />
     <link rel="preload" href="image/cookie.png" as="image" />
@@ -112,24 +115,7 @@
           </div>
         </button>
       </div>
-      <div class="button">
-        <button
-          id="luckyClick"
-          type="button"
-          class="upgrade"
-          data-content="Lucky Click (Cost: 20)"
-        >
-          <img
-            class="button_image"
-            src="image/goodluck.png"
-            alt="Click Upgrade"
-          />
-          <div class="productContainer">
-            
-            <span class="button_top">Lucky Click (Cost: 20)</span>
-          </div>
-        </button>
-      </div>
+      
       <!-- Add new building buttons here -->
       <div class="button">
         <button
@@ -196,6 +182,24 @@
           />
           <div class="productContainer">
             <span class="button_top">Buy Cookie Temple (Cost: 100,000)</span>
+          </div>
+        </button>
+      </div>
+      <div class="button">
+        <button
+          id="luckyClick"
+          type="button"
+          class="upgrade"
+          data-content="Lucky Click (Cost: 20)"
+        >
+          <img
+            class="button_image"
+            src="image/goodluck.png"
+            alt="Click Upgrade"
+          />
+          <div class="productContainer">
+            
+            <span class="button_top">Lucky Click (Cost: 20)</span>
           </div>
         </button>
       </div>
@@ -488,7 +492,7 @@
     <!-- <script src="script.js" defer></script> -->
 
     <!-- Add this right before the closing body tag -->
-    <script>
+    <!-- <script>
       // Immediate fix for any backdrop blur
       document.addEventListener('DOMContentLoaded', () => {
         // Fix any elements with backdrop or blur classes
@@ -511,7 +515,7 @@
         `;
         document.head.appendChild(styleEl);
       });
-    </script>
+    </script> -->
 
     <!-- Add this right before the closing body tag -->
     <script>

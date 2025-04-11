@@ -282,6 +282,7 @@ export function dropCookieImage(speed = 1, size = 'normal') {
   const images = document.querySelectorAll(".set img");
 
   if (images.length === 0) return;
+  console.log('test2');
 
   // Get a cookie element (reused or new)
   const newImg = getCookieElement();
@@ -483,3 +484,4 @@ document.addEventListener("DOMContentLoaded", function () {
     dropCookieImage();
   });
 });
+

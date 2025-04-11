@@ -542,6 +542,7 @@ body.blur {
   width: 50px;
   height: 50px;
   animation: fallAnimation 2s linear forwards;
+  
 }
 
 /* Optimize falling animation to use hardware acceleration */
@@ -623,7 +624,7 @@ body[data-particle-heavy="true"] .floating-number {
   transform-origin: center center;
   pointer-events: none;
   will-change: transform, opacity;
-  z-index: -1;
+  z-index: 10000 !important;
   border-radius: 50%;
   opacity: 0;
   box-shadow: 0 2px 10px rgba(0,0,0,0.1);
@@ -669,6 +670,7 @@ body.quality-high .falling {
 
 /* RIGHT Section: Upgrade Visualizations Only (Mirrors Left Section) */
 .right {
+  margin: 15px;
   position: fixed;
   margin: 15px;
   top: 60%;
@@ -2257,131 +2259,6 @@ body > .item-desc,
   display: none;
 }
 
-/* responsive */
-@media (max-width: 932px) {
-  .blurz{
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 500;
-    width: 100vw;
-    height: 100vh;
-    background-color: rgba(0, 0, 0, 0.4);
-    backdrop-filter: blur(15px);
-    display: block;
-  }
-  .blurz.show{
-    display: block;
-  }
-  .upgrade-box {
-    width: 120px;
-  }
-  .right {
-    width: 150px;
-  }
-  #cookie {
-    padding-top: 50%;
-  }
-  #shop {
-    height: 100px;
-  }
-  #shop h2 {
-    font-size: 20px;
-    font-style: italic;
-  }
-  .right{
-    padding-right: 52px;
-  }
-  .left {
-    height: 150px;
-    margin-top:8%;
-  }
-  .product{
-    display: block;
-  }
-  .upgrade .button_image {
-    display: block; 
-    width: 30px; 
-    height: 30px; 
-    border-radius: 5px; 
-    filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.2));
-    animation: bounce 2s infinite;
-    will-change: transform;
-    transform: translateZ(0);
-    transition: filter 0.3s ease, transform 0.3s ease;
-    z-index: 528;
-  }
-  .upgrade .button_image:hover {
-    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3));
-    transform: scale(1.1) translateZ(0);
-  }
-  .left .button {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 70%;
-  }
-  .product{
-    font-size: 15px;
-    width: 70%;
-  }
-  .upgrade {
-    display: flex;
-    flex-direction: row; 
-    align-items: center;
-    justify-content: center;
-    padding: 10px;
-    border: none;
-    gap: 8px;
-  }
-  .upgrade-image {
-    width: 35px;
-    height: 35px;
-  }
-  .upgrade .button_top {
-    display: block;
-    border: none;
-    color: #020202;
-    font-size: medium;
-  }
-  button.upgrade.productContainer:disabled .button_top {
-    border-color: #ccc !important;
-    background: #ccc !important;
-    color: #999 !important;
-  }
-  #settingsMenu {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(255, 255, 255, 0.9); 
-    height: 210px;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-    z-index: 1000;
-    display: none; 
-  }
-  #settingsMenu .show {
-    display: block;
-  }
-  #achievementsContainer {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(255, 255, 255, 0.9); 
-    height: 180px;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-    z-index: 1000;
-    display: none; 
-  }
-  #achievementsContainer .show{
-    display: block;
-  }
-}
 
 /* Floating number animation styles */
 .floating-number {
@@ -2723,26 +2600,34 @@ body > .item-desc,
 }
 
 /* Remove all blur effects */
-.blur, .blurz, body.blur, #backdrop.blur, #backdrop.blurz, .backdrop.blurz, .backdrop.blur {
+/* .blur, .blurz, body.blur, #backdrop.blur, #backdrop.blurz, .backdrop.blurz, .backdrop.blur {
   filter: none !important;
   -webkit-backdrop-filter: none !important;
   backdrop-filter: none !important;
   pointer-events: auto !important;
-}
+} */
 
 /* Completely disable all backdrop blur effects */
-#backdrop, #backdrop.show, .backdrop, .backdrop.show {
-  background-color: rgba(0, 0, 0, 0.2); /* Semi-transparent overlay instead of blur */
+/* #backdrop, #backdrop.show, .backdrop, .backdrop.show {
+  background-color: rgba(0, 0, 0, 0.2); 
   filter: none !important;
   -webkit-backdrop-filter: none !important;
   backdrop-filter: none !important;
   pointer-events: none;
-}
+} */
 
 /* Add z-index to ensure backdrop stays behind other elements */
-#backdrop, .backdrop {
-  z-index: 998;
-  pointer-events: none;
+@media (max-width: 935px){
+
+  #backdrop, .backdrop {
+    position: fixed;
+    top:0;
+    left:0;
+    width: 100%;
+    height: 100%;
+    z-index: 998;
+    pointer-events: none;
+  }
 }
 
 /* Set proper pointer events for modals */
@@ -2999,5 +2884,139 @@ html, body {
   100% { 
     opacity: 0;
     transform: translate3d(clamp(-10vw, var(--horizontal-drift), 10vw), 110vh, 0) rotate(var(--rotation)) scale(0.9);
+  }
+}
+body.theme-dark * {
+  scrollbar-color: rgba(150, 150, 150, 0.3) rgba(0, 0, 0, 0.2);
+}
+.blurz {
+  display: none;
+}
+/* responsive */
+@media (max-width: 932px) {
+  .blurz{
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 500;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(15px);
+    /* display: block; */
+  }
+  .blurz.show{
+    display: block;
+  }
+
+  .upgrade-box {
+    width: 120px;
+  }
+  .right {
+    width: 150px;
+  }
+  #cookie {
+    padding-top: 50%;
+  }
+  #shop {
+    height: 100px;
+  }
+  #shop h2 {
+    font-size: 20px;
+    font-style: italic;
+  }
+  .right{
+    padding-right: 52px;
+  }
+  .left {
+    height: 150px;
+    margin-top:8%;
+  }
+  .product{
+    display: block;
+  }
+  .upgrade .button_image {
+    display: block; 
+    width: 30px; 
+    height: 30px; 
+    border-radius: 5px; 
+    filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.2));
+    animation: bounce 2s infinite;
+    will-change: transform;
+    transform: translateZ(0);
+    transition: filter 0.3s ease, transform 0.3s ease;
+    z-index: 528;
+  }
+  .upgrade .button_image:hover {
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3));
+    transform: scale(1.1) translateZ(0);
+  }
+  .left .button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 70%;
+  }
+  .product{
+    font-size: 15px;
+    width: 70%;
+  }
+  .upgrade {
+    display: flex;
+    flex-direction: row; 
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    border: none;
+    gap: 8px;
+  }
+  .upgrade-image {
+    width: 35px;
+    height: 35px;
+  }
+  .upgrade .button_top {
+    display: block;
+    border: none;
+    color: #020202;
+    font-size: medium;
+  }
+  button.upgrade.productContainer:disabled .button_top {
+    border-color: #ccc !important;
+    background: #ccc !important;
+    color: #999 !important;
+  }
+  #settingsMenu {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(255, 255, 255, 0.9); 
+    height: 210px;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    display: none; 
+  }
+  #settingsMenu .show {
+    display: block;
+  }
+  #achievementsContainer {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    height: 300px;
+    overflow-y: auto;
+    transform: translate(-50%, -50%);
+    background: rgba(255, 255, 255, 0.9); 
+    height: 180px;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    display: none; 
+  }
+  #achievementsContainer .show{
+    display: block;
   }
 }

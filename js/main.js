@@ -272,6 +272,7 @@ class ToggleMenu {
     this.icon = document.getElementById(iconId);
     this.menu = document.getElementById(menuId);
     this.backdrop = document.getElementById("backdrop");
+    this.body = document.body;
 
     if (this.icon && this.menu) {
       this.init();
@@ -288,13 +289,21 @@ class ToggleMenu {
   toggleMenu() {
     this.menu.classList.toggle("show");
     if (this.backdrop) {
+      console.log("menu");
       this.backdrop.classList.toggle("show");
       // Ensure no blur is applied
-      this.backdrop.style.backdropFilter = 'none';
-      this.backdrop.style.webkitBackdropFilter = 'none';
-      this.backdrop.style.filter = 'none';
+      // this.backdrop.style.backdropFilter = 'none';
+      // this.backdrop.style.webkitBackdropFilter = 'none';
+      // this.backdrop.style.filter = 'none';
+      
+        this.backdrop.style.backdropFilter = 'blur(5px)';
+      this.backdrop.style.webkitBackdropFilter = 'blur(5px)';
+      this.backdrop.style.filter = 'blur(5px)';
     }
+    this.body.classList.toggle("blur");
+    this.backdrop.classList.toggle("show");
   }
+ 
 
   closeMenu(event) {
     if (!this.menu.contains(event.target) && !this.icon.contains(event.target)) {
@@ -309,6 +318,7 @@ class ToggleMenu {
     }
   }
 }
+
 
 document.addEventListener("DOMContentLoaded", function () {
   new ToggleMenu("settingsIcon", "settingsMenu");
