@@ -1,4 +1,3 @@
-/* Global Styles */
 body {
   font-family: "Roboto", sans-serif;
   background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
@@ -10,15 +9,11 @@ body {
   opacity: 1 !important;
 }
 
-/* Remove the blur effect that was applied to body */
 body.blur {
-  /* Remove this rule entirely or replace with something that doesn't blur */
-  filter: none !important; /* Override any blur filter with none */
-  pointer-events: auto !important; /* Ensure clicks work normally */
+  filter: none !important;
+  pointer-events: auto !important;
 }
 
-/* LEFT Section: Upgrade Buttons */
-/* Shifted down slightly (top: 60%) */
 .left {
   position: fixed;
   top: 60%;
@@ -26,12 +21,10 @@ body.blur {
   gap: 20px;
   transform: translateY(-60%);
   width: 220px;
-  /* Remove the white background */
   background: transparent;
   padding: 20px;
   margin-top: 50px;
   border-radius: 12px;
-  /* Remove box-shadow completely */
   box-shadow: none;
   overflow-y: auto;
   max-height: 90%;
@@ -48,20 +41,19 @@ body.blur {
 }
 
 .left button:disabled {
-  background: #ccc !important;  /* changed grey background */
+  background: #ccc !important;
   color: #fff !important;
   box-shadow: none !important;
   transform: none !important;
   cursor: not-allowed !important;
-  /* Removed forced padding override */
 }
 
 .left button {
   background: linear-gradient(145deg, #2980b9, #3498db);
   color: #fff;
-  font-size: 18px;     /* reduced font size */
-  padding: 10px;        /* reduced padding */
-  width: auto;         /* removed full width */
+  font-size: 18px;
+  padding: 10px;
+  width: auto;
   border: none;
   border-radius: 12px;
   cursor: pointer;
@@ -82,8 +74,6 @@ body.blur {
   display: none;
 }
 
-
-/* TOP Section: Stats - REDESIGNED */
 .stats {
   position: fixed;
   top: 20px;
@@ -105,7 +95,6 @@ body.blur {
   display: block !important;
 }
 
-/* New cookie count styling */
 .stats h1 {
   font-size: 1.6em;
   margin: 0 0 8px 0;
@@ -124,7 +113,7 @@ body.blur {
 }
 
 .stats h1 #cookieCount {
-  color: #8b4513; /* Cookie brown */
+  color: #8b4513;
   font-weight: 700;
   transition: text-shadow 0.3s, color 0.3s;
 }
@@ -133,7 +122,6 @@ body.blur {
   text-shadow: 0 0 8px rgba(139, 69, 19, 0.7);
 }
 
-/* Stats metrics section */
 .stats-metrics {
   display: flex;
   justify-content: center;
@@ -198,7 +186,6 @@ body.blur {
   100% { transform: rotate(0deg); }
 }
 
-/* Cookie gain animation */
 @keyframes cookieGain {
   0% { transform: scale(1); }
   50% { transform: scale(1.15); }
@@ -209,7 +196,6 @@ body.blur {
   animation: cookieGain 0.4s ease-in-out;
 }
 
-/* New Position for Boost Indicators */
 #production-boost-indicator,
 #click-boost-indicator,
 #frenzy-indicator {
@@ -225,25 +211,24 @@ body.blur {
   color: #777;
 }
 
-/* ACHIEVEMENTS Container - Redesigned Trophy Case Look */
 #achievementsContainer {
   display: none;
   position: fixed;
   top: 20px;
   right: 70px; 
-  width: 280px; /* Slightly wider */
-  background: linear-gradient(to bottom, #fffaf0, #f8f8ff); /* Warm to cool gradient */
-  padding: 0; /* Remove padding - we'll add it in the inner content */
+  width: 280px;
+  background: linear-gradient(to bottom, #fffaf0, #f8f8ff);
+  padding: 0;
   border-radius: 15px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2), 
               inset 0 1px 3px rgba(255, 255, 255, 0.8);
   z-index: 210;
-  overflow: hidden; /* For the header styling */
+  overflow: hidden;
   border: 1px solid rgba(210, 210, 210, 0.8);
 }
 
 #achievementsContainer .achievements-header {
-  background: linear-gradient(145deg, #2980b9, #3498db); /* Match other UI elements */
+  background: linear-gradient(145deg, #2980b9, #3498db);
   color: white;
   padding: 12px 15px;
   display: flex;
@@ -288,7 +273,7 @@ body.blur {
   transition: transform 0.2s ease;
   position: relative;
   overflow: hidden;
-  border-left: 4px solid #ffd700; /* Gold accent */
+  border-left: 4px solid #ffd700;
 }
 
 #achievementsList li:hover {
@@ -303,11 +288,11 @@ body.blur {
 }
 
 #achievementsList li:nth-child(2n)::before {
-  content: "🥇"; /* Alternate medal icon */
+  content: "🥇";
 }
 
 #achievementsList li:nth-child(3n)::before {
-  content: "🍪"; /* Cookie icon for some variety */
+  content: "🍪";
 }
 
 #achievementsList li:last-child {
@@ -323,7 +308,6 @@ body.blur {
   font-style: italic;
 }
 
-/* Subtle shine effect */
 #achievementsList li::after {
   content: "";
   position: absolute;
@@ -349,7 +333,6 @@ body.blur {
   transition: all 0.7s ease;
 }
 
-/* Enhanced achievement styling */
 #achievementsList {
   list-style-type: none;
   margin: 0;
@@ -462,7 +445,6 @@ body.blur {
   color: #000;
 }
 
-/* Shine effect for all achievements */
 .achievement-item::after {
   content: "";
   position: absolute;
@@ -488,7 +470,6 @@ body.blur {
   transition: all 0.7s ease;
 }
 
-/* Achievements Icon Wrapper */
 #achievementsWrapper {
   position: fixed;
   top: 20px;
@@ -503,7 +484,6 @@ body.blur {
   z-index: 9999;
 }
 
-/* Background and Center Section */
 .background {
   position: relative;
   width: 100%;
@@ -515,26 +495,8 @@ body.blur {
   align-items: center;
 }
 .background .set {
-  /* position: absolute;
-  width: 50%;
-  height: 100%;
-  top: 0;
-  left: 30%;
-  pointer-events: none;
-  filter: brightness(35%);
-  overflow: hidden;
-  will-change: transform; */
   display: none;
 }
-/* .background .set div {
-  position: absolute;
-  display: block;
-}
-.background .set div img {
-  width: 20px;
-  height: 30px;
-  will-change: transform;
-} */
 
 .falling {
   position: fixed; 
@@ -542,16 +504,11 @@ body.blur {
   width: 50px;
   height: 50px;
   animation: fallAnimation 2s linear forwards;
-  
 }
 
-/* Optimize falling animation to use hardware acceleration */
 .falling {
-  /* ...existing styles... */
-  transform: translate3d(0, 0, 0); /* Force GPU acceleration */
-  will-change: transform; /* Hint to browser that the element will animate */
-  
-  /* Reduce animation complexity for better performance */
+  transform: translate3d(0, 0, 0);
+  will-change: transform;
   animation: fall 3s linear forwards;
 }
 
@@ -561,14 +518,13 @@ body.blur {
   }
 }
 
-/* Limit animations when too many elements are present */
 body[data-particle-heavy="true"] .falling {
-  animation-duration: 2s; /* Speed up animations */
-  opacity: 0.7; /* Lower opacity for less visual load */
+  animation-duration: 2s;
+  opacity: 0.7;
 }
 
 body[data-particle-heavy="true"] .floating-number {
-  opacity: 0.5; /* Lower opacity for less visual load */
+  opacity: 0.5;
 }
 
 @keyframes fallAnimation {
@@ -581,7 +537,6 @@ body[data-particle-heavy="true"] .floating-number {
   }
 }
 
-/* Add improved falling cookie animations */
 @keyframes cookieFallMedium {
   0% { 
     opacity: 0;
@@ -618,7 +573,6 @@ body[data-particle-heavy="true"] .floating-number {
   }
 }
 
-/* Base falling cookie styling */
 .falling {
   position: absolute;
   transform-origin: center center;
@@ -630,7 +584,6 @@ body[data-particle-heavy="true"] .floating-number {
   box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
-/* Adjust animation styles based on quality class applied to body */
 body.quality-low .falling {
   filter: none;
   animation-duration: 3s !important;
@@ -644,7 +597,6 @@ body.quality-high .falling {
   filter: drop-shadow(0 2px 5px rgba(0,0,0,0.3));
 }
 
-/* CENTER Section: Clickable Cookie */
 .center {
   position: relative;
   z-index: 300;
@@ -668,7 +620,6 @@ body.quality-high .falling {
   transform: scale(0.95);
 }
 
-/* RIGHT Section: Upgrade Visualizations Only (Mirrors Left Section) */
 .right {
   margin: 15px;
   position: fixed;
@@ -677,11 +628,9 @@ body.quality-high .falling {
   right: 20px;
   transform: translateY(-60%);
   width: 220px;
-  /* Remove the white background */
   background: transparent;
   padding: 20px;
   border-radius: 12px;
-  /* Remove box-shadow completely */
   box-shadow: none;
   overflow-y: auto;
   overflow-x: hidden;
@@ -692,7 +641,6 @@ body.quality-high .falling {
   gap: 15px;
 }
 
-/* SHOP Section: Fixed dimensions, positioned at top left */
 #shop {
   position: fixed;
   top: 20px;
@@ -728,15 +676,11 @@ body.quality-high .falling {
   margin-bottom: 4px;
 }
 
-/* REMOVE ALL TOOLTIP STYLES FROM HERE - Tooltips now controlled by tooltip.css */
-/* Tooltip Speech Bubble, Reset tooltip styles, etc. sections should be removed */
-
-/* SHOP Container - Fixed header overflow issue */
 #shopContainer {
   display: none;
   position: fixed;
   top: 20px;
-  left: 95px; /* Increased from 70px to prevent overlap with icon */
+  left: 95px;
   width: 280px;
   background: linear-gradient(to bottom, #fffaf0, #f8f8ff);
   padding: 0;
@@ -744,16 +688,15 @@ body.quality-high .falling {
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2),
               inset 0 1px 3px rgba(255, 255, 255, 0.8);
   z-index: 210;
-  overflow: hidden; /* For the header styling */
+  overflow: hidden;
   border: 1px solid rgba(210, 210, 210, 0.8);
 }
 
-/* Time Accelerator Countdown */
 .time-accelerator-timer {
   display: block;
   margin-top: 4px;
   font-weight: bold;
-  color: #ff4500; /* Bright orange-red */
+  color: #ff4500;
   font-size: 14px;
   text-shadow: 0 0 3px rgba(255, 255, 255, 0.8);
   animation: pulse 1s infinite alternate;
@@ -764,7 +707,6 @@ body.quality-high .falling {
   to { opacity: 1; }
 }
 
-/* Shop Item Image: Reduced size */
 .shop-item img.shop-item-image {
   display: block;
   width: 40px;
@@ -780,7 +722,6 @@ body.quality-high .falling {
   transform: scale(1.05);
 }
 
-/* Highlight active shop item */
 .shop-item.active {
   border: 2px solid #ff4444;
 }
@@ -795,7 +736,6 @@ body.quality-high .falling {
   to { filter: drop-shadow(0 0 10px gold); }
 }
 
-/* SETTINGS Container */
 #settingsContainer {
   position: fixed;
   bottom: 20px;
@@ -811,11 +751,11 @@ body.quality-high .falling {
   align-items: center;
   justify-content: center;
   gap: 6px;
-  background: linear-gradient(145deg, #2980b9, #3498db); /* Match upgrade buttons */
+  background: linear-gradient(145deg, #2980b9, #3498db);
   border-radius: 10px;
   cursor: pointer;
   border: none;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Match upgrade buttons shadow */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 .setting-btn:hover {
@@ -829,7 +769,7 @@ body.quality-high .falling {
 .bar {
   width: 50%;
   height: 2px;
-  background-color: #fff; /* White color to match upgrade button text */
+  background-color: #fff;
   position: relative;
   border-radius: 2px;
 }
@@ -837,7 +777,7 @@ body.quality-high .falling {
   content: "";
   width: 2px;
   height: 2px;
-  background-color: #e0efff; /* Match upgrade button's --button_color */
+  background-color: #e0efff;
   position: absolute;
   border-radius: 50%;
   border: 2px solid white;
@@ -856,7 +796,7 @@ body.quality-high .falling {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 #settingsMenu button {
-  background: linear-gradient(145deg, #2980b9, #3498db); /* Match upgrade buttons */
+  background: linear-gradient(145deg, #2980b9, #3498db);
   color: white;
   font-size: 14px;
   font-weight: 500;
@@ -867,11 +807,11 @@ body.quality-high .falling {
   border-radius: 6px;
   cursor: pointer;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Match upgrade buttons shadow */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 #settingsMenu button:hover {
-  background: linear-gradient(145deg, #2980b9, #3498db); /* Keep gradient on hover */
+  background: linear-gradient(145deg, #2980b9, #3498db);
   transform: scale(1.05);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
 }
@@ -881,7 +821,6 @@ body.quality-high .falling {
   box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.25);
 }
 
-/* Confetti Particle Styles */
 .confetti {
   position: absolute;
   width: 8px;
@@ -903,7 +842,6 @@ body.quality-high .falling {
   }
 }
 
-/* Floating Numbers */
 .floating-number {
   position: absolute;
   color: red;
@@ -922,11 +860,10 @@ body.quality-high .falling {
   }
 }
 
-/* Enhanced Upgrade Visualization Boxes */
 .upgrade-box {
   background: linear-gradient(145deg, #ffffff, #f0f0f0);
   border-radius: 12px;
-  padding: 25px 10px 10px 2px; /* Increased top padding to make room for title */
+  padding: 25px 10px 10px 2px;
   width: 220px;
   display: flex;
   flex-direction: column;
@@ -936,8 +873,8 @@ body.quality-high .falling {
   border: 1px solid rgba(230, 230, 230, 0.8);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   position: relative;
-  overflow: visible; /* Changed from hidden to visible so title can appear outside box */
-  margin-top: 15px; /* Added margin to ensure space for the title */
+  overflow: visible;
+  margin-top: 15px;
   visibility: visible !important;
   opacity: 1 !important;
   display: block !important;
@@ -982,7 +919,6 @@ body.quality-high .falling {
   pointer-events: none;
 }
 
-/* Different colored bars for each upgrade type */
 #autoClickersBox .upgrade-progress-bar {
   background: linear-gradient(90deg, #3498db, #2980b9);
 }
@@ -1074,7 +1010,6 @@ body.quality-high .falling {
   box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-/* Different themes for each upgrade type */
 #autoClickersBox .upgrade-counter span::before {
   background: linear-gradient(to bottom, #e1f5fe, #b3e5fc);
 }
@@ -1092,7 +1027,6 @@ body.quality-high .falling {
   50% { transform: translateY(-5px) translateZ(0); }
 }
 
-/* Custom title for each upgrade box */
 .upgrade-box::before {
   content: attr(data-title);
   position: absolute;
@@ -1105,8 +1039,8 @@ body.quality-high .falling {
   font-weight: bold;
   color: #555;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  z-index: 10; /* Higher z-index to ensure visibility */
-  white-space: nowrap; /* Ensure text doesn't wrap */
+  z-index: 10;
+  white-space: nowrap;
 }
 
 #autoClickersBox::before {
@@ -1127,9 +1061,8 @@ body.quality-high .falling {
   color: #2e7d32;
 }
 
-/* Toast Notification */
 .auto-save-notification {
-  position: relative; /* Changed from fixed to relative */
+  position: relative;
   background: rgba(0, 0, 0, 0.7);
   color: white;
   padding: 10px 20px;
@@ -1139,7 +1072,7 @@ body.quality-high .falling {
   animation: fadeInOut 3s forwards;
   white-space: nowrap;
   pointer-events: none;
-  margin-bottom: 5px; /* Add margin between toasts */
+  margin-bottom: 5px;
   width: 100%;
   text-align: center;
 }
@@ -1163,7 +1096,6 @@ body.quality-high .falling {
   }
 }
 
-/* Uiverse.io Button styling for upgrade buttons - Even Further Reduced Size */
 .upgrade {
   --button_radius: 0.75em;
   --button_color: #e0efff;
@@ -1173,10 +1105,10 @@ body.quality-high .falling {
   --shadow_color: rgba(0, 0, 0, 0.5);
   --glitch_offset: 2px;
 
-  font-size: 8px; /* further reduced font size */
+  font-size: 8px;
   font-weight: bold;
   border: none;
-  width: 60px; /* further reduced width */
+  width: 60px;
   border-radius: var(--button_radius);
   background: var(--button_outline_color);
   position: relative;
@@ -1190,33 +1122,29 @@ body.quality-high .falling {
   box-sizing: border-box;
   border: 5px solid var(--button_outline_color);
   border-radius: var(--button_radius);
-  padding: 0.2em 0.3em; /* further reduced padding */
+  padding: 0.2em 0.3em;
   background: var(--button_color);
   color: var(--button_outline_color);
   transform: translateY(-0.2em);
   transition: transform 0.2s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
-/* Ensure consistent box-sizing for upgrade buttons and their inner span */
 button.upgrade, button.upgrade .button_top {
   box-sizing: border-box;
 }
 
-/* Override upgrade button styling when disabled */
 button.upgrade:disabled {
   background: #ccc !important;
   border: 5px solid #ccc !important;
   color: #fff !important;
   pointer-events: none;
-  /* Optional: Reset custom variables if used */
-  --button_outline_color: #ccc;
 }
+
 button.upgrade:disabled .button_top {
   border: 5px solid #ccc !important;
   color: #fff !important;
 }
 
-/* Force consistent box-sizing and disable default appearance */
 button.upgrade,
 button.upgrade .button_top {
   box-sizing: border-box;
@@ -1225,16 +1153,14 @@ button.upgrade .button_top {
   appearance: none;
 }
 
-/* Remove duplicate disabled button overrides and add a single minimal override */
 button.upgrade:disabled,
 button.upgrade:disabled .button_top {
   background: #ccc !important;
   border-color: #ccc !important;
   color: #fff !important;
-  pointer-events: none !important; /* prevent clicking */
+  pointer-events: none !important;
 }
 
-/* Ensure all upgrade buttons use consistent box-sizing */
 .upgrade, .upgrade .button_top {
   box-sizing: border-box;
   -webkit-appearance: none;
@@ -1242,7 +1168,6 @@ button.upgrade:disabled .button_top {
   appearance: none;
 }
 
-/* Unified disabled state override: only override colors (no change in dimensions) */
 button.upgrade:disabled,
 button.upgrade:disabled .button_top {
   background: linear-gradient(145deg, #aaaaaa, #888888) !important;
@@ -1251,20 +1176,14 @@ button.upgrade:disabled .button_top {
   pointer-events: none !important;
 }
 
-/* Remove all other duplicate disabled styling rules */
-
-/* ...existing code... */
 .upgrade {
-  /* ...existing layout properties... */
   background: linear-gradient(145deg, #2980b9, #3498db);
 }
 .upgrade .button_top {
-  /* ...existing layout properties... */
   border: 5px solid var(--button_outline_color);
   color: var(--button_outline_color);
 }
 
-/* Disabled state: only change the colors */
 button.upgrade:disabled,
 button.upgrade:disabled .button_top {
   background: linear-gradient(145deg, #aaaaaa, #888888) !important;
@@ -1273,216 +1192,21 @@ button.upgrade:disabled .button_top {
   pointer-events: none !important;
 }
 
-/* CLEAN SLATE: Remove all previous disabled button styling */
-/* Keep only these consolidated rules that preserve dimensions */
 button.upgrade:disabled {
   background: #ccc !important;
   color: #fff !important;
   cursor: not-allowed !important;
   pointer-events: none !important;
-  /* Don't add any border that would change dimensions */
   border: none !important;
-  /* Only modify the color variable */
   --button_outline_color: #ccc;
 }
 
 button.upgrade:disabled .button_top {
-  /* Only change colors, keep the same border width */
   border-color: #ccc !important; 
   background: #eee !important;
   color: #999 !important;
 }
 
-/* Remove all other duplicate disabled styling rules */
-
-/* SHOP Container - Fixed header overflow issue */
-#shopContainer {
-  display: none;
-  position: fixed;
-  top: 20px;
-  left: 95px; /* Increased from 70px to prevent overlap with icon */
-  width: 280px;
-  background: linear-gradient(to bottom, #fffaf0, #f8f8ff);
-  padding: 0;
-  border-radius: 15px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2),
-              inset 0 1px 3px rgba(255, 255, 255, 0.8);
-  z-index: 210;
-  overflow: visible; /* Allow tooltips to be visible outside container */
-  border: 1px solid rgba(210, 210, 210, 0.8);
-}
-
-#shopContainer .shop-header {
-  background: linear-gradient(145deg, #2980b9, #3498db);
-  color: white;
-  padding: 12px 15px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  border-bottom: 2px solid rgba(0, 0, 0, 0.1);
-  width: 100%; /* Ensure header width fits container */
-  box-sizing: border-box; /* Include padding in width calculation */
-}
-
-#shopContainer .shop-content {
-  padding: 15px;
-  max-height: 300px;
-  overflow-y: auto; /* Only the content scrolls */
-  overflow-x: visible; /* Allow tooltips to show */
-  position: relative; /* Create positioning context for tooltip */
-}
-
-/* Shop Icon Wrapper */
-#shopWrapper {
-  position: fixed;
-  top: 20px;
-  left: 20px;
-  z-index: 9999;
-  cursor: pointer;
-  width: 64px; /* Define width to match icon size */
-  height: 64px; /* Define height to match icon size */
-  display: flex; /* For better icon centering */
-  justify-content: center;
-  align-items: center;
-}
-
-#shopIcon {
-  width: 64px; /* Increased from 40px */
-  height: 64px; /* Increased from 40px */
-  position: relative;
-  z-index: 9999;
-  transition: transform 0.3s ease, filter 0.3s ease; /* Added transition for hover effect */
-}
-
-#shopIcon:hover {
-  transform: scale(1.1); /* Slight scale up on hover */
-  filter: drop-shadow(0 0 5px rgba(41, 128, 185, 0.6)); /* Blue glow to match the color scheme */
-}
-
-#shopIcon:active {
-  transform: scale(0.95); /* Slight press effect */
-}
-
-/* Remove the old fixed shop styling */
-#shop {
-  display: none; /* Hide the old shop section */
-}
-
-/* Update shop items to fit in the new container */
-.shop-item {
-  position: relative; /* Enable tooltip positioning */
-  margin-bottom: 15px;
-  padding-bottom: 15px;
-  border-bottom: 1px solid #ddd;
-}
-
-.shop-item:last-child {
-  border-bottom: none;
-  margin-bottom: 0;
-  padding-bottom: 0;
-}
-
-/* Make sure shop container allows overflow */
-#shopContainer {
-  /* ...existing properties... */
-  overflow: visible; /* Allow tooltips to be visible outside container */
-}
-
-/* Reset tooltip styles for better visibility */
-.shop-item .item-desc {
-  position: absolute;
-  bottom: 100%; /* Position above the item */
-  left: 50%;
-  transform: translateX(-50%);
-  background: #fff;
-  color: #333;
-  padding: 12px 15px;
-  border: 2px solid #2980b9; /* More visible border */
-  border-radius: 5px;
-  min-width: 180px;
-  max-width: 250px;
-  white-space: normal;
-  font-size: 14px;
-  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.35);
-  margin-bottom: 10px; /* Space between tooltip and item */
-  z-index: 999999;
-  pointer-events: none; /* Prevent interfering with clicks */
-  
-  /* Direct visibility properties - no transitions that could break it */
-  visibility: hidden;
-  opacity: 0;
-}
-
-/* Tooltip arrow pointing to the item */
-.shop-item .item-desc::after {
-  content: "";
-  position: absolute;
-  bottom: -10px; /* Position at bottom of tooltip */
-  left: 50%;
-  transform: translateX(-50%);
-  border-width: 10px 8px 0 8px;
-  border-style: solid;
-  border-color: #2980b9 transparent transparent transparent; /* Match border color */
-}
-
-/* Simple direct display for tooltip on hover */
-.shop-item:hover .item-desc {
-  visibility: visible;
-  opacity: 1;
-}
-
-/* Fix shop content overflow settings */
-#shopContainer .shop-content {
-  padding: 15px;
-  max-height: 300px;
-  overflow-y: auto;
-  overflow-x: visible;
-}
-
-/* ...existing code... */
-
-/* Reset tooltip styles for maximum visibility above ALL elements */
-.shop-item .item-desc {
-  position: fixed; /* Changed from absolute to fixed to escape stacking contexts */
-  z-index: 9999999; /* Ultra-high z-index to appear above everything */
-  background: #fff;
-  color: #333;
-  padding: 12px 15px;
-  border: 2px solid #2980b9;
-  border-radius: 5px;
-  min-width: 180px;
-  max-width: 250px;
-  white-space: normal;
-  font-size: 14px;
-  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.35);
-  pointer-events: none;
-  
-  /* Setup for position calculation in JS */
-  opacity: 0;
-  visibility: hidden;
-}
-
-/* Tooltip arrow pointing to the item */
-.shop-item .item-desc::after {
-  content: "";
-  position: absolute;
-  bottom: -10px;
-  left: 50%;
-  transform: translateX(-50%);
-  border-width: 10px 8px 0 8px;
-  border-style: solid;
-  border-color: #2980b9 transparent transparent transparent;
-}
-
-/* Simple direct display for tooltip on hover with JS position calculation */
-.shop-item:hover .item-desc {
-  visibility: visible;
-  opacity: 1;
-}
-
-/* ...existing code... */
-
-/* SHOP Container - Fix header overflow */
 #shopContainer {
   display: none;
   position: fixed;
@@ -1495,7 +1219,7 @@ button.upgrade:disabled .button_top {
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2),
               inset 0 1px 3px rgba(255, 255, 255, 0.8);
   z-index: 210;
-  overflow: hidden; /* Change to hidden to contain the header */
+  overflow: visible;
   border: 1px solid rgba(210, 210, 210, 0.8);
 }
 
@@ -1507,36 +1231,200 @@ button.upgrade:disabled .button_top {
   align-items: center;
   gap: 10px;
   border-bottom: 2px solid rgba(0, 0, 0, 0.1);
-  width: 100%; /* Ensure header fits container */
-  box-sizing: border-box; /* Include padding in width calculation */
-  margin: 0; /* Remove any margin */
+  width: 100%;
+  box-sizing: border-box;
 }
 
 #shopContainer .shop-content {
   padding: 15px;
   max-height: 300px;
   overflow-y: auto;
-  overflow-x: visible; /* Allow tooltips to show */
+  overflow-x: visible;
   position: relative;
 }
 
-/* Completely redesigned tooltip with better visibility */
+#shopWrapper {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 9999;
+  cursor: pointer;
+  width: 64px;
+  height: 64px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#shopIcon {
+  width: 64px;
+  height: 64px;
+  position: relative;
+  z-index: 9999;
+  transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+#shopIcon:hover {
+  transform: scale(1.1);
+  filter: drop-shadow(0 0 5px rgba(41, 128, 185, 0.6));
+}
+
+#shopIcon:active {
+  transform: scale(0.95);
+}
+
+#shop {
+  display: none;
+}
+
+.shop-item {
+  position: relative;
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #ddd;
+}
+
+.shop-item:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+#shopContainer {
+  overflow: visible;
+}
+
 .shop-item .item-desc {
-  background: rgba(255, 255, 255, 0.9); /* semi-transparent white */
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #fff;
   color: #333;
-  padding: 8px 10px; /* more compact padding */
+  padding: 12px 15px;
   border: 2px solid #2980b9;
   border-radius: 5px;
-  width: 220px; /* fixed width */
-  font-size: 13px; /* slightly reduced font-size for compactness */
-  line-height: 1.2; /* tighter line spacing */
-  word-wrap: break-word; /* allow breaking long words */
+  min-width: 180px;
+  max-width: 250px;
+  white-space: normal;
+  font-size: 14px;
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.35);
+  margin-bottom: 10px;
+  z-index: 999999;
+  pointer-events: none;
+  visibility: hidden;
+  opacity: 0;
+}
+
+.shop-item .item-desc::after {
+  content: "";
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 10px 8px 0 8px;
+  border-style: solid;
+  border-color: #2980b9 transparent transparent transparent;
+}
+
+.shop-item:hover .item-desc {
+  visibility: visible;
+  opacity: 1;
+}
+
+#shopContainer .shop-content {
+  padding: 15px;
+  max-height: 300px;
+  overflow-y: auto;
+  overflow-x: visible;
+}
+
+.shop-item .item-desc {
+  position: fixed;
+  z-index: 9999999;
+  background: #fff;
+  color: #333;
+  padding: 12px 15px;
+  border: 2px solid #2980b9;
+  border-radius: 5px;
+  min-width: 180px;
+  max-width: 250px;
+  white-space: normal;
+  font-size: 14px;
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.shop-item .item-desc::after {
+  content: "";
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 10px 8px 0 8px;
+  border-style: solid;
+  border-color: #2980b9 transparent transparent transparent;
+}
+
+.shop-item:hover .item-desc {
+  visibility: visible;
+  opacity: 1;
+}
+
+#shopContainer {
+  display: none;
+  position: fixed;
+  top: 20px;
+  left: 95px;
+  width: 280px;
+  background: linear-gradient(to bottom, #fffaf0, #f8f8ff);
+  padding: 0;
+  border-radius: 15px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2),
+              inset 0 1px 3px rgba(255, 255, 255, 0.8);
+  z-index: 210;
+  overflow: hidden;
+  border: 1px solid rgba(210, 210, 210, 0.8);
+}
+
+#shopContainer .shop-header {
+  background: linear-gradient(145deg, #2980b9, #3498db);
+  color: white;
+  padding: 12px 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0;
+}
+
+#shopContainer .shop-content {
+  padding: 15px;
+  max-height: 300px;
+  overflow-y: auto;
+  overflow-x: visible;
+  position: relative;
+}
+
+.shop-item .item-desc {
+  background: rgba(255, 255, 255, 0.9);
+  color: #333;
+  padding: 8px 10px;
+  border: 2px solid #2980b9;
+  border-radius: 5px;
+  width: 220px;
+  font-size: 13px;
+  line-height: 1.2;
+  word-wrap: break-word;
   white-space: normal;
   box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.35);
   pointer-events: none;
   visibility: hidden;
   opacity: 0;
-  /* Remove any absolute or fixed positioning so JS sets them */
   position: initial;
   margin-bottom: 10px;
 }
@@ -1552,22 +1440,18 @@ button.upgrade:disabled .button_top {
   border-color: #2980b9 transparent transparent transparent;
 }
 
-/* Simple direct display for tooltip on hover */
 .shop-item:hover .item-desc {
   visibility: visible;
   opacity: 1;
 }
 
-/* ...existing code... */
-
-/* Completely redesigned tooltip with better visibility and positioning */
 .shop-item .item-desc {
   position: absolute;
-  bottom: 100%; /* Position above the item */
+  bottom: 100%;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(0, 0, 0, 0.9); /* Darker background for better contrast */
-  color: #333; /* Dark text color */
+  background: rgba(0, 0, 0, 0.9);
+  color: #333;
   padding: 10px 12px;
   border: 1px solid #2980b9;
   border-radius: 5px;
@@ -1586,113 +1470,17 @@ button.upgrade:disabled .button_top {
   z-index: 999999;
 }
 
-/* Improved text-highlight styling for better visibility */
 .shop-item .item-desc .text-highlight {
-  background-color: #ffffff; /* Pure white background */
-  color: #000000; /* Black text for maximum contrast */
-  padding: 3px 6px; /* More padding around text */
-  margin: 2px 0; /* Space between lines */
-  border-radius: 3px; /* Rounded corners */
-  display: inline-block; /* Ensure block behavior */
-  line-height: 1.2; /* Tighter line spacing */
-  box-shadow: 0 1px 2px rgba(0,0,0,0.2); /* Subtle shadow for depth */
-}
-
-/* Arrow pointing down from tooltip - match darker background */
-.shop-item .item-desc::after {
-  content: "";
-  position: absolute;
-  bottom: -8px;
-  left: 50%;
-  transform: translateX(-50%);
-  border-width: 8px 8px 0 8px;
-  border-style: solid;
-  border-color: rgba(0, 0, 0, 0.9) transparent transparent transparent; /* Match background */
-}
-
-/* ...existing code... */
-
-/* Special class for tooltips that would appear off-screen */
-.shop-item .item-desc.align-left {
-  left: 0;
-  transform: translateX(0);
-}
-
-.shop-item .item-desc.align-left::after {
-  left: 20px; /* Align arrow with item when left-aligned */
-  transform: translateX(0);
-}
-
-/* Add styling for text with white background */
-.shop-item .item-desc br {
-  display: block; /* Ensure line breaks work properly */
-  content: "";
-  margin-top: 3px; /* Spacing between lines */
-}
-
-/* Style each line of text with a white background */
-.shop-item .item-desc {
-  /* Text styling with background */
-  text-shadow: 
-    -1px -1px 0 #fff, 
-    1px -1px 0 #fff, 
-    -1px 1px 0 #fff, 
-    1px 1px 0 #fff;
-  background-clip: text; /* Modern browsers */
-}
-
-/* Alternative approach - add spans with white background to each line */
-.shop-item .item-desc .text-highlight {
-  background-color: white;
-  padding: 2px 4px;
-  border-radius: 2px;
-  box-decoration-break: clone;
-  -webkit-box-decoration-break: clone;
-}
-
-/* ...existing code... */
-
-/* Completely redesigned tooltip with clear text highlights */
-.shop-item .item-desc {
-  position: absolute;
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(0, 0, 0, 0.85);
-  padding: 12px;
-  border: 1px solid #2980b9;
-  border-radius: 6px;
-  width: max-content;
-  max-width: 220px;
-  font-size: 13px;
-  line-height: 1.5;
-  text-align: center;
-  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.5);
-  pointer-events: none;
-  margin-bottom: 12px;
-  z-index: 999999;
-}
-
-/* Remove all previous text highlighting approaches */
-.shop-item .item-desc .text-highlight {
-  display: inline-block;
   background-color: #ffffff;
   color: #000000;
   padding: 3px 6px;
   margin: 2px 0;
   border-radius: 3px;
-  font-weight: 500;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  display: inline-block;
+  line-height: 1.2;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.2);
 }
 
-/* Add spacing between highlighted lines */
-.shop-item .item-desc br {
-  display: block;
-  content: "";
-  margin-top: 4px;
-}
-
-/* Arrow pointing down from tooltip - match darker background */
 .shop-item .item-desc::after {
   content: "";
   position: absolute;
@@ -1701,17 +1489,15 @@ button.upgrade:disabled .button_top {
   transform: translateX(-50%);
   border-width: 8px 8px 0 8px;
   border-style: solid;
-  border-color: rgba(0, 0, 0, 0.85) transparent transparent transparent;
+  border-color: rgba(0, 0, 0, 0.9) transparent transparent transparent;
 }
 
-/* Important override to ensure visibility */
 .shop-item:hover .item-desc {
   visibility: visible !important;
   opacity: 1 !important;
   display: block !important;
 }
 
-/* Cookie animation when accelerated */
 #cookie.accelerated {
   animation: shake 0.5s infinite alternate;
 }
@@ -1721,21 +1507,16 @@ button.upgrade:disabled .button_top {
   100% { transform: rotate(3deg) scale(1.1); }
 }
 
-/* ...existing code... */
-
-/* SHOP Container styles - keep existing settings */
 #shopContainer {
-  /* ...existing code... */
 }
 
-/* Updated shop item styling for better proportions */
 .shop-item {
   position: relative;
   display: inline-block;
   margin: 8px;
   padding: 5px;
   text-align: center;
-  width: 60px; /* Fixed width to match image + padding */
+  width: 60px;
   vertical-align: top;
   border-radius: 5px;
   transition: background-color 0.2s ease;
@@ -1747,17 +1528,15 @@ button.upgrade:disabled .button_top {
   background-color: rgba(255, 255, 255, 0.2);
 }
 
-/* Keep existing image styling */
 .shop-item img.shop-item-image {
   display: block;
   width: 40px;
   height: 40px;
   cursor: pointer;
-  margin: 0 auto 4px; /* Center horizontally with bottom margin */
+  margin: 0 auto 4px;
   transition: transform 0.2s ease;
 }
 
-/* Improved cost display to fit compact layout */
 .shop-item .item-cost {
   display: block;
   font-size: 11px;
@@ -1766,7 +1545,6 @@ button.upgrade:disabled .button_top {
   white-space: nowrap;
 }
 
-/* Shop content layout for compact items */
 #shopContainer .shop-content {
   display: flex;
   flex-wrap: wrap;
@@ -1774,16 +1552,12 @@ button.upgrade:disabled .button_top {
   padding: 10px;
 }
 
-/* Enhanced active shop item highlighting */
 .shop-item.active {
   background-color: rgba(255, 215, 0, 0.2);
   border: 1px solid #ff4444;
   box-shadow: 0 0 5px gold;
 }
 
-/* ...existing code... */
-
-/* Golden Cookie styling */
 #goldenCookieContainer {
   position: fixed;
   top: 0;
@@ -1796,7 +1570,7 @@ button.upgrade:disabled .button_top {
 
 .golden-cookie {
   position: absolute;
-  width: 80px; /* Increase size for better click target */
+  width: 80px;
   height: 80px;
   border-radius: 50%;
   background: radial-gradient(circle at 30% 30%, #ffdf7f, #ffd700 30%, #ffa500 70%, #ff8c00);
@@ -1804,17 +1578,14 @@ button.upgrade:disabled .button_top {
   z-index: 1000;
   box-shadow: 0 0 15px 5px rgba(255, 215, 0, 0.7);
   animation: golden-glow 1.5s infinite alternate;
-  /* Ensure it's clickable */
   pointer-events: auto;
 }
 
-/* Animation for golden cookie glow effect */
 @keyframes golden-glow {
   0% { box-shadow: 0 0 5px 2px rgba(255, 215, 0, 0.6); transform: scale(1); }
   100% { box-shadow: 0 0 15px 5px rgba(255, 215, 0, 0.9); transform: scale(1.05); }
 }
 
-/* Indicator for applied multiplier */
 .multiplier-indicator {
   position: absolute;
   top: -10px;
@@ -1831,7 +1602,6 @@ button.upgrade:disabled .button_top {
   box-shadow: 0 0 8px rgba(255, 215, 0, 0.8);
 }
 
-/* Toast Notification Container */
 .toast-container {
   position: fixed;
   bottom: 20px;
@@ -1846,9 +1616,8 @@ button.upgrade:disabled .button_top {
   width: auto;
 }
 
-/* Toast Notification Item */
 .auto-save-notification {
-  position: relative; /* Changed from fixed to relative */
+  position: relative;
   background: rgba(0, 0, 0, 0.7);
   color: white;
   padding: 10px 20px;
@@ -1858,7 +1627,7 @@ button.upgrade:disabled .button_top {
   animation: fadeInOut 3s forwards;
   white-space: nowrap;
   pointer-events: none;
-  margin-bottom: 5px; /* Add margin between toasts */
+  margin-bottom: 5px;
   width: 100%;
   text-align: center;
 }
@@ -1882,7 +1651,6 @@ button.upgrade:disabled .button_top {
   }
 }
 
-/* Golden cookie animation when clicked */
 .golden-cookie-clicked {
   animation: zoom-out 0.5s forwards;
   filter: brightness(1.5);
@@ -1899,7 +1667,6 @@ button.upgrade:disabled .button_top {
   }
 }
 
-/* Click power boosted cookie animation */
 #cookie.click-boosted {
   animation: click-pulse 0.8s infinite alternate;
   filter: brightness(1.2) drop-shadow(0 0 10px orange);
@@ -1910,7 +1677,6 @@ button.upgrade:disabled .button_top {
   100% { transform: scale(1.08); filter: brightness(1.4) drop-shadow(0 0 15px orange); }
 }
 
-/* New Frenzy animation for clicking frenzy */
 #cookie.frenzy-boosted {
   animation: frenzy-pulse 0.4s infinite alternate;
   filter: brightness(1.8) saturate(1.5) drop-shadow(0 0 15px crimson);
@@ -1921,7 +1687,6 @@ button.upgrade:disabled .button_top {
   100% { transform: scale(1.2) rotate(2deg); filter: brightness(1.8) saturate(1.5) drop-shadow(0 0 20px crimson); }
 }
 
-/* Active Bonuses Section */
 .active-bonuses {
   margin-top: 8px;
   display: flex;
@@ -1986,21 +1751,18 @@ button.upgrade:disabled .button_top {
   }
 }
 
-/* Remove old boost indicators - they're replaced with the new system */
 #production-boost-indicator,
 #click-boost-indicator,
 #frenzy-indicator {
   display: none;
 }
 
-/* Fix duplicate tooltips by hiding the original static tooltips */
 .shop-item > .item-desc {
-  display: none !important; /* Hide the original tooltips that are direct children of shop-item */
+  display: none !important;
   visibility: hidden !important;
   opacity: 0 !important;
 }
 
-/* Ensure only dynamically created tooltips are visible */
 body > .item-desc.item-desc-tooltip {
   display: block !important;
   visibility: visible !important;
@@ -2009,7 +1771,6 @@ body > .item-desc.item-desc-tooltip {
   position: absolute;
 }
 
-/* Personalization Panel */
 .panel-container {
   position: fixed;
   top: 50%;
@@ -2100,7 +1861,6 @@ body > .item-desc.item-desc-tooltip {
   box-shadow: 0 0 0 2px rgba(46, 204, 113, 0.5);
 }
 
-/* Enhanced Lucky Click Effects */
 .floating-effect {
   position: absolute;
   animation: floatUpSpecial 2s ease-out;
@@ -2114,7 +1874,6 @@ body > .item-desc.item-desc-tooltip {
   100% { transform: translateY(-100px) scale(1); opacity: 0; }
 }
 
-/* Boosted Click Power Display */
 #clickPower.boosted {
   color: #ff6600 !important;
   text-shadow: 0 0 5px rgba(255, 102, 0, 0.5) !important;
@@ -2126,7 +1885,6 @@ body > .item-desc.item-desc-tooltip {
   to { transform: scale(1.1); }
 }
 
-/* Click Power Boost Indicator */
 #click-boost-indicator {
   background: linear-gradient(to right, #ff6600, #ff9933);
   color: white;
@@ -2145,7 +1903,6 @@ body > .item-desc.item-desc-tooltip {
   to { box-shadow: 0 0 15px rgba(255, 102, 0, 0.8); }
 }
 
-/* Hide all shop item tooltips */
 .shop-item .item-desc,
 .shop-item .item-desc-tooltip,
 .item-desc-tooltip {
@@ -2155,14 +1912,11 @@ body > .item-desc.item-desc-tooltip {
   pointer-events: none !important;
 }
 
-/* Also remove tooltip arrows */
 .shop-item .item-desc::after,
 .item-desc-tooltip::after {
   display: none !important;
 }
 
-/* COMPLETE REMOVAL OF ALL TOOLTIPS AND HOVER EFFECTS */
-/* This will forcefully hide any tooltip-like elements */
 .shop-item .item-desc,
 .item-desc,
 .item-desc-tooltip,
@@ -2180,14 +1934,12 @@ body > .item-desc,
   content: none !important;
 }
 
-/* Prevent any hover styling on shop items */
 .shop-item:hover {
   transform: none !important;
   background: inherit !important;
   box-shadow: none !important;
 }
 
-/* Make sure absolutely no pseudo-elements show on hover */
 .shop-item::after,
 .shop-item::before,
 .shop-item *::after,
@@ -2196,7 +1948,6 @@ body > .item-desc,
   content: none !important;
 }
 
-/* Remove any hover styling that might change appearance */
 .shop-item:hover,
 .shop-item:hover *,
 .shop-item *:hover {
@@ -2206,10 +1957,6 @@ body > .item-desc,
   text-decoration: none !important;
 }
 
-/* Remove all tooltip-related styles from the main CSS */
-/* These styles should be completely purged */
-
-/* Shop item styling - simplified without tooltips */
 .shop-item {
   margin-bottom: 10px;
   border-bottom: 1px solid #ddd;
@@ -2238,7 +1985,6 @@ body > .item-desc,
   margin-bottom: 4px;
 }
 
-/* Shop Item Image: Reduced size */
 .shop-item img.shop-item-image {
   display: block;
   width: 40px;
@@ -2254,13 +2000,10 @@ body > .item-desc,
   transform: scale(1.05);
 }
 
-/* ...existing code... */
 .upgrade .button_image{
   display: none;
 }
 
-
-/* Floating number animation styles */
 .floating-number {
   position: absolute;
   font-size: 20px;
@@ -2278,7 +2021,6 @@ body > .item-desc,
   color: red;
 }
 
-/* Floating effect messages */
 .floating-effect {
   position: absolute;
   font-size: 18px;
@@ -2297,7 +2039,6 @@ body > .item-desc,
   color: #ff4500;
 }
 
-/* Visual boost effects */
 .cookie.accelerated {
   filter: brightness(1.5) drop-shadow(0 0 10px gold) !important;
   transform: scale(1.05);
@@ -2316,7 +2057,6 @@ body > .item-desc,
   transition: all 0.3s ease;
 }
 
-/* Boosted display values */
 .boosted-display {
   color: #ff4500;
   font-weight: bold;
@@ -2336,7 +2076,6 @@ body > .item-desc,
   font-size: 1.2em;
 }
 
-/* Boost indicators */
 .boost-indicator {
   margin-top: 5px;
   font-weight: bold;
@@ -2356,7 +2095,6 @@ body > .item-desc,
   font-size: 1.2em;
 }
 
-/* Toast notifications */
 .toast-container {
   position: fixed;
   bottom: 20px;
@@ -2378,17 +2116,16 @@ body > .item-desc,
   animation: fade-in-out 3s forwards;
 }
 
-/* Bonus indicators */
 #activeBonuses {
   position: fixed;
-  top: 100px; /* Move it below the cookie counter */
-  right: 20px; /* Position on the right side instead of potentially overlapping center */
+  top: 100px;
+  right: 20px;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  z-index: 900; /* Lower than critical UI elements */
-  pointer-events: none; /* Let clicks pass through */
-  max-width: 200px; /* Limit width to prevent excessive horizontal spread */
+  z-index: 900;
+  pointer-events: none;
+  max-width: 200px;
 }
 
 .bonus-indicator {
@@ -2404,7 +2141,7 @@ body > .item-desc,
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   transition: all 0.3s ease;
   animation: fadeIn 0.5s;
-  pointer-events: none; /* Let clicks pass through */
+  pointer-events: none;
 }
 
 .bonus-indicator.time-accelerator {
@@ -2450,10 +2187,9 @@ body > .item-desc,
   to { opacity: 1; transform: scale(1); }
 }
 
-/* Golden cookie styles */
 .golden-cookie {
   position: absolute;
-  width: 80px; /* Increase size for better click target */
+  width: 80px;
   height: 80px;
   border-radius: 50%;
   background: radial-gradient(circle at 30% 30%, #ffdf7f, #ffd700 30%, #ffa500 70%, #ff8c00);
@@ -2461,111 +2197,7 @@ body > .item-desc,
   z-index: 1000;
   box-shadow: 0 0 15px 5px rgba(255, 215, 0, 0.7);
   animation: golden-glow 1.5s infinite alternate;
-  pointer-events: auto; /* Ensure it's clickable */
-}
-
-/* Animation for golden cookie glow effect */
-@keyframes golden-glow {
-  0% { box-shadow: 0 0 5px 2px rgba(255, 215, 0, 0.6); transform: scale(1); }
-  100% { box-shadow: 0 0 15px 5px rgba(255, 215, 0, 0.9); transform: scale(1.05); }
-}
-
-/* Fix for upgrade button images */
-.upgrade-image {
-  width: 40px;
-  height: 40px;
-  display: block;
-  margin: 0 auto 5px auto;
-}
-
-/* Product visuals */
-.product {
-  display: flex;
-  align-items: center;
-  margin-bottom: 10px;
-}
-
-.product img {
-  width: 40px;
-  height: 40px;
-  margin-right: 10px;
-}
-
-/* Shop item styling to ensure images display properly */
-.shop-item {
-  text-align: center;
-  padding: 10px;
-  border-radius: 5px;
-  transition: background-color 0.3s;
-  cursor: pointer;
-}
-
-.shop-item:hover {
-  background-color: rgba(0, 0, 0, 0.05);
-}
-
-.shop-item-image {
-  width: 64px;
-  height: 64px;
-  display: block;
-  margin: 0 auto 10px auto;
-}
-
-/* Animations */
-@keyframes float-up {
-  0% {
-    transform: translateY(0);
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(-40px);
-    opacity: 0;
-  }
-}
-
-@keyframes float-up-message {
-  0% {
-    transform: translateY(0) scale(1);
-    opacity: 1;
-  }
-  50% {
-    transform: translateY(-50px) scale(1.2);
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(-100px) scale(1);
-    opacity: 0;
-  }
-}
-
-@keyframes pulse {
-  0% {
-    transform: scale(1);
-    opacity: 0.7;
-  }
-  100% {
-    transform: scale(1.05);
-    opacity: 1;
-  }
-}
-
-@keyframes fade-in-out {
-  0% {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  10% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  90% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
+  pointer-events: auto;
 }
 
 @keyframes golden-glow {
@@ -2588,7 +2220,6 @@ body > .item-desc,
   }
 }
 
-/* Cookie count animation */
 #cookieCount.cookie-gain {
   animation: cookie-gain 0.3s ease;
 }
@@ -2599,24 +2230,6 @@ body > .item-desc,
   100% { transform: scale(1); }
 }
 
-/* Remove all blur effects */
-/* .blur, .blurz, body.blur, #backdrop.blur, #backdrop.blurz, .backdrop.blurz, .backdrop.blur {
-  filter: none !important;
-  -webkit-backdrop-filter: none !important;
-  backdrop-filter: none !important;
-  pointer-events: auto !important;
-} */
-
-/* Completely disable all backdrop blur effects */
-/* #backdrop, #backdrop.show, .backdrop, .backdrop.show {
-  background-color: rgba(0, 0, 0, 0.2); 
-  filter: none !important;
-  -webkit-backdrop-filter: none !important;
-  backdrop-filter: none !important;
-  pointer-events: none;
-} */
-
-/* Add z-index to ensure backdrop stays behind other elements */
 @media (max-width: 935px){
 
   #backdrop, .backdrop {
@@ -2630,21 +2243,14 @@ body > .item-desc,
   }
 }
 
-/* Set proper pointer events for modals */
 .shop-container, .settings-menu, .achievements-container {
   pointer-events: auto;
 }
 
-/* Golden cookie styles remain unchanged */
 .golden-cookie {
-  /* ...existing code... */
-  pointer-events: auto; /* Ensure it's clickable */
+  pointer-events: auto;
 }
 
-/* Rest of the styles remain unchanged */
-
-/* Custom scrollbar styling for better immersion */
-/* For WebKit browsers (Chrome, Safari, Edge) */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -2665,61 +2271,55 @@ body > .item-desc,
   background-color: rgba(100, 100, 100, 0.6);
 }
 
-/* For Firefox */
 * {
   scrollbar-width: thin;
   scrollbar-color: rgba(100, 100, 100, 0.4) rgba(0, 0, 0, 0.1);
 }
 
-/* Optimize container heights to reduce need for scrolling */
 .left, .right {
-  max-height: 80vh; /* Use viewport height instead of fixed pixels */
+  max-height: 80vh;
   overflow-y: auto;
   overflow-x: hidden;
 }
 
-/* Production container (right side) adjustments */
 .production-container {
   display: flex;
   flex-direction: column;
-  gap: 12px; /* Slightly reduce gap to fit more content */
-  padding-right: 10px; /* Add padding for scrollbar space */
+  gap: 12px;
+  padding-right: 10px;
 }
 
-/* Make product items more compact */
 .product {
-  margin-bottom: 5px; /* Reduce margin to fit more items */
+  margin-bottom: 5px;
 }
 
 .product img {
-  width: 36px; /* Slightly smaller images */
+  width: 36px;
   height: 36px;
 }
 
 .product-info {
-  font-size: 0.95em; /* Slightly smaller text */
+  font-size: 0.95em;
 }
 
 .product-description {
   margin-top: 2px;
-  font-size: 0.9em; /* Smaller description text */
+  font-size: 0.9em;
   opacity: 0.8;
 }
 
-/* Fix for active bonuses container - reposition to avoid overlapping the cookie counter */
 #activeBonuses {
   position: fixed;
-  top: 100px; /* Move it below the cookie counter */
-  right: 20px; /* Position on the right side instead of potentially overlapping center */
+  top: 100px;
+  right: 20px;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  z-index: 900; /* Lower than critical UI elements */
-  pointer-events: none; /* Let clicks pass through */
-  max-width: 200px; /* Limit width to prevent excessive horizontal spread */
+  z-index: 900;
+  pointer-events: none;
+  max-width: 200px;
 }
 
-/* Style for bonus indicators to be more compact and less obtrusive */
 .bonus-indicator {
   background: rgba(0, 0, 0, 0.6);
   color: white;
@@ -2733,10 +2333,9 @@ body > .item-desc,
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   transition: all 0.3s ease;
   animation: fadeIn 0.5s;
-  pointer-events: none; /* Let clicks pass through */
+  pointer-events: none;
 }
 
-/* Different types of indicators */
 .bonus-indicator.time-accelerator {
   border-left: 3px solid #ffcc00;
 }
@@ -2755,7 +2354,6 @@ body > .item-desc,
   animation: pulse 1s infinite alternate;
 }
 
-/* Indicator parts */
 .bonus-icon {
   font-size: 18px;
 }
@@ -2781,35 +2379,6 @@ body > .item-desc,
   to { opacity: 1; transform: scale(1); }
 }
 
-/* Add scroll indicators */
-.left::after, .right::after {
-  content: '';
-  position: sticky;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 20px;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.1), transparent);
-  pointer-events: none;
-  opacity: 0; /* Start hidden */
-  transition: opacity 0.3s;
-}
-
-.left.has-overflow::after, .right.has-overflow::after {
-  opacity: 1; /* Show when content overflows */
-}
-
-/* Ensure boosts in stats area don't obstruct the cookie counter */
-#production-boost-indicator,
-#click-boost-indicator,
-#frenzy-indicator {
-  margin-top: 10px;
-  max-width: 100%;
-  box-sizing: border-box;
-  font-size: 13px;
-}
-
-/* Responsive adjustments for smaller screens */
 @media (max-width: 768px) {
   #activeBonuses {
     right: 10px;
@@ -2827,10 +2396,8 @@ body > .item-desc,
   }
 }
 
-/* Add these rules to prevent horizontal scrollbar */
-
 html, body {
-  overflow-x: hidden; /* Prevent horizontal scrollbar */
+  overflow-x: hidden;
   width: 100%;
   position: relative;
 }
@@ -2844,30 +2411,27 @@ html, body {
   border-radius: 50%;
   opacity: 0;
   box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-  max-width: 100px; /* Limit maximum size */
+  max-width: 100px;
   max-height: 100px;
 }
 
-/* Ensure content is contained */
 #content-container {
   position: relative;
   width: 100%;
   overflow-x: hidden;
 }
 
-/* Fix cookie animation containers */
 #goldenCookieContainer, 
 #confetti-canvas,
 .animation-demo-effect {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100vw !important; /* Use viewport width */
-  height: 100vh !important; /* Use viewport height */
+  width: 100vw !important;
+  height: 100vh !important;
   overflow: hidden;
 }
 
-/* Improve falling animation to prevent overflow */
 @keyframes cookieFallMedium {
   0% { 
     opacity: 0;
@@ -2892,7 +2456,6 @@ body.theme-dark * {
 .blurz {
   display: none;
 }
-/* responsive */
 @media (max-width: 932px) {
   .blurz{
     position: fixed;
@@ -2903,7 +2466,6 @@ body.theme-dark * {
     height: 100vh;
     background-color: rgba(0, 0, 0, 0.4);
     backdrop-filter: blur(15px);
-    /* display: block; */
   }
   .blurz.show{
     display: block;

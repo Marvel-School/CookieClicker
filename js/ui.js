@@ -1,7 +1,4 @@
-// Handles UI interactions and event listeners
-
 export function setupEventListeners(game) {
-  // Add event listeners to upgrade buttons
   document.querySelectorAll("button.upgrade").forEach((btn) => {
     btn.addEventListener("click", () => {
       game.log("Upgrade button clicked:", btn.id);
@@ -9,13 +6,11 @@ export function setupEventListeners(game) {
     });
   });
 
-  // Add hover sound to upgrade buttons
   const upgradeButtons = [
     game.clickUpgradeButton,
     game.autoClickerButton,
     game.grandmaButton,
     game.farmButton,
-    // Add new upgrade buttons
     game.mineButton,
     game.factoryButton, 
     game.bankButton,
@@ -27,7 +22,6 @@ export function setupEventListeners(game) {
     btn.addEventListener("mouseover", () => game.playHoverSound())
   );
 
-  // Shop icon click handler
   if (game.shopIcon && game.shopContainer) {
     game.shopIcon.addEventListener("click", (e) => {
       e.stopPropagation(); 
@@ -35,12 +29,10 @@ export function setupEventListeners(game) {
       game.shopContainer.style.display = isVisible ? "none" : "block";
     });
     
-    // Prevent clicks inside the shop container from closing it
     game.shopContainer.addEventListener("click", (e) => {
       e.stopPropagation();
     });
     
-    // Close shop panel when clicking elsewhere
     document.addEventListener("click", () => {
       if (game.shopContainer.style.display === "block") {
         game.shopContainer.style.display = "none";
@@ -48,19 +40,14 @@ export function setupEventListeners(game) {
     });
   }
 
-  // Settings Panel
   setupSettingsPanel(game);
   
-  // Achievements icon handler
   setupAchievementsPanel(game);
   
-  // Cookie click handler
   game.cookie.addEventListener("click", (e) => game.handleCookieClick(e));
 
-  // Set up shop item tooltips
   setupTooltips(game);
 
-  // Ensure proper image paths
   setupShopItems(game);
 }
 
@@ -70,7 +57,6 @@ function setupTooltips(game) {
   document.querySelectorAll('.shop-item').forEach(item => {
     const upgradeKey = item.getAttribute("data-upgrade");
     
-    // Add click handler to the entire shop item
     item.addEventListener('click', (e) => {
       e.stopPropagation();
       if (upgradeKey && game.shopUpgrades[upgradeKey]) {
@@ -83,11 +69,9 @@ function setupTooltips(game) {
 }
 
 function setupShopItems(game) {
-  // Example of how to properly set image paths
   document.querySelectorAll('.shop-item').forEach(item => {
     const imgElement = item.querySelector('img');
     if (imgElement) {
-      // Make sure all image paths start with 'image/' to reference the correct folder
       if (!imgElement.src.includes('image/')) {
         const imageName = imgElement.getAttribute('data-image') || 'default.png';
         imgElement.src = `image/${imageName}`;
@@ -97,26 +81,22 @@ function setupShopItems(game) {
 }
 
 function setupSettingsPanel(game) {
-  // Settings Panel: Toggle display on settings icon click
   game.settingsIcon.addEventListener("click", (e) => {
     e.stopPropagation(); 
     game.settingsMenu.style.display = 
       game.settingsMenu.style.display === "block" ? "none" : "block";
   });
   
-  // Prevent clicks inside the settings menu from closing it
   game.settingsMenu.addEventListener("click", (e) => {
     e.stopPropagation();
   });
   
-  // Close settings menu when clicking elsewhere
   document.addEventListener("click", () => {
     if (game.settingsMenu.style.display === "block") {
       game.settingsMenu.style.display = "none";
     }
   });
 
-  // Settings control buttons
   const settingsButtons = [
     game.saveGameButton,
     game.loadGameButton,
@@ -136,8 +116,6 @@ function setupSettingsPanel(game) {
     alert(`Sound is now ${game.soundOn ? "ON" : "OFF"}.`);
     game.log("Sound toggled:", game.soundOn);
   });
-  
-  // Remove the temporary golden cookie spawn button listener
 }
 
 function setupAchievementsPanel(game) {
@@ -145,19 +123,16 @@ function setupAchievementsPanel(game) {
   const achievementsContainer = document.getElementById("achievementsContainer");
   
   if (achievementsIcon && achievementsContainer) {
-    // Toggle visibility
     achievementsIcon.addEventListener("click", (e) => {
       e.stopPropagation(); 
       const isVisible = achievementsContainer.style.display === "block";
       achievementsContainer.style.display = isVisible ? "none" : "block";
     });
     
-    // Prevent clicks inside the achievements container from closing it
     achievementsContainer.addEventListener("click", (e) => {
       e.stopPropagation();
     });
     
-    // Close achievements panel when clicking elsewhere
     document.addEventListener("click", () => {
       if (achievementsContainer.style.display === "block") {
         achievementsContainer.style.display = "none";
@@ -168,7 +143,6 @@ function setupAchievementsPanel(game) {
 
 export function updateGameDisplay(game) {
   try {
-    // Protect against NaN in cookie count
     if (isNaN(game.state.cookies)) {
       console.error("Cookie count is NaN, fixing...");
       game.state.cookies = 0;
@@ -176,32 +150,25 @@ export function updateGameDisplay(game) {
     
     const cookies = Math.floor(game.state.cookies);
     
-    // Update text displays using formatted numbers for better readability
     if (game.cookieCount) game.cookieCount.textContent = formatNumber(cookies);
     
-    // Limit click power display to 1 decimal place with fallback
     if (game.clickPowerDisplay) {
       try {
         game.clickPowerDisplay.textContent = formatNumberWithDecimals(game.state.clickPower);
       } catch (e) {
         console.error("Error formatting click power:", e);
-        // Fallback to simple display
         game.clickPowerDisplay.textContent = game.state.clickPower;
       }
     }
     
     if (game.count) game.count.textContent = formatNumber(cookies) + " cookies";
 
-    // Update button states
     updateButtonStates(game, cookies);
     
-    // Update time accelerator display
     updateTimeAccelerator(game);
     
-    // Update progression visuals
     updateProgressionVisuals(game);
     
-    // Show multiplier in stats if above 1
     if (game.state.cookieMultiplier > 1) {
       if (!document.getElementById('multiplierDisplay')) {
         const multiplierEl = document.createElement('div');
@@ -220,7 +187,6 @@ export function updateGameDisplay(game) {
   }
 }
 
-// Helper function to format large numbers
 function formatNumber(num) {
   if (num === undefined || num === null) return "0";
   if (isNaN(num)) return "0";
@@ -230,34 +196,27 @@ function formatNumber(num) {
   return (num / 1000000000).toFixed(1) + 'B';
 }
 
-// New helper function to format numbers with limited decimal places
 function formatNumberWithDecimals(num) {
-  // Safety checks
   if (num === undefined || num === null) return "0";
   if (isNaN(num)) return "0";
   
-  // First check if it's an integer
   if (Number.isInteger(num)) {
     return num;
   }
   
-  // If it's less than 1000, format with 1 decimal place
   if (num < 1000) {
     return parseFloat(num.toFixed(1));
   }
   
-  // For larger numbers, use the regular formatter
   return formatNumber(num);
 }
 
 function updateButtonStates(game, cookies) {
-  // Cache & update button states in batch
   const hasCookies = {};
   Object.keys(game.upgrades).forEach(key => {
     hasCookies[key] = cookies >= game.upgrades[key].cost;
   });
   
-  // Update button texts
   Object.keys(game.upgrades).forEach((key) => {
     const buttons = document.querySelectorAll(`button#${key}`);
     
@@ -279,7 +238,6 @@ function updateButtonStates(game, cookies) {
     });
   });
   
-  // Update all shop item costs
   Object.keys(game.shopUpgrades).forEach((key) => {
     const costElement = document.querySelector(`[data-upgrade="${key}"] .item-cost span`);
     if (costElement && game.shopUpgrades[key]) {
@@ -287,12 +245,10 @@ function updateButtonStates(game, cookies) {
     }
   });
   
-  // Update individual button states
   game.clickUpgradeButton.disabled = cookies < game.upgrades.clickUpgrade.cost;
   game.autoClickerButton.disabled = cookies < game.upgrades.autoClicker.cost;
   game.grandmaButton.disabled = cookies < game.upgrades.grandma.cost;
   game.farmButton.disabled = cookies < game.upgrades.farm.cost;
-  // New upgrades
   game.mineButton.disabled = cookies < game.upgrades.mine.cost;
   game.factoryButton.disabled = cookies < game.upgrades.factory.cost;
   game.bankButton.disabled = cookies < game.upgrades.bank.cost;
@@ -321,7 +277,6 @@ function updateTimeAccelerator(game) {
 
 function updateProgressionVisuals(game) {
   try {
-    // Update cookies per second display
     const autoClickers = game.upgrades?.autoClicker?.count || 0;
     const grandmas = game.upgrades?.grandma?.count || 0;
     const farms = game.upgrades?.farm?.count || 0;
@@ -330,7 +285,6 @@ function updateProgressionVisuals(game) {
     const banks = game.upgrades?.bank?.count || 0;
     const temples = game.upgrades?.temple?.count || 0;
     
-    // Calculate base CPS from all buildings
     let cps = autoClickers * 1 + 
               grandmas * 3 + 
               farms * 6 + 
@@ -338,23 +292,19 @@ function updateProgressionVisuals(game) {
               factories * 25 + 
               temples * 80;
     
-    // Add bank interest if banks are present
     if (banks > 0) {
-      // 0.05% of total cookies per second per bank
       cps += (game.state.cookies * 0.0005) * banks;
     }
     
-    // Apply cookie multiplier (protect against NaN)
     if (typeof game.state.cookieMultiplier === 'number' && !isNaN(game.state.cookieMultiplier)) {
       cps *= game.state.cookieMultiplier;
     } else {
       console.error("Cookie multiplier is not a valid number:", game.state.cookieMultiplier);
-      game.state.cookieMultiplier = 1; // Reset to default if invalid
+      game.state.cookieMultiplier = 1;
     }
     
     if (game.cpsDisplay) game.cpsDisplay.textContent = Math.floor(cps);
     
-    // Check if elements exist before trying to update them
     if (game.autoClickersProgressBar && game.autoClickersCountVisual) {
       updateResourceBar(game.autoClickersProgressBar, game.autoClickersCountVisual, autoClickers, 100);
     }
@@ -369,7 +319,6 @@ function updateProgressionVisuals(game) {
       console.warn("Grandma visual elements not found, will try again later");
     }
     
-    // Add new building bars
     if (game.mineProgressBar && game.mineCountDisplay) {
       updateResourceBar(game.mineProgressBar, game.mineCountDisplay, mines, 100);
     }
@@ -418,7 +367,6 @@ export function updateAchievementsList(game, earnedAchievements) {
     return;
   }
   
-  // Sort by rarity (legendary first)
   const rarityOrder = {
     'legendary': 0,
     'epic': 1,

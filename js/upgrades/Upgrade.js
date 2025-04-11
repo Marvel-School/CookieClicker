@@ -1,6 +1,3 @@
-/**
- * Base class for all upgrades
- */
 export class Upgrade {
   constructor(cost, multiplier, displayPrefix, extra = null) {
     this.cost = cost;
@@ -41,8 +38,6 @@ export class Upgrade {
     return true;
   }
   
-  // To be overridden in subclasses
   executePurchase(game) {
-    // Default implementation does nothing
   }
 }

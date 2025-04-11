@@ -1,13 +1,9 @@
 import { IncrementUpgrade } from './IncrementUpgrade.js';
 
-/**
- * Specialized upgrade that contributes to CPS (cookies per second)
- * Extends IncrementUpgrade with CPS calculation
- */
 export class ProductionUpgrade extends IncrementUpgrade {
   constructor(cost, multiplier, displayPrefix, cpsValue, extra = null) {
     super(cost, multiplier, displayPrefix, extra);
-    this.cpsValue = cpsValue; // Base CPS contribution per unit
+    this.cpsValue = cpsValue;
   }
   
   getCPS(multiplier = 1) {

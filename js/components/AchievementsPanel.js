@@ -1,8 +1,5 @@
 import { UIComponent } from './UIComponent.js';
 
-/**
- * Achievements panel component for displaying earned achievements
- */
 export class AchievementsPanel extends UIComponent {
   constructor(game, containerElement, toggleElement, listElement) {
     super(containerElement, toggleElement);
@@ -23,7 +20,6 @@ export class AchievementsPanel extends UIComponent {
       return;
     }
     
-    // Sort by rarity (legendary first)
     const rarityOrder = {
       'legendary': 0,
       'epic': 1,

@@ -1,21 +1,17 @@
-// Contains the Achievement class and achievement setup
-
 export class Achievement {
   constructor(id, name, description, condition, rarity = 'common', category = 'general', icon = '🍪') {
     this.id = id;
     this.name = name;
     this.description = description;
-    this.condition = condition; // Function that returns true if achievement is earned
+    this.condition = condition;
     this.earned = false;
-    this.rarity = rarity; // common, uncommon, rare, epic, legendary
-    this.category = category; // clicking, production, collection, special
+    this.rarity = rarity;
+    this.category = category;
     this.icon = icon;
   }
 }
 
-// This function will be called by the Game class to set up the achievements
 export function setupAchievements(game) {
-  // Cookie production achievements
   game.registerAchievement(new Achievement(
     'cookies_100',
     'Cookie Novice',
@@ -66,7 +62,6 @@ export function setupAchievements(game) {
     '👑'
   ));
   
-  // Clicking achievements
   game.registerAchievement(new Achievement(
     'click_power_10',
     'Finger of Destiny',
@@ -97,7 +92,6 @@ export function setupAchievements(game) {
     '💪'
   ));
   
-  // Building collection achievements
   game.registerAchievement(new Achievement(
     'autoclicker_5',
     'Automation Beginner',
@@ -118,7 +112,6 @@ export function setupAchievements(game) {
     '🤖'
   ));
   
-  // Mine achievements
   game.registerAchievement(new Achievement(
     'mine_5',
     'Cookie Miner',
@@ -149,7 +142,6 @@ export function setupAchievements(game) {
     '💎'
   ));
   
-  // Factory achievements
   game.registerAchievement(new Achievement(
     'factory_5',
     'Industrialist',
@@ -170,7 +162,6 @@ export function setupAchievements(game) {
     '🏭'
   ));
   
-  // Bank achievements
   game.registerAchievement(new Achievement(
     'bank_5',
     'Cookie Investor',
@@ -191,7 +182,6 @@ export function setupAchievements(game) {
     '💰'
   ));
   
-  // Temple achievements
   game.registerAchievement(new Achievement(
     'temple_5',
     'Cookie Worshipper',
@@ -212,7 +202,6 @@ export function setupAchievements(game) {
     '👑'
   ));
   
-  // Special achievements
   game.registerAchievement(new Achievement(
     'balanced_force',
     'Balanced Force',
@@ -238,7 +227,6 @@ export function setupAchievements(game) {
     '🍀'
   ));
   
-  // Special achievement - Balanced Collector
   game.registerAchievement(new Achievement(
     'balanced_collector',
     'Cookie Connoisseur',

@@ -38,4 +38,4 @@ export function log(debug, message, ...data) {
   }
 }
 
-export const AUTO_SAVE_INTERVAL = 60000; // 1 minute
+export const AUTO_SAVE_INTERVAL = 60000;

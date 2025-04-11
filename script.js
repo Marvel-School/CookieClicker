@@ -1,25 +1,14 @@
 const PARTICLE_SIZE = 20;
 const PARTICLE_LIFETIME = 2000;
-const AUTO_SAVE_INTERVAL = 60000; // 1 minutes
-
-// Upgrade classes:
+const AUTO_SAVE_INTERVAL = 60000;
 
 class Upgrade {
-  // Modified constructor: now accepts displayPrefix and sets it.
   constructor(cost, multiplier, displayPrefix, extra = null) {
     this.cost = cost;
     this.multiplier = multiplier;
     this.displayPrefix = displayPrefix;
     this.extra = extra;
   }
-  // New: returns text for button display.
-//   getDisplayText() {
-//     if (window.innerWidth > 932) {
-//         return ` ${this.displayPrefix} (Cost: ${this.cost})`; 
-//     } else {
-//         return `(Cost: ${this.cost})`; 
-//     }
-// }
   canPurchase(game) {
     return game.state.cookies >= this.cost;
   }
@@ -41,9 +30,7 @@ class Upgrade {
     }
     game.updateDisplay();
   }
-  // To be defined in subclasses.
   executePurchase(game) {
-    // ...override in subclass...
   }
 }
 
@@ -68,55 +55,43 @@ class IncrementUpgrade extends Upgrade {
 
 class LuckyUpgrade extends Upgrade {
   constructor(cost, multiplier, displayPrefix) {
-    // Lower initial cost to 15 (down from 20) and slower cost increase (1.15 instead of 1.5)
     super(15, 1.15, displayPrefix);
   }
   
   executePurchase(game) {
-    // Get production values
     const autoClickers = game.upgrades.autoClicker.count || 0;
     const grandmas = game.upgrades.grandma.count || 0;
     const farms = game.upgrades.farm.count || 0;
     
-    // Calculate CPS (cookies per second)
     const baseCps = autoClickers * 1 + grandmas * 5 + farms * 10;
     
-    // Apply multipliers if present
     const cps = baseCps * (game.state.cookieMultiplier || 1);
     
-    // ENHANCEMENT 1: Much more generous base reward (30-90 seconds worth of production)
     const productionSeconds = 30 + Math.floor(Math.random() * 60);
     const baseBonus = Math.max(100, cps * productionSeconds);
     
-    // ENHANCEMENT 2: More generous adaptive cap based on game progression
     const gameProgress = game.state.cookies / 500;
     const adaptiveCap = Math.max(1000, 2000 + gameProgress * 2);
     const cappedBonus = Math.min(baseBonus, adaptiveCap);
 
-    // ENHANCEMENT 3: Higher chance for critical hits (30% chance)
     let bonus = 0;
     let effectMessage = "";
     let isCritical = false;
     
-    if (Math.random() < 0.3) { // 30% chance of critical
-      // Critical hit gives 2.5-3.5x the bonus
+    if (Math.random() < 0.3) {
       const critMultiplier = 2.5 + Math.random();
       bonus = Math.floor(cappedBonus * critMultiplier);
       isCritical = true;
       effectMessage = "CRITICAL LUCKY HIT! 💥";
     } else {
-      // Normal hit with increased randomness (80%-140%)
       const randomFactor = 0.8 + (Math.random() * 0.6);
       bonus = Math.floor(cappedBonus * randomFactor);
     }
     
-    // Add cookies
     game.state.cookies += bonus;
     
-    // Show floating number and animation
     game.showFloatingNumber(bonus, true);
     
-    // Show effect message if needed
     if (effectMessage) {
       const message = document.createElement("div");
       message.className = "floating-effect";
@@ -136,22 +111,18 @@ class LuckyUpgrade extends Upgrade {
       message.style.pointerEvents = "none";
       document.body.appendChild(message);
       
-      // Animation and cleanup
       setTimeout(() => message.remove(), 2000);
     }
     
-    // Track lucky streak
     game.state.luckyStreak = (game.state.luckyStreak || 0) + 1;
   }
 }
 
-// ShopUpgrade using similar pattern:
 class ShopUpgrade extends Upgrade {
   constructor(cost, multiplier, displayPrefix, extra = null, baseCost) {
     super(cost, multiplier, displayPrefix, extra);
     this.baseCost = baseCost;
   }
-  // Override purchase entirely (different cost update)
   purchase(game) {
     if (!this.canPurchase(game)) {
       game.log(
@@ -164,7 +135,6 @@ class ShopUpgrade extends Upgrade {
     if (this.extra === "timeAccelerator") {
       game.activateTimeAccelerator(this);
     }
-    // Changed 1.2 to use this.multiplier for cost update.
     this.cost = Math.floor(this.cost * this.multiplier);
     const costSpan = document.querySelector(
       `[data-upgrade="timeAccelerator"] .item-cost span`
@@ -180,62 +150,53 @@ class Achievement {
     this.id = id;
     this.name = name;
     this.description = description;
-    this.condition = condition; // Function that returns true if achievement is earned
+    this.condition = condition;
     this.earned = false;
-    this.rarity = rarity; // common, uncommon, rare, epic, legendary
-    this.category = category; // clicking, production, collection, special
+    this.rarity = rarity;
+    this.category = category;
     this.icon = icon;
   }
 }
 
 class Game {
   constructor() {
-    // Enable debug logging
     this.debug = true;
     this.log("Initializing game...");
 
-    // Centralized game state
     this.state = {
       cookies: 0,
       clickPower: 1,
       grandmas: 0,
-
-      // Time Accelerator state
       timeAcceleratorActive: false,
       timeAcceleratorMultiplier: 1,
       timeAcceleratorEndTime: 0,
     };
 
-    // Use the new upgrade classes instead of one size–fits–all:
     this.upgrades = {
       clickUpgrade: new ClickMultiplierUpgrade(10, 3, "Upgrade Click Power"),
       autoClicker: new IncrementUpgrade(50, 1.5, "Buy Auto Clicker"),
       grandma: new IncrementUpgrade(100, 1.5, "Buy Grandma's Bakery", "updateGrandmasVisual"),
       farm: new IncrementUpgrade(500, 1.5, "Buy Cookie Farm"),
-      luckyClick: new LuckyUpgrade(15, 1.15, "Lucky Click"), // Updated cost and multiplier
+      luckyClick: new LuckyUpgrade(15, 1.15, "Lucky Click"),
     };
 
     this.shopUpgrades = {
       timeAccelerator: new ShopUpgrade(1000, 2.5, "Time Accelerator", "timeAccelerator", 1000),
     };
 
-    // Replace simple achievements array with a more structured system
     this.achievements = [];
     this.setupAchievements();
 
-    // Sound settings
     this.soundOn = true;
     this.clickSound = new Audio("sounds/click.mp3");
     this.clickSound.volume = 0.2;
 
     this.init();
 
-    // Auto-load saved game if exists
     if (localStorage.getItem("cookieGameSave")) {
       this.loadGame();
       this.log("Auto-loaded saved game.");
     } else {
-      // For new game, check achievements after a short delay
       setTimeout(() => this.checkAchievements(), 500);
     }
   }
@@ -255,28 +216,23 @@ class Game {
 
   init() {
     this.log("Initializing DOM elements...");
-    // Cache DOM elements
     this.cookie = document.getElementById("cookie");
     this.cookieCount = document.getElementById("cookieCount");
     this.count = document.getElementById("count");
     this.clickPowerDisplay = document.getElementById("clickPower");
     this.cpsDisplay = document.getElementById("cps");
 
-    // Standard Upgrade Buttons
     this.clickUpgradeButton = document.getElementById("clickUpgrade");
     this.autoClickerButton = document.getElementById("autoClicker");
     this.grandmaButton = document.getElementById("grandma");
     this.farmButton = document.getElementById("farm");
     this.luckyClickButton = document.getElementById("luckyClick");
 
-    // Shop Section
     this.shopElement = document.getElementById("shop");
 
-    // Shop Section - Updated for collapsible shop
     this.shopIcon = document.getElementById("shopIcon");
     this.shopContainer = document.getElementById("shopContainer");
 
-    // Settings Panel Elements
     this.saveGameButton = document.getElementById("saveGame");
     this.loadGameButton = document.getElementById("loadGame");
     this.resetGameButton = document.getElementById("resetGame");
@@ -284,13 +240,11 @@ class Game {
     this.settingsIcon = document.getElementById("settingsIcon");
     this.settingsMenu = document.getElementById("settingsMenu");
 
-    // Achievements Elements
     this.achievementsContainer = document.getElementById(
       "achievementsContainer"
     );
     this.achievementsList = document.getElementById("achievementsList");
 
-    // Visualization Elements
     this.grandmaProgressBar = document.getElementById("grandmaProgressBar");
     this.grandmaCountDisplay = document.getElementById("grandmaCount");
     this.autoClickersProgressBar = document.getElementById(
@@ -307,12 +261,10 @@ class Game {
     this.updateGrandmasVisual();
     this.startGameLoop();
 
-    // Auto-save every 5 minutes
     setInterval(() => this.autoSave(), AUTO_SAVE_INTERVAL);
   }
 
   setupEventListeners() {
-    // Add event listeners to every upgrade button:
     document.querySelectorAll("button.upgrade").forEach((btn) => {
       btn.addEventListener("click", () => {
         this.log("Upgrade button clicked:", btn.id);
@@ -320,7 +272,6 @@ class Game {
       });
     });
 
-    // Add hover sound to upgrade buttons
     [
       this.clickUpgradeButton,
       this.autoClickerButton,
@@ -331,7 +282,6 @@ class Game {
       btn.addEventListener("mouseover", () => this.playHoverSound())
     );
 
-    // Shop Items: Purchase by clicking the item image
     document.querySelectorAll(".shop-item img").forEach((itemImage) => {
       itemImage.addEventListener("click", () => {
         const upgradeKey = itemImage
@@ -341,20 +291,17 @@ class Game {
       });
     });
 
-    // New shop icon click handler
     if (this.shopIcon && this.shopContainer) {
       this.shopIcon.addEventListener("click", (e) => {
-        e.stopPropagation(); // Prevent closing when clicking the icon
+        e.stopPropagation();
         const isVisible = this.shopContainer.style.display === "block";
         this.shopContainer.style.display = isVisible ? "none" : "block";
       });
       
-      // Prevent clicks inside the shop container from closing it
       this.shopContainer.addEventListener("click", (e) => {
         e.stopPropagation();
       });
       
-      // Close shop panel when clicking elsewhere
       document.addEventListener("click", () => {
         if (this.shopContainer.style.display === "block") {
           this.shopContainer.style.display = "none";
@@ -364,9 +311,8 @@ class Game {
       this.log("ERROR: shopIcon or shopContainer not found!");
     }
 
-    // Settings Panel: Toggle display on settings icon click with improved handling
     this.settingsIcon.addEventListener("click", (e) => {
-      e.stopPropagation(); // Prevent document click from immediately closing it
+      e.stopPropagation();
       this.settingsMenu.style.display = 
         this.settingsMenu.style.display === "block" ? "none" : "block";
       this.log(
@@ -376,19 +322,16 @@ class Game {
       );
     });
     
-    // Prevent clicks inside the settings menu from closing it
     this.settingsMenu.addEventListener("click", (e) => {
       e.stopPropagation();
     });
     
-    // Add click-outside handling for settings menu
     document.addEventListener("click", () => {
       if (this.settingsMenu.style.display === "block") {
         this.settingsMenu.style.display = "none";
       }
     });
 
-    // Add hover sound to settings control buttons
     [
       this.saveGameButton,
       this.loadGameButton,
@@ -406,24 +349,20 @@ class Game {
       this.log("Sound toggled:", this.soundOn);
     });
 
-    // Fix achievements icon click handler
     const achievementsIcon = document.getElementById("achievementsIcon");
     const achievementsContainer = document.getElementById("achievementsContainer");
     
     if (achievementsIcon && achievementsContainer) {
-      // Simplified toggle logic
       achievementsIcon.addEventListener("click", (e) => {
-        e.stopPropagation(); // Prevent closing when clicking the icon
+        e.stopPropagation();
         const isVisible = achievementsContainer.style.display === "block";
         achievementsContainer.style.display = isVisible ? "none" : "block";
       });
       
-      // Prevent clicks inside the achievements container from closing it
       achievementsContainer.addEventListener("click", (e) => {
         e.stopPropagation();
       });
       
-      // Close achievements panel when clicking elsewhere
       document.addEventListener("click", () => {
         if (achievementsContainer.style.display === "block") {
           achievementsContainer.style.display = "none";
@@ -433,16 +372,12 @@ class Game {
       this.log("ERROR: achievementsIcon or achievementsContainer not found!");
     }
 
-    // Cookie click handler
     this.cookie.addEventListener("click", (e) => this.handleCookieClick(e));
 
-    // CLEANUP: REMOVE ALL DUPLICATE TOOLTIP IMPLEMENTATIONS AND REPLACE WITH THIS SINGLE IMPLEMENTATION
     document.querySelectorAll('.shop-item').forEach(item => {
-      // First, let's completely clone the item to remove any existing event handlers
       const clone = item.cloneNode(true);
       item.parentNode.replaceChild(clone, item);
       
-      // Add purchase functionality
       const itemImage = clone.querySelector('img.shop-item-image');
       if (itemImage) {
         itemImage.addEventListener('click', () => {
@@ -451,41 +386,31 @@ class Game {
         });
       }
       
-      // Single tooltip implementation with viewport boundary checking
       const tooltip = clone.querySelector('.item-desc');
       if (tooltip) {
-        // Store tooltip content
         const originalContent = tooltip.innerHTML;
         
-        // Add mouse events
         clone.addEventListener('mouseenter', () => {
-          // Remove any existing tooltips to avoid duplicates
           document.querySelectorAll('body > .item-desc').forEach(t => t.remove());
           
-          // Create fresh tooltip element
           const newTooltip = document.createElement('div');
           newTooltip.className = 'item-desc';
           newTooltip.innerHTML = `<div class="text-container">${originalContent}</div>`;
           document.body.appendChild(newTooltip);
           
-          // Get positioning information
           const rect = clone.getBoundingClientRect();
           const tooltipHeight = newTooltip.offsetHeight || 120;
           const tooltipWidth = newTooltip.offsetWidth || 220;
           const minPadding = 10;
           
-          // Check if tooltip would be cut off at top
           const positionAbove = rect.top - tooltipHeight - 15;
           if (positionAbove < minPadding) {
-            // Position below instead
             newTooltip.style.top = (rect.bottom + 15) + 'px';
             newTooltip.classList.add('position-below');
           } else {
-            // Position above (standard)
             newTooltip.style.top = positionAbove + 'px';
           }
           
-          // Handle horizontal positioning
           let leftPos = rect.left + (rect.width / 2) - (tooltipWidth / 2);
           if (leftPos < minPadding) {
             leftPos = minPadding;
@@ -494,70 +419,55 @@ class Game {
           }
           newTooltip.style.left = leftPos + 'px';
           
-          // Ensure visibility
           newTooltip.style.zIndex = '100000000';
         });
         
         clone.addEventListener('mouseleave', () => {
-          // Clean up any tooltips when mouse leaves
           document.querySelectorAll('body > .item-desc').forEach(t => t.remove());
         });
       }
     });
 
-    // IMPROVED TOOLTIP IMPLEMENTATION - Fixes multiple tooltips
     document.querySelectorAll('.shop-item').forEach(item => {
-      // First, let's completely clone the item to remove any existing event handlers
       const clone = item.cloneNode(true);
       item.parentNode.replaceChild(clone, item);
       
-      // Add purchase functionality
       const itemImage = clone.querySelector('img.shop-item-image');
       if (itemImage) {
         itemImage.addEventListener('click', (e) => {
-          e.stopPropagation(); // Prevent bubbling
+          e.stopPropagation();
           const upgradeKey = clone.getAttribute("data-upgrade");
           if (upgradeKey) this.purchaseShopUpgrade(upgradeKey);
         });
       }
       
-      // Single tooltip implementation with better cleanup
       const tooltip = clone.querySelector('.item-desc');
       if (tooltip) {
-        // Store tooltip content
         const originalContent = tooltip.innerHTML;
         
-        // Add mouse events
         clone.addEventListener('mouseenter', (e) => {
-          e.stopPropagation(); // Prevent event bubbling
+          e.stopPropagation();
           
-          // Remove ANY tooltip elements from anywhere in the DOM
           document.querySelectorAll('.item-desc-tooltip').forEach(t => t.remove());
           
-          // Create fresh tooltip element with special class for identification
           const newTooltip = document.createElement('div');
-          newTooltip.className = 'item-desc item-desc-tooltip'; // Add specific class
+          newTooltip.className = 'item-desc item-desc-tooltip';
           newTooltip.innerHTML = `<div class="text-container">${originalContent}</div>`;
           document.body.appendChild(newTooltip);
           
-          // Get positioning information
           const rect = clone.getBoundingClientRect();
           const tooltipHeight = newTooltip.offsetHeight || 120;
           const tooltipWidth = newTooltip.offsetWidth || 220;
           const minPadding = 10;
           
-          // Check if tooltip would be cut off at top
           const positionAbove = rect.top - tooltipHeight - 15;
           if (positionAbove < minPadding) {
-            // Position below instead
             newTooltip.style.top = (rect.bottom + 15) + 'px';
             newTooltip.classList.add('position-below');
           } else {
-            // Position above (standard)
             newTooltip.style.top = positionAbove + 'px';
           }
           
-          // Handle horizontal positioning
           let leftPos = rect.left + (rect.width / 2) - (tooltipWidth / 2);
           if (leftPos < minPadding) {
             leftPos = minPadding;
@@ -566,18 +476,15 @@ class Game {
           }
           newTooltip.style.left = leftPos + 'px';
           
-          // Ensure visibility
           newTooltip.style.zIndex = '100000000';
         });
         
         clone.addEventListener('mouseleave', (e) => {
-          e.stopPropagation(); // Prevent event bubbling
-          // Clean up any tooltips when mouse leaves using the specific class
+          e.stopPropagation();
           document.querySelectorAll('.item-desc-tooltip').forEach(t => t.remove());
         });
       }
     });
-
   }
 
   handleCookieClick(e) {
@@ -609,16 +516,15 @@ class Game {
 
   activateTimeAccelerator(item) {
     const baseCost = item.baseCost || 1000;
-    const minDuration = 30; // 30 seconds - shorter base duration
-    const maxDuration = 60; // 1 minute max
+    const minDuration = 30;
+    const maxDuration = 60;
     let duration = minDuration + (item.cost - baseCost) * 0.05;
     duration = Math.min(duration, maxDuration);
 
     this.state.timeAcceleratorActive = true;
-    this.state.timeAcceleratorMultiplier = 4; // Increased from 2 to 4x
+    this.state.timeAcceleratorMultiplier = 4;
     this.state.timeAcceleratorEndTime = Date.now() + duration * 1000;
 
-    // Add visual effects when activated
     this.applyTimeAcceleratorVisuals(true);
     
     this.log(
@@ -634,7 +540,6 @@ class Game {
       this.state.timeAcceleratorMultiplier = 1;
       this.state.timeAcceleratorEndTime = 0;
       
-      // Remove visual effects when deactivated
       this.applyTimeAcceleratorVisuals(false);
       
       this.log("Time Accelerator expired");
@@ -642,9 +547,7 @@ class Game {
     }, duration * 1000);
   }
   
-  // New method to handle visual effects
   applyTimeAcceleratorVisuals(active) {
-    // Apply effects to cookie
     if (this.cookie) {
       if (active) {
         this.cookie.classList.add('accelerated');
@@ -655,7 +558,6 @@ class Game {
       }
     }
     
-    // Apply effects to CPS display
     if (this.cpsDisplay) {
       if (active) {
         this.cpsDisplay.style.color = "#ff4500";
@@ -671,15 +573,13 @@ class Game {
     let lastTime = performance.now();
     let lastUpdateTime = 0;
     let lastAchievementCheck = 0;
-    const UPDATE_INTERVAL = 100; // Update display at most every 100ms
-    const ACHIEVEMENT_CHECK_INTERVAL = 1000; // Check achievements every second
+    const UPDATE_INTERVAL = 100;
+    const ACHIEVEMENT_CHECK_INTERVAL = 1000;
     
     const loop = (now) => {
-      // Calculate accurate delta time
       const delta = (now - lastTime) / 1000;
       lastTime = now;
       
-      // Core cookie calculation logic
       const autoClickers = this.upgrades.autoClicker.count || 0;
       const grandmas = this.upgrades.grandma.count || 0;
       const farms = this.upgrades.farm.count || 0;
@@ -688,16 +588,13 @@ class Game {
         ? this.state.timeAcceleratorMultiplier
         : 1;
       
-      // Update cookie count
       this.state.cookies += cps * timeAccelMult * delta;
       
-      // Throttle visual updates to reduce DOM operations
       if (now - lastUpdateTime > UPDATE_INTERVAL) {
         this.updateDisplay();
         lastUpdateTime = now;
       }
       
-      // Periodically check for new achievements
       if (now - lastAchievementCheck > ACHIEVEMENT_CHECK_INTERVAL) {
         this.checkAchievements();
         lastAchievementCheck = now;
@@ -710,39 +607,32 @@ class Game {
   }
 
   updateDisplay() {
-    // Cache values to avoid layout thrashing
     const cookies = Math.floor(this.state.cookies);
     
-    // Group updates to minimize reflows
     this.cookieCount.textContent = cookies;
     this.clickPowerDisplay.textContent = this.state.clickPower;
     this.count.textContent = cookies + " cookies";
   
-    // Cache & update button states in batch
     const hasCookies = {};
     Object.keys(this.upgrades).forEach(key => {
       hasCookies[key] = cookies >= this.upgrades[key].cost;
     });
     
-    // Update button texts (optimized to reduce DOM operations)
     Object.keys(this.upgrades).forEach((key) => {
       const buttons = document.querySelectorAll(`button#${key}`);
       
-      // Skip if no buttons found or disabled state is already correct
       if (!buttons.length) return;
       
       const text = this.upgrades[key].getDisplayText();
       const disabled = !hasCookies[key];
       
       buttons.forEach((btn) => {
-        // Only update if changed
         if (btn.dataset.content !== text) {
           btn.dataset.content = text;
           const btnTop = btn.querySelector(".button_top");
           if (btnTop) btnTop.textContent = text;
         }
         
-        // Only update disabled state if it's changed
         if (btn.disabled !== disabled) {
           btn.disabled = disabled;
         }
@@ -799,14 +689,11 @@ class Game {
     const floatingNumber = document.createElement("div");
     floatingNumber.className = "floating-number";
     
-    // Format number to reduce decimal places
     let displayAmount;
     if (typeof amount === 'number') {
-      // If it's an integer, show as is
       if (Number.isInteger(amount)) {
         displayAmount = amount;
       } else {
-        // If decimal, limit to 1 decimal place
         displayAmount = parseFloat(amount.toFixed(1));
       }
     } else {
@@ -823,14 +710,12 @@ class Game {
   }
 
   createConfetti(x, y) {
-    // Skip if called too frequently (improved debouncing)
     const now = Date.now();
     if (this.lastConfettiTime && now - this.lastConfettiTime < 200) {
       return;
     }
     this.lastConfettiTime = now;
     
-    // Use canvas instead of DOM elements for better performance
     if (!this.confettiCanvas) {
       this.confettiCanvas = document.createElement('canvas');
       this.confettiCanvas.width = window.innerWidth;
@@ -843,18 +728,15 @@ class Game {
       document.body.appendChild(this.confettiCanvas);
       this.confettiCtx = this.confettiCanvas.getContext('2d');
       
-      // Handle resize events
       window.addEventListener('resize', () => {
         this.confettiCanvas.width = window.innerWidth;
         this.confettiCanvas.height = window.innerHeight;
       });
     }
   
-    // Create particles
     const numParticles = 10;
     const particles = [];
     
-    // Create particle objects (not DOM elements)
     for (let i = 0; i < numParticles; i++) {
       particles.push({
         x: x,
@@ -870,30 +752,23 @@ class Game {
       });
     }
   
-    // Animation function for canvas rendering
     const animate = () => {
-      // Clear only the needed part of canvas
       this.confettiCtx.clearRect(0, 0, this.confettiCanvas.width, this.confettiCanvas.height);
       
-      // Check if there are any active particles
       let hasActiveParticles = false;
   
-      // Update and draw particles
       for (const particle of particles) {
-        // Calculate lifetime
         const lifetime = now + PARTICLE_LIFETIME - particle.createdAt;
         if (lifetime <= 0) continue;
         
         hasActiveParticles = true;
         
-        // Update position
         particle.x += particle.speedX;
         particle.y += particle.speedY;
-        particle.speedY += 0.1; // gravity
+        particle.speedY += 0.1;
         particle.rotation += particle.rotationSpeed;
         particle.opacity = lifetime / PARTICLE_LIFETIME;
         
-        // Draw particle
         this.confettiCtx.save();
         this.confettiCtx.globalAlpha = particle.opacity;
         this.confettiCtx.translate(particle.x, particle.y);
@@ -903,13 +778,11 @@ class Game {
         this.confettiCtx.restore();
       }
       
-      // Continue animation if particles are still active
       if (hasActiveParticles) {
         requestAnimationFrame(animate);
       }
     };
     
-    // Start animation
     requestAnimationFrame(animate);
   }
 
@@ -947,7 +820,6 @@ class Game {
   }
 
   setupAchievements() {
-    // Cookie production achievements
     this.registerAchievement(new Achievement(
       'cookies_100',
       'Cookie Novice',
@@ -998,7 +870,6 @@ class Game {
       '👑'
     ));
     
-    // Clicking achievements
     this.registerAchievement(new Achievement(
       'click_power_10',
       'Finger of Destiny',
@@ -1029,7 +900,6 @@ class Game {
       '💪'
     ));
     
-    // Building collection achievements
     this.registerAchievement(new Achievement(
       'autoclicker_5',
       'Automation Beginner',
@@ -1120,7 +990,6 @@ class Game {
       '🚜'
     ));
     
-    // Special achievements
     this.registerAchievement(new Achievement(
       'cps_100',
       'Industrial Revolution',
@@ -1196,7 +1065,6 @@ class Game {
       this.updateAchievements();
     }
     
-    // Special tracking for lucky streak achievement
     if (this.lastUpgradePurchased === 'luckyClick') {
       this.state.luckyStreak = (this.state.luckyStreak || 0) + 1;
     } else if (this.lastUpgradePurchased && this.lastUpgradePurchased !== 'luckyClick') {
@@ -1205,9 +1073,7 @@ class Game {
   }
 
   updateAchievements() {
-    // Use the cached achievementsList element from init.
     if (this.achievementsList) {
-      // Group achievements by category
       const earnedAchievements = this.achievements.filter(a => a.earned);
       
       if (earnedAchievements.length === 0) {
@@ -1220,7 +1086,6 @@ class Game {
         return;
       }
       
-      // Sort by rarity (legendary first)
       const rarityOrder = {
         'legendary': 0,
         'epic': 1,
@@ -1254,14 +1119,11 @@ class Game {
     const floatingNumber = document.createElement("div");
     floatingNumber.className = "floating-number";
     
-    // Format number to reduce decimal places
     let displayAmount;
     if (typeof amount === 'number') {
-      // If it's an integer, show as is
       if (Number.isInteger(amount)) {
         displayAmount = amount;
       } else {
-        // If decimal, limit to 1 decimal place
         displayAmount = parseFloat(amount.toFixed(1));
       }
     } else {
@@ -1322,17 +1184,15 @@ class Game {
       const savedGame = JSON.parse(savedStr);
       this.log("Saved game data loaded:", savedGame);
 
-      // Load main state
       this.state = savedGame.state || this.state;
 
-      // Reinitialize upgrades using class constructors and override with saved data
       if (typeof savedGame.upgrades === "object") {
         this.upgrades = {
           clickUpgrade: new ClickMultiplierUpgrade(10, 3, "Upgrade Click Power"),
           autoClicker: new IncrementUpgrade(50, 1.5, "Buy Auto Clicker"),
           grandma: new IncrementUpgrade(100, 1.5, "Buy Grandma's Bakery", "updateGrandmasVisual"),
           farm: new IncrementUpgrade(500, 1.5, "Buy Cookie Farm"),
-          luckyClick: new LuckyUpgrade(15, 1.15, "Lucky Click"), // Updated cost and multiplier
+          luckyClick: new LuckyUpgrade(15, 1.15, "Lucky Click"),
         };
         Object.keys(savedGame.upgrades).forEach((key) => {
           if (savedGame.upgrades[key].cost !== undefined) {
@@ -1344,7 +1204,6 @@ class Game {
         });
       }
 
-      // Reinitialize shopUpgrades similarly
       if (typeof savedGame.shopUpgrades === "object") {
         this.shopUpgrades = {
           timeAccelerator: new ShopUpgrade(300, 2, "Time Accelerator", "timeAccelerator", 300),
@@ -1356,13 +1215,10 @@ class Game {
         });
       }
 
-      // Reset and recreate achievements then restore earned status
-      // This ensures achievement conditions are properly restored
       this.achievements = [];
       this.setupAchievements();
       
       if (Array.isArray(savedGame.achievements)) {
-        // For old format (simple array of strings)
         if (typeof savedGame.achievements[0] === 'string') {
           savedGame.achievements.forEach(name => {
             const achievement = this.achievements.find(a => a.name === name);
@@ -1371,7 +1227,6 @@ class Game {
             }
           });
         } 
-        // For new format (array of Achievement objects)
         else {
           savedGame.achievements.forEach(savedAch => {
             const achievement = this.achievements.find(a => a.id === savedAch.id);
@@ -1387,7 +1242,7 @@ class Game {
       this.updateDisplay();
       this.updateAchievements();
       this.updateGrandmasVisual();
-      this.checkAchievements(); // Check achievements right after loading
+      this.checkAchievements();
       this.log("Load complete.");
       this.showToast("Game loaded successfully!");
     } catch (e) {
@@ -1418,12 +1273,11 @@ class Game {
       autoClicker: new IncrementUpgrade(50, 1.5, "Buy Auto Clicker"),
       grandma: new IncrementUpgrade(100, 1.5, "Buy Grandma's Bakery", "updateGrandmasVisual"),
       farm: new IncrementUpgrade(500, 1.5, "Buy Cookie Farm"),
-      luckyClick: new LuckyUpgrade(15, 1.15, "Lucky Click"), // Updated cost and multiplier
+      luckyClick: new LuckyUpgrade(15, 1.15, "Lucky Click"),
     };
     this.shopUpgrades = {
       timeAccelerator: new ShopUpgrade(300, 2, "Time Accelerator", "timeAccelerator", 300),
     };
-    // Properly reset achievements
     this.achievements = [];
     this.setupAchievements();
     
@@ -1443,7 +1297,6 @@ document.addEventListener("DOMContentLoaded", function () {
   let dropdownContent = document.getElementById("achievementsContainer");
 
   achieveWrapper.addEventListener("click", function (event) {
-    // Compute display dynamically on click.
     let dropdownContentDisplay = window.getComputedStyle(dropdownContent, null).getPropertyValue("display");
     if (dropdownContentDisplay === "none") {
       dropdownContent.style.display = "block";
@@ -1457,10 +1310,6 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-// This file redirects to use the modular version
 console.log("Loading Cookie Clicker through module system...");
-
-// We're now using the module system initialized in main.js
-// No need for initialization code here
 
 

@@ -89,39 +89,6 @@ document.addEventListener('DOMContentLoaded', () => {
       settingsMenu.appendChild(newPersonalizationBtn);
     }
     
-    // REMOVE DUPLICATE EVENT LISTENERS - Let PersonalizationPanel handle everything
-    // The code below is causing the double-click issue
-    /*
-    // Set up personalization panel toggle
-    if (personalizationBtn && personalizationContainer) {
-      personalizationBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        personalizationContainer.style.display = 
-          personalizationContainer.style.display === 'block' ? 'none' : 'block';
-      });
-      
-      // Close button
-      const closeBtn = document.getElementById('closePersonalization');
-      if (closeBtn) {
-        closeBtn.addEventListener('click', () => {
-          personalizationContainer.style.display = 'none';
-        });
-      }
-      
-      // Close panel when clicking outside
-      document.addEventListener('click', () => {
-        if (personalizationContainer.style.display === 'block') {
-          personalizationContainer.style.display = 'none';
-        }
-      });
-      
-      // Prevent clicks inside from closing
-      personalizationContainer.addEventListener('click', (e) => {
-        e.stopPropagation();
-      });
-    }
-    */
-    
     // Legacy support for achievements dropdown
     const achieveWrapper = document.getElementById("achievementsWrapper");
     const dropdownContent = document.getElementById("achievementsContainer");

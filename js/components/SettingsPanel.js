@@ -1,8 +1,5 @@
 import { UIComponent } from './UIComponent.js';
 
-/**
- * Settings panel component for game controls like save, load, reset
- */
 export class SettingsPanel extends UIComponent {
   constructor(game, containerElement, toggleElement) {
     super(containerElement, toggleElement);

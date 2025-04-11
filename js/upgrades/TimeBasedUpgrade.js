@@ -1,8 +1,6 @@
 import { Upgrade } from './Upgrade.js'; 
 
-/**
- * Specialized upgrade for time-limited boosts
- */
+
 export class TimeBasedUpgrade extends Upgrade {
   constructor(cost, multiplier, displayPrefix, effectMethod, baseDuration = 30, baseMultiplier = 2) {
     super(cost, multiplier, displayPrefix, effectMethod);
@@ -12,7 +10,6 @@ export class TimeBasedUpgrade extends Upgrade {
   }
   
   calculateDuration(baseCost) {
-    // Increase duration based on cost progression
     const costDiff = this.cost - baseCost;
     const durationBonus = costDiff > 0 ? (costDiff * 0.05) : 0;
     const maxDuration = this.baseDuration * 2;
@@ -21,7 +18,6 @@ export class TimeBasedUpgrade extends Upgrade {
   }
   
   calculateMultiplier() {
-    // Can be extended to scale multiplier with cost
     return this.baseMultiplier;
   }
   
