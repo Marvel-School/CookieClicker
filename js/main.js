@@ -235,6 +235,3 @@ document.addEventListener("DOMContentLoaded", function () {
   new ToggleMenu("achievementsIcon", "achievementsContainer");
   new ToggleMenu("shopIcon", "shopContainer");
 });
-
-
-
