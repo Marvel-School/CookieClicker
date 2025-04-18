@@ -1,3 +1,12 @@
+html, body {
+  overflow-x: hidden;
+  width: 100%;
+  position: relative;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
 body {
   font-family: "Roboto", sans-serif;
   background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
@@ -7,11 +16,19 @@ body {
   display: block !important;
   visibility: visible !important;
   opacity: 1 !important;
+  overflow: hidden;
 }
 
-body.blur {
-  filter: none !important;
-  pointer-events: auto !important;
+/* Hide scrollbars globally but allow scrolling */
+::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+* {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 .left {
@@ -27,11 +44,69 @@ body.blur {
   border-radius: 12px;
   box-shadow: none;
   overflow-y: auto;
-  max-height: 90%;
+  max-height: 80vh;
   display: flex;
   flex-direction: column;
   justify-content: space-around;
   z-index: 100;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.right {
+  position: fixed;
+  top: 60%;
+  right: 20px;
+  transform: translateY(-60%);
+  width: 220px;
+  background: transparent;
+  padding: 20px;
+  margin-top: 50px;
+  border-radius: 12px;
+  box-shadow: none;
+  overflow-y: auto;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  z-index: 100;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.background {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  background: radial-gradient(#333, #000);
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#content-container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+#goldenCookieContainer, 
+#confetti-canvas,
+.animation-demo-effect {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw !important;
+  height: 100vh !important;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+body.blur {
+  filter: none !important;
+  pointer-events: auto !important;
 }
 
 .left .button {
@@ -484,20 +559,6 @@ body.blur {
   z-index: 9999;
 }
 
-.background {
-  position: relative;
-  width: 100%;
-  height: 100vh;
-  background: radial-gradient(#333, #000);
-  overflow: hidden;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.background .set {
-  display: none;
-}
-
 .falling {
   position: fixed; 
   top: -100px; 
@@ -601,7 +662,12 @@ body.quality-high .falling {
   position: relative;
   z-index: 300;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
 }
+
 #cookie {
   width: 250px;
   height: 250px;
@@ -613,32 +679,13 @@ body.quality-high .falling {
   opacity: 1 !important;
   display: block !important;
 }
+
 #cookie:hover {
   transform: scale(1.05);
 }
+
 #cookie:active {
   transform: scale(0.95);
-}
-
-.right {
-  margin: 15px;
-  position: fixed;
-  margin: 15px;
-  top: 60%;
-  right: 20px;
-  transform: translateY(-60%);
-  width: 220px;
-  background: transparent;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: none;
-  overflow-y: auto;
-  overflow-x: hidden;
-  max-height: 90%;
-  z-index: 100;
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
 }
 
 #shop {
@@ -654,23 +701,28 @@ body.quality-high .falling {
   z-index: 150;
   overflow: auto;
 }
+
 #shop h2 {
   margin-top: 0;
 }
+
 .shop-item {
   margin-bottom: 10px;
   border-bottom: 1px solid #ddd;
   padding-bottom: 10px;
   position: relative;
 }
+
 .shop-item:last-child {
   border-bottom: none;
 }
+
 .shop-item .item-name {
   font-weight: bold;
   display: block;
   margin-bottom: 4px;
 }
+
 .shop-item .item-cost {
   display: block;
   margin-bottom: 4px;
@@ -743,6 +795,7 @@ body.quality-high .falling {
   z-index: 999;
   text-align: right;
 }
+
 .setting-btn {
   width: 45px;
   height: 45px;
@@ -758,14 +811,17 @@ body.quality-high .falling {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
+
 .setting-btn:hover {
   transform: scale(1.05);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
 }
+
 .setting-btn:active {
   transform: scale(0.98);
   box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.25);
 }
+
 .bar {
   width: 50%;
   height: 2px;
@@ -773,6 +829,7 @@ body.quality-high .falling {
   position: relative;
   border-radius: 2px;
 }
+
 .bar::before {
   content: "";
   width: 2px;
@@ -784,6 +841,7 @@ body.quality-high .falling {
   transition: all 0.3s;
   box-shadow: 0px 0px 5px white;
 }
+
 #settingsMenu {
   display: none;
   position: absolute;
@@ -795,6 +853,7 @@ body.quality-high .falling {
   width: 200px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
+
 #settingsMenu button {
   background: linear-gradient(145deg, #2980b9, #3498db);
   color: white;
@@ -831,6 +890,7 @@ body.quality-high .falling {
   animation: confettiAnimation 1s ease-out forwards;
   z-index: 999999;
 }
+
 @keyframes confettiAnimation {
   0% {
     transform: translate(0, 0) rotate(0deg);
@@ -849,6 +909,7 @@ body.quality-high .falling {
   animation: floatUp 1s ease-out;
   pointer-events: none;
 }
+
 @keyframes floatUp {
   0% {
     transform: translateY(0);
@@ -1179,6 +1240,7 @@ button.upgrade:disabled .button_top {
 .upgrade {
   background: linear-gradient(145deg, #2980b9, #3498db);
 }
+
 .upgrade .button_top {
   border: 5px solid var(--button_outline_color);
   color: var(--button_outline_color);
@@ -2450,12 +2512,15 @@ html, body {
     transform: translate3d(clamp(-10vw, var(--horizontal-drift), 10vw), 110vh, 0) rotate(var(--rotation)) scale(0.9);
   }
 }
+
 body.theme-dark * {
   scrollbar-color: rgba(150, 150, 150, 0.3) rgba(0, 0, 0, 0.2);
 }
+
 .blurz {
   display: none;
 }
+
 @media (max-width: 932px) {
   .blurz{
     position: fixed;
