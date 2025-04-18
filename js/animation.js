@@ -365,7 +365,7 @@ export function cleanupAnimations() {
   }
 }
 
-window.addEventListener('unload', cleanupAnimations);
+window.addEventListener('pagehide', cleanupAnimations);
 
 document.addEventListener('visibilitychange', () => {
   if (document.hidden) {

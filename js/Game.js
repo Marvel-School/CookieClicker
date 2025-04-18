@@ -69,7 +69,7 @@ export default class Game {
     this.setupAchievements();
 
     this.soundOn = true;
-    this.clickSound = new Audio("sounds/click.mp3");
+    this.clickSound = document.getElementById('click-sound');
     this.clickSound.volume = 0.2;
     this.userHasInteracted = false;
     
